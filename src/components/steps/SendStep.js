@@ -78,6 +78,14 @@ class SendStep extends Component {
 
 
     componentDidMount() {
+
+    }
+
+    componentWillReceiveProps(props) {
+        this.setState({
+            recipient: props.to,
+            amount: props.amount,
+        })
     }
 
     handleCurrencyChange = event => {
@@ -175,7 +183,7 @@ class SendStep extends Component {
                 />
                 <TextField
                     fullWidth
-                    label="TO"
+                    label="To"
                     className={classes.textField}
                     value={recipient}
                     margin="normal"
@@ -193,7 +201,7 @@ class SendStep extends Component {
 
                 <TextField
                     fullWidth
-                    label="amount"
+                    label="Amount"
                     className={classes.textField}
                     value={amount}
                     margin="normal"
@@ -269,8 +277,8 @@ class SendStep extends Component {
                     <Button
                         variant="contained"
                         color="primary"
-                        disabled={!this.state.valid}
-                        onClick={()=>{onSendStepContinue(availableCurrencies[currencyId], {account}, {recipient}, parseInt(amount,10), nrg, nrgPrice)}}
+                        disabled={!this.isFormValid()}
+                        onClick={() => { onSendStepContinue(availableCurrencies[currencyId], 'todo', recipient, parseFloat(amount, 10), 333, 777, 555, '1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz') }}
                         className={classes.continueButton}>
                         <b>Continue</b>
                         <ArrowForward className={classes.rightIcon} />

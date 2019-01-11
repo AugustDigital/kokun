@@ -23,8 +23,7 @@ const styles = theme => ({
     marginBottom: theme.spacing.unit * 5,
   },
   devSectionContainer: {
-    backgroundImage: 'linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.07));',
-    height:'100%'
+    backgroundImage: 'linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.07));'
   },
   grow: {
     flexGrow: 1,

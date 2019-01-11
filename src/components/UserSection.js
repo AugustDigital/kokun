@@ -37,7 +37,6 @@ class UserSection extends Component {
 
     render() {
         const { classes } = this.props;
-        console.log(this.props.className)
         return (
             <div className={this.props.className + ' ' + classes.root}>
                 <Grid container
