@@ -27,21 +27,6 @@ class AionPayService {
         }catch(error){
             reject(error);
         }
-
-        /*this.web3.eth.estimateGas(txArgs).then((result)=>{
-            let nonce = 0;
-            let estimatedNrg = result;
-
-            this.web3.eth.getTransactionCount(address).then((nonce) =>{
-                resolve([nonce, estimatedNrg])
-            }).catch((error) =>{
-                reject(error)
-            });
-
-        }).catch((error)=>{
-            reject(error)
-        })*/
-
     })
 
   }
@@ -64,53 +49,21 @@ class AionPayService {
           }catch(error){
               reject(error)
           }
-
-          /*
-          this.web3.eth.getBalance(address).
-              then((result) => {
-
-                  let nrgPriceData = null;
-                  let balance = result.toString();
-
-                  this.web3.eth.getGasPrice().then((nrgPriceData)=>{
-                      resolve([balance, nrgPriceData])
-                  }).catch((err)=>{
-                      reject(err)
-                  });
-
-              }).catch((err)=>{
-                  console.log(err)
-                  reject(err)
-              })*/
       })
 
   }
 
   async sendTransaction(encodedTx) {
 
-      //return new Promise((resolve, reject) => {
+      let result = await this.web3.eth.sendRawTransaction(encodedTx);
 
-          let result = await this.web3.eth.sendRawTransaction(encodedTx);
-
-          if(result){
-              let txn = TxnResponse;
-              txn.txHash = result;
-              return txn;
-          }else{
-              return false
-          }
-
-          /*try{
-              this.web3.eth.sendSignedTransaction(encodedTx).on('receipt', result=>{
-                  let txn = TxnResponse;
-                  txn.txHash = result;
-                  resolve(txn);
-              })
-          } catch(error){
-              reject(error)
-          }*/
-
-      //})
+      if(result){
+          let txn = TxnResponse;
+          txn.txHash = result;
+          return txn;
+      }else{
+          return false
+      }
     }
 }
 export default AionPayService;

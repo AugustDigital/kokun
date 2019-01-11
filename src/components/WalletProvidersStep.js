@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles, Typography, TextField, ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, Grid, Button, LinearProgress } from '@material-ui/core'
 import { Warning, ArrowForward } from '@material-ui/icons';
+const Accounts = require('aion-keystore');
 
 const CONTENT_ITEMS = ['LEDGER', 'KEY STORE FILE', 'PRIVATE KEY'];
 const styles = theme => ({
@@ -50,6 +51,15 @@ const styles = theme => ({
         paddingTop: '2px',
         paddingBottom: '2px'
     },
+    privateKeyError: {
+        width: 'fit-content',
+        backgroundColor: "rgb(224,48,81)",
+        marginTop: theme.spacing.unit,
+        paddingRight: theme.spacing.unit,
+        paddingLeft: theme.spacing.unit,
+        paddingTop: '2px',
+        paddingBottom: '2px'
+    },
     warningIcon: {
         marginRight: theme.spacing.unit,
         fontSize: 12,
@@ -70,7 +80,10 @@ class WalletProvidersStep extends Component {
     state = {
         expanded: null,
         privateKey: null,
+        publicKey: null,
         completed: 0,
+        privateKeyError: false,
+        privateKeyErrorMessage: 'Using a private key online is not safe'
     }
 
     componentDidMount() { }
@@ -110,7 +123,14 @@ class WalletProvidersStep extends Component {
                 break;
             }
             case CONTENT_ITEMS[2]: {
-                //todo unloack account from private key
+                try{
+                    const aion = new Accounts();
+                    let account = aion.privateKeyToAccount(this.state.privateKey);
+                    this.setState({publicKey: account})
+                }catch(e){
+                    this.setState({privateKeyError:true, privateKeyErrorMessage: 'Invalid key'})
+                    return;
+                }
                 break;
             }
         }
@@ -157,7 +177,7 @@ class WalletProvidersStep extends Component {
                                 }}
                             />
                             <br />
-                            <Grid className={classes.privateKeyWarning}
+                            <Grid className={(this.state.privateKeyError) ? classes.privateKeyError : classes.privateKeyWarning}
                                 container
                                 direction="row"
                                 justify="flex-start"
@@ -166,7 +186,7 @@ class WalletProvidersStep extends Component {
                                     <Warning className={classes.warningIcon} />
                                 </Grid>
                                 <Grid item>
-                                    <Typography variant="subtitle2">Using a private key online is not safe</Typography>
+                                    <Typography variant="subtitle2">{this.state.privateKeyErrorMessage}</Typography>
                                 </Grid>
                             </Grid>
                         </div>
