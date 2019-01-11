@@ -4,18 +4,21 @@ import { withStyles } from '@material-ui/core'
 import TopBar from './components/TopBar.js'
 import UserSection from './components/UserSection'
 import DevSection from './components/DevSection'
+const MARGIN_PERCENT = '10%';
 const styles = theme => ({
   root: {
     flexGrow: 1,
     height: '100%',
   },
   userSection: {
-    paddingRight: theme.spacing.unit * 30,
-    paddingLeft: theme.spacing.unit * 30,
+    paddingRight: MARGIN_PERCENT,
+    paddingLeft: MARGIN_PERCENT,
+    paddingTop: theme.spacing.unit * 5,
+    paddingBottom: theme.spacing.unit * 5,
   },
   devSection: {
-    marginRight: theme.spacing.unit * 30,
-    marginLeft: theme.spacing.unit * 30,
+    marginRight: MARGIN_PERCENT,
+    marginLeft: MARGIN_PERCENT,
     marginTop: theme.spacing.unit * 5,
     marginBottom: theme.spacing.unit * 5,
   },
