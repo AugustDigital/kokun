@@ -22,10 +22,10 @@ const styles = theme => ({
         width: '100%'
     },
     normalPanelStyle: {
-        background: '#ffffff',
+        backgroundColor: theme.palette.background.default
     },
     expandedPanelStyle: {
-        background: '#ffffff',
+        backgroundColor: theme.palette.background.default,
         borderStyle: 'solid',
         borderWidth: '3px',
         borderRadius: '5px',
@@ -76,13 +76,13 @@ const styles = theme => ({
         right: 0,
     },
     progressBarBar: {
-        backgroundColor:'rgb(80,241,175)'
+        backgroundColor: 'rgb(80,241,175)'
     }
 })
 class WalletProvidersStep extends Component {
-    
-    
-    constructor(props){
+
+
+    constructor(props) {
         super(props);
         this.state = {
             expanded: null,
@@ -91,26 +91,26 @@ class WalletProvidersStep extends Component {
         }
         this.CONTENT_ITEMS = [
             {
-                title:'Ledger', 
-                create:this.createLedgerPanel,
-                unlock:this.unlockLedger, 
-                validate:this.validateLedger
+                title: 'Ledger',
+                create: this.createLedgerPanel,
+                unlock: this.unlockLedger,
+                validate: this.validateLedger
             },
             {
-                title:'Key Store File', 
-                create:this.createKeyStorePanel,
-                unlock:this.unlockKeyStore,
-                validate:this.validateKeystoreFile
-            }, 
+                title: 'Key Store File',
+                create: this.createKeyStorePanel,
+                unlock: this.unlockKeyStore,
+                validate: this.validateKeystoreFile
+            },
             {
-                title:'Private Key', 
-                create:this.createPrivateKeyPanel,
-                unlock:this.unlockPrivateKey,
-                validate:this.validatePrivateKey
+                title: 'Private Key',
+                create: this.createPrivateKeyPanel,
+                unlock: this.unlockPrivateKey,
+                validate: this.validatePrivateKey
             }
         ];
     }
-    
+
     componentDidMount() { }
     handlePanelChange = panel => (event, expanded) => {
         this.setState({
@@ -123,7 +123,7 @@ class WalletProvidersStep extends Component {
     unlockAccount = (item) => {
         //todo unlock account there
         let data = item.unlock() // could be a promise
-        
+
         const timer = setInterval(() => { //fake loading
             if (this.state.completed > 100) {
                 clearInterval(timer);
@@ -134,25 +134,25 @@ class WalletProvidersStep extends Component {
         }, 500);
 
     }
-    unlockLedger = ()=>{
-        return {data:'todo:integrate'}
+    unlockLedger = () => {
+        return { data: 'todo:integrate' }
     }
-    unlockKeyStore = ()=>{
-        return {data:'todo:integrate'}
+    unlockKeyStore = () => {
+        return { data: 'todo:integrate' }
     }
 
-    unlockPrivateKey=()=>{
-        return {data:'todo:integrate'}
+    unlockPrivateKey = () => {
+        return { data: 'todo:integrate' }
     }
-    
-    createLedgerPanel= (classes)=>{
-        return(<div className={classes.content}>Todo Ledger</div>)
+
+    createLedgerPanel = (classes) => {
+        return (<div className={classes.content}>Todo Ledger</div>)
     }
-    createKeyStorePanel=(classes)=>{
-        return(<div className={classes.content}>Todo Key store file</div>)
+    createKeyStorePanel = (classes) => {
+        return (<div className={classes.content}>Todo Key store file</div>)
     }
-    createPrivateKeyPanel=(classes)=>{
-        return(<div className={classes.content}>
+    createPrivateKeyPanel = (classes) => {
+        return (<div className={classes.content}>
             <TextField
                 fullWidth
                 label="Enter Private Key"
@@ -183,14 +183,14 @@ class WalletProvidersStep extends Component {
         </div>);
     }
 
-    validateLedger=()=>{
+    validateLedger = () => {
         return false;//todo
     }
-    validateKeystoreFile=()=>{
+    validateKeystoreFile = () => {
         return false;//todo
     }
-    validatePrivateKey=()=>{
-        const {privateKey} = this.state;
+    validatePrivateKey = () => {
+        const { privateKey } = this.state;
         return privateKey !== null && privateKey.length > 0;//todo
     }
     render() {
@@ -198,9 +198,9 @@ class WalletProvidersStep extends Component {
         const { expanded, completed } = this.state;
 
         let content;
-        if(completed === 0){ //Wallet Import Options
+        if (completed === 0) { //Wallet Import Options
             const innerContent = this.CONTENT_ITEMS.map((item, index) => {
-                
+
                 return (<Grid key={index} item>
                     <ExpansionPanel className={expanded === item ? classes.expandedPanelStyle : classes.normalPanelStyle} expanded={expanded === item} onChange={this.handlePanelChange(item)}>
                         <ExpansionPanelSummary>
@@ -228,16 +228,16 @@ class WalletProvidersStep extends Component {
                             color="primary"
                             disabled={!expanded.validate()}
                             className={classes.continueButton}
-                            onClick={()=>this.unlockAccount(expanded)}>
+                            onClick={() => this.unlockAccount(expanded)}>
                             <b>Continue</b>
-                    <ArrowForward className={classes.rightIcon} />
+                            <ArrowForward className={classes.rightIcon} />
                         </Button>
                     </Grid>
                     : null}
 
             </Grid>)
 
-        }else{ //Unlocking progress screen
+        } else { //Unlocking progress screen
             content = (<Grid spacing={8}
                 container
                 direction="column"
@@ -245,15 +245,15 @@ class WalletProvidersStep extends Component {
                 alignItems="center">
                 <Typography variant="h5" style={{ fontWeight: 'bold', marginTop: '25px', marginBottom: '25px' }}>Unlocking {expanded.title}...</Typography>
                 <div className={classes.progressBarContainer}>
-                    <LinearProgress 
-                        variant="determinate" 
+                    <LinearProgress
+                        variant="determinate"
                         value={this.state.completed}
                         className={classes.progressBar}
-                        classes={{bar: classes.progressBarBar}} />
+                        classes={{ bar: classes.progressBarBar }} />
                 </div>
             </Grid>)
         }
-        
+
         return (content);
     }
 }

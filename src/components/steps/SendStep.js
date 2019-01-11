@@ -57,6 +57,14 @@ class SendStep extends Component {
 
 
     componentDidMount() {
+
+    }
+
+    componentWillReceiveProps(props) {
+        this.setState({
+            recipient: props.to,
+            amount: props.amount,
+        })
     }
 
     handleCurrencyChange = event => {
@@ -76,9 +84,9 @@ class SendStep extends Component {
         //todo
     }
 
-    isFormValid = () =>{ 
-        const {recipient, amount} = this.state;
-        return recipient.length>0&&!isNaN(parseInt(amount,10)) ; //todo add nrg validation
+    isFormValid = () => {
+        const { recipient, amount } = this.state;
+        return typeof (recipient) !== 'undefined' && recipient.length > 0 && !isNaN(parseFloat(amount)); //todo add nrg validation
     }
 
     render() {
@@ -122,7 +130,7 @@ class SendStep extends Component {
                     disabled
                     id="standard-disabled"
                     label="FROM"
-                    value={'todo'}
+                    value={'TODO'}
                     className={classes.textField}
                     style={{ marginTop: '45px' }}
                     margin="normal"
@@ -139,7 +147,7 @@ class SendStep extends Component {
                 />
                 <TextField
                     fullWidth
-                    label="TO"
+                    label="To"
                     className={classes.textField}
                     value={recipient}
                     margin="normal"
@@ -156,7 +164,7 @@ class SendStep extends Component {
 
                 <TextField
                     fullWidth
-                    label="amount"
+                    label="Amount"
                     className={classes.textField}
                     value={amount}
                     margin="normal"
@@ -216,7 +224,7 @@ class SendStep extends Component {
                         variant="contained"
                         color="primary"
                         disabled={!this.isFormValid()}
-                        onClick={()=>{onSendStepContinue(availableCurrencies[currencyId], 'todo', 'todo', parseInt(amount,10), 333, 777)}}
+                        onClick={() => { onSendStepContinue(availableCurrencies[currencyId], 'todo', recipient, parseFloat(amount, 10), 333, 777, 555, '1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz') }}
                         className={classes.continueButton}>
                         <b>Continue</b>
                         <ArrowForward className={classes.rightIcon} />
