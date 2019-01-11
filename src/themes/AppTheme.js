@@ -6,7 +6,8 @@ const AppTheme = createMuiTheme({
         type:'dark',
         background:{default:'#ebebf5'},
         text: {
-            primary:'#ebebf5',
+            //primary:'#ebebf5',
+            primary:'black',
             secondary:'#0f2752',
             disabled:'#0f2752',
             hint:'#0f2752',
