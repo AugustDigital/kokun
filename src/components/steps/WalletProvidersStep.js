@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles, Typography, TextField, ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, Grid, Button, LinearProgress } from '@material-ui/core'
 import { Warning, ArrowForward } from '@material-ui/icons';
-
+const Accounts = require('aion-keystore');
 
 const styles = theme => ({
     heading: {
@@ -50,6 +50,15 @@ const styles = theme => ({
         paddingTop: '2px',
         paddingBottom: '2px'
     },
+    privateKeyError: {
+        width: 'fit-content',
+        backgroundColor: "rgb(224,48,81)",
+        marginTop: theme.spacing.unit,
+        paddingRight: theme.spacing.unit,
+        paddingLeft: theme.spacing.unit,
+        paddingTop: '2px',
+        paddingBottom: '2px'
+    },
     warningIcon: {
         marginRight: theme.spacing.unit,
         fontSize: 12,
@@ -80,37 +89,39 @@ const styles = theme => ({
     }
 })
 class WalletProvidersStep extends Component {
-    
-    
+
+
     constructor(props){
         super(props);
         this.state = {
             expanded: null,
             privateKey: null,
             completed: 0,
+            privateKeyError: false,
+            privateKeyErrorMessage: 'Using a private key online is not safe'
         }
         this.CONTENT_ITEMS = [
             {
-                title:'Ledger', 
+                title:'Ledger',
                 create:this.createLedgerPanel,
-                unlock:this.unlockLedger, 
+                unlock:this.unlockLedger,
                 validate:this.validateLedger
             },
             {
-                title:'Key Store File', 
+                title:'Key Store File',
                 create:this.createKeyStorePanel,
                 unlock:this.unlockKeyStore,
                 validate:this.validateKeystoreFile
-            }, 
+            },
             {
-                title:'Private Key', 
+                title:'Private Key',
                 create:this.createPrivateKeyPanel,
                 unlock:this.unlockPrivateKey,
                 validate:this.validatePrivateKey
             }
         ];
     }
-    
+
     componentDidMount() { }
     handlePanelChange = panel => (event, expanded) => {
         this.setState({
@@ -123,7 +134,8 @@ class WalletProvidersStep extends Component {
     unlockAccount = (item) => {
         //todo unlock account there
         let data = item.unlock() // could be a promise
-        
+        if(!data) return;
+
         const timer = setInterval(() => { //fake loading
             if (this.state.completed > 100) {
                 clearInterval(timer);
@@ -142,9 +154,16 @@ class WalletProvidersStep extends Component {
     }
 
     unlockPrivateKey=()=>{
-        return {data:'todo:integrate'}
+        try{
+            const aion = new Accounts();
+            let account = aion.privateKeyToAccount(this.state.privateKey);
+            return account.address;
+        }catch(e){
+            this.setState({privateKeyError: true, privateKeyErrorMessage: "Invalid key"})
+            return false;
+        }
     }
-    
+
     createLedgerPanel= (classes)=>{
         return(<div className={classes.content}>Todo Ledger</div>)
     }
@@ -168,7 +187,7 @@ class WalletProvidersStep extends Component {
                 }}
             />
             <br />
-            <Grid className={classes.privateKeyWarning}
+            <Grid className={(this.state.privateKeyError) ? classes.privateKeyError : classes.privateKeyWarning}
                 container
                 direction="row"
                 justify="flex-start"
@@ -177,7 +196,7 @@ class WalletProvidersStep extends Component {
                     <Warning className={classes.warningIcon} />
                 </Grid>
                 <Grid item>
-                    <Typography variant="subtitle2">Using a private key online is not safe</Typography>
+                    <Typography variant="subtitle2">{this.state.privateKeyErrorMessage}</Typography>
                 </Grid>
             </Grid>
         </div>);
@@ -200,7 +219,7 @@ class WalletProvidersStep extends Component {
         let content;
         if(completed === 0){ //Wallet Import Options
             const innerContent = this.CONTENT_ITEMS.map((item, index) => {
-                
+
                 return (<Grid key={index} item>
                     <ExpansionPanel className={expanded === item ? classes.expandedPanelStyle : classes.normalPanelStyle} expanded={expanded === item} onChange={this.handlePanelChange(item)}>
                         <ExpansionPanelSummary>
@@ -245,15 +264,15 @@ class WalletProvidersStep extends Component {
                 alignItems="center">
                 <Typography variant="h5" style={{ fontWeight: 'bold', marginTop: '25px', marginBottom: '25px' }}>Unlocking {expanded.title}...</Typography>
                 <div className={classes.progressBarContainer}>
-                    <LinearProgress 
-                        variant="determinate" 
+                    <LinearProgress
+                        variant="determinate"
                         value={this.state.completed}
                         className={classes.progressBar}
                         classes={{bar: classes.progressBarBar}} />
                 </div>
             </Grid>)
         }
-        
+
         return (content);
     }
 }

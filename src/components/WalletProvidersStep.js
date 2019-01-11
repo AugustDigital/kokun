@@ -111,6 +111,7 @@ class WalletProvidersStep extends Component {
         }
     }
     unlockAccount = () => {
+
         const { expanded } = this.state;
         //todo unlock account there
         switch (expanded) {

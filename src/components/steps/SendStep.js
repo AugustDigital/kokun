@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles, Typography, TextField, Grid, Button, FormControl, Select, MenuItem } from '@material-ui/core'
-import { ArrowForward } from '@material-ui/icons';
+import { Warning, ArrowForward } from '@material-ui/icons';
+import * as TransactionUtil from '../../utils/TransactionUtil';
 
 
 const styles = theme => ({
@@ -40,6 +41,20 @@ const styles = theme => ({
         marginLeft: theme.spacing.unit,
         fontSize: 14,
     },
+    error: {
+        width: 'fit-content',
+        backgroundColor: "rgb(224,48,81)",
+        marginTop: theme.spacing.unit,
+        paddingRight: theme.spacing.unit,
+        paddingLeft: theme.spacing.unit,
+        paddingTop: '2px',
+        paddingBottom: '2px'
+    },
+    warningIcon: {
+        marginRight: theme.spacing.unit,
+        fontSize: 12,
+        color: "#fff"
+    },
 })
 class SendStep extends Component {
 
@@ -52,6 +67,12 @@ class SendStep extends Component {
             availableCurrencies: ['Aion', 'Plat'],
             recipient: '',
             amount: '',
+            account: this.props.account,
+            nrg: TransactionUtil.defaultNrgLimit,
+            nrgPrice: TransactionUtil.defaultNrgPrice,
+            error: false,
+            errorMessage: '',
+            valid: false
         }
     }
 
@@ -65,25 +86,42 @@ class SendStep extends Component {
     };
 
     onRecipientEntered = (event) => {
-        this.setState({ recipient: event.target.value })
+        this.setState(
+            { recipient: event.target.value },
+            () => this.isFormValid()
+        )
     }
 
     onAmountEntered = (event) => {
-        this.setState({ amount: event.target.value })
+        this.setState(
+            { amount: event.target.value },
+            () => this.isFormValid()
+        )
     }
 
     onEditNrg = () => {
         //todo
     }
 
-    isFormValid = () =>{ 
-        const {recipient, amount} = this.state;
-        return recipient.length>0&&!isNaN(parseInt(amount,10)) ; //todo add nrg validation
+    isFormValid = () =>{
+        const {account, recipient, amount, nrg} = this.state;
+
+        if(recipient.length < 0 || isNaN(parseInt(amount,10))){
+            this.setState({
+                valid: false,
+                error: true,
+                errorMessage: 'Fields missing'
+            })
+        }else{
+            this.setState({error: false, valid: true, errorMessage:''})
+        }
+
+        //return recipient.length>0&&!isNaN(parseInt(amount,10)); //todo add nrg validation
     }
 
     render() {
         const { classes, onSendStepBack, onSendStepContinue } = this.props;
-        const { availableCurrencies, currencyId, amount, recipient } = this.state;
+        const { availableCurrencies, currencyId, amount, recipient, nrg, nrgPrice, account, error, errorMessage} = this.state;
 
         const dropDownItems = availableCurrencies.map((item, index) => {
             return (<MenuItem key={index} value={index}>{item}</MenuItem>)
@@ -122,7 +160,7 @@ class SendStep extends Component {
                     disabled
                     id="standard-disabled"
                     label="FROM"
-                    value={'todo'}
+                    value={this.state.account}
                     className={classes.textField}
                     style={{ marginTop: '45px' }}
                     margin="normal"
@@ -144,7 +182,8 @@ class SendStep extends Component {
                     value={recipient}
                     margin="normal"
                     color="primary"
-                    onChange={this.onRecipientEntered}
+                    onChange={this.onRecipientEntered.bind(this)}
+                    onBlur={this.isFormValid}
                     InputLabelProps={{
                         className: classes.textField,
                     }}
@@ -162,7 +201,8 @@ class SendStep extends Component {
                     margin="normal"
                     color="primary"
                     type="number"
-                    onChange={this.onAmountEntered}
+                    onChange={this.onAmountEntered.bind(this)}
+                    onBlur={this.isFormValid}
                     InputLabelProps={{
                         className: classes.textField,
                     }}
@@ -183,7 +223,7 @@ class SendStep extends Component {
                         disabled
                         id="standard-disabled"
                         label="MAX NRG COST"
-                        value={'todo'}
+                        value={nrg}
                         className={classes.textField}
                         margin="normal"
                         InputLabelProps={{
@@ -201,6 +241,22 @@ class SendStep extends Component {
                     <Button variant="outlined" onClick={this.onEditNrg}>EDIT</Button>
                 </Grid>
 
+                {
+                    (error) ?
+                    <Grid className={classes.error}
+                        container
+                        direction="row"
+                        justify="flex-start"
+                        alignItems="center">
+                        <Grid item>
+                            <Warning className={classes.warningIcon} />
+                        </Grid>
+                        <Grid item>
+                            <Typography variant="subtitle2">{errorMessage}</Typography>
+                        </Grid>
+                    </Grid> : null
+                }
+
                 <Grid spacing={8}
                     container
                     direction="row"
@@ -215,8 +271,8 @@ class SendStep extends Component {
                     <Button
                         variant="contained"
                         color="primary"
-                        disabled={!this.isFormValid()}
-                        onClick={()=>{onSendStepContinue(availableCurrencies[currencyId], 'todo', 'todo', parseInt(amount,10), 333, 777)}}
+                        disabled={!this.state.valid}
+                        onClick={()=>{onSendStepContinue(availableCurrencies[currencyId], {account}, {recipient}, parseInt(amount,10), nrg, nrgPrice)}}
                         className={classes.continueButton}>
                         <b>Continue</b>
                         <ArrowForward className={classes.rightIcon} />
