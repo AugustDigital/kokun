@@ -115,8 +115,6 @@ class SendStep extends Component {
         }else{
             this.setState({error: false, valid: true, errorMessage:''})
         }
-
-        //return recipient.length>0&&!isNaN(parseInt(amount,10)); //todo add nrg validation
     }
 
     render() {
