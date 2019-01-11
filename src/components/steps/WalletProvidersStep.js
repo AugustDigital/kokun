@@ -196,7 +196,6 @@ class WalletProvidersStep extends Component {
     render() {
         const { classes } = this.props;
         const { expanded, completed } = this.state;
-        console.log(expanded);
 
         let content;
         if(completed === 0){ //Wallet Import Options

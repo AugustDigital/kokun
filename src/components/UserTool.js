@@ -10,7 +10,7 @@ const styles = theme => ({
 class UserTool extends Component {
 
     state = {
-        step: 1//todo switch back to 0 after testing
+        step: 0//todo switch back to 0 after testing
     }
 
     componentDidMount() { }
