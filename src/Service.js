@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import web3Provider from './utils/getWeb3';
 import {TxnResponse} from './common/TxnResponse';
 

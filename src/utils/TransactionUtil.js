@@ -66,7 +66,7 @@ export function signTransaction(transaction, privateKey) {
 
     let signedTransaction = SignedTransaction;
     signedTransaction.messageHash = CryptoUtil.uia2hex(hash)
-    signedTransaction. signature = CryptoUtil.uia2hex(aionPubSig)
+    signedTransaction.signature = CryptoUtil.uia2hex(aionPubSig)
     signedTransaction.rawTransaction = CryptoUtil.uia2hex(rawTransaction)
     signedTransaction.input = transaction
 
@@ -115,7 +115,7 @@ export function verifyAndEncodedSignTransaction(transaction, rlpEncoded, signatu
 }
 
 export function rlpEncode(transaction) { //return Uint8Array
-    const txArray = new Array()
+    const txArray = []
 
     if (transaction.to) {
       transaction.to = transaction.to.toLowerCase()

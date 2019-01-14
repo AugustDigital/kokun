@@ -130,7 +130,7 @@ class SendStep extends Component {
     isFormValid = () =>{
         const {account, recipient, amount, nrg} = this.state;
 
-        if(typeof (recipient) == 'undefined' || recipient.length < 0 || isNaN(parseInt(amount,10))){
+        if(typeof (recipient) === 'undefined' || recipient.length < 0 || isNaN(parseInt(amount,10))){
             this.setState({
                 valid: false,
                 error: true,
