@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles, Typography, Grid, Button, Paper } from '@material-ui/core'
 import { ArrowForward } from '@material-ui/icons';
-
+import AionLogoLarge from '../../assets/aion_logo_large.png'
+import Animations from '../../Animations.css'
 
 const styles = theme => ({
     paper: {
@@ -49,14 +50,14 @@ class ConfirmStep extends Component {
                 clearInterval(timer);
                 this.props.onTransactonStepContinue('123456789098764321')
             } else {
-                this.setState({ completed: this.state.completed + 25 })
+                this.setState({ completed: this.state.completed + 10 })
             }
-        }, 500);
+        }, 1000);
 
     }
 
     render() {
-        const { classes, to, from, amount, nrg, nrgPrice, nrgMax, rawTransaction, onTransactonStepBack } = this.props;
+        const { classes, currency, to, from, amount, nrg, nrgPrice, nrgLimit, rawTransaction, onTransactonStepBack } = this.props;
         const { completed } = this.state;
         return (
             <div>
@@ -118,7 +119,7 @@ class ConfirmStep extends Component {
                                 alignItems="center"
                                 className={classes.transactionRow}>
                                 <Typography color="textSecondary" variant="subtitle2" className={classes.fatLable}>Maximum NRG</Typography>
-                                <Typography color="textSecondary" variant="subtitle2" className={classes.thinLable}>{nrgMax}</Typography>
+                                <Typography color="textSecondary" variant="subtitle2" className={classes.thinLable}>{nrgLimit}</Typography>
                             </Grid>
                         </Paper>
                         <Grid
@@ -150,16 +151,24 @@ class ConfirmStep extends Component {
                             <Button
                                 variant="contained"
                                 color="primary"
-                                onClick={(event) => { console.log('hi'); this.sendTransaction() }}
+                                onClick={(event) => { this.sendTransaction() }}
                                 className={classes.continueButton}>
                                 <b>Continue</b>
                                 <ArrowForward className={classes.rightIcon} />
                             </Button>
                         </Grid>
                     </Grid>
-                    : <div>
-                        Sending...
-                    </div>}
+                    :
+                    <Grid spacing={0}
+                        container
+                        direction="column"
+                        justify="center"
+                        alignItems="center">
+                        <img alt="Cranberry Logo" className="rotation" src={AionLogoLarge} width="90px" />
+                        <Typography variant="h4" style={{ fontWeight: 'bold', marginTop: '30px' }}>Sending {currency}</Typography>
+                        <Typography variant="subtitle2" style={{ fontWeight: 'light', marginTop: '20px' }}> Sending transaction and waiting for at least one block confirmation.</Typography>
+                        <Typography variant="subtitle2" style={{ fontWeight: 'light' }}> Please be patient this wont't take too long...</Typography>
+                    </Grid>}
 
             </div>
 
@@ -176,8 +185,8 @@ ConfirmStep.propTypes = {
     to: PropTypes.string.isRequired,
     amount: PropTypes.number.isRequired,
     nrg: PropTypes.number.isRequired,
-    nrgPrice: PropTypes.number.isRequired,
-    nrgMax: PropTypes.number.isRequired,
+    //nrgPrice: PropTypes.number.isRequired, uncomment if needed
+    //nrgLimit: PropTypes.number.isRequired,
     rawTransaction: PropTypes.string.isRequired
 };
 
