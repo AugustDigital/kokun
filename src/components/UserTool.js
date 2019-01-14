@@ -22,13 +22,14 @@ const styles = theme => ({
 class UserTool extends Component {
 
     state = {
-        step: 1,//todo switch back to 0 after testing
+        step: 0,
         transactionData: {
 
         },
         account: null,
         privateKey: null,
-        web3: null
+        web3: null,
+        rawTransaction: null
     }
 
     componentDidMount() {
@@ -51,10 +52,32 @@ class UserTool extends Component {
             step: 1
         })
     }
+    async signTransaction(nrgPrice, to, amount, nrg) {
+        const aion = new Accounts();
+        const account = aion.privateKeyToAccount(this.state.privateKey);
+        const nonce = this.state.web3.eth.getTransactionCount(account.address);
+        let totalAions = this.state.web3.toWei(amount, "ether");
+
+        let transaction = {
+            nonce: nonce,
+            gasPrice:nrgPrice,
+            to: to,
+            value: totalAions,
+            gas: nrg,
+            timestamp: Date.now() * 1000
+        };
+
+        const signedTransaction = await account.signTransaction(transaction);
+
+        return signedTransaction;
+    }
     onSendStepContinue = (currency, from, to, amount, nrg, nrgPrice, nrgLimit, rawTransaction) => {
-        this.setState({
-            step: 2,
-            transactionData: { currency, from, to, amount, nrg, nrgPrice, nrgLimit, rawTransaction }
+        this.signTransaction(nrgPrice, to, amount, nrg).then((signedTransaction)=>{
+            this.setState({
+                step: 2,
+                transactionData: { currency, from, to, amount, nrg, nrgPrice, nrgLimit  },
+                rawTransaction: signedTransaction.rawTransaction
+            })
         })
     }
     onSendStepBack = () => {
@@ -82,7 +105,7 @@ class UserTool extends Component {
     }
     render() {
         const { classes } = this.props;
-        const { step, transactionData, txHash, signedTransaction } = this.state;
+        const { step, transactionData, txHash, rawTransaction, account } = this.state;
         let content = null;
 
 
@@ -96,7 +119,7 @@ class UserTool extends Component {
             }
             case 1: { // Send
                 content = (<SendStep
-                    account={this.state.account}
+                    account={account}
                     onSendStepContinue={this.onSendStepContinue}
                     onSendStepBack={this.onSendStepBack}
                     currency={transactionData.currency}//following data is in the case of 'back' navigation
@@ -106,7 +129,7 @@ class UserTool extends Component {
                     nrg={transactionData.nrg}
                     nrgPrice={transactionData.nrgPrice}
                     nrgLimit={transactionData.nrgLimit}
-                    rawTransaction={transactionData.rawTransaction}
+                    rawTransaction={rawTransaction}
                 />);
                 break;
             }
@@ -121,7 +144,7 @@ class UserTool extends Component {
                     nrg={transactionData.nrg}
                     nrgPrice={transactionData.nrgPrice}
                     nrgLimit={transactionData.nrgLimit}
-                    rawTransaction={transactionData.rawTransaction}
+                    rawTransaction={rawTransaction}
                 />);
                 break;
             }

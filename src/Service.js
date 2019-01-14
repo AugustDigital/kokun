@@ -1,29 +1,31 @@
-import Web3 from 'aion-web3';
+import React, { Component } from 'react';
+import web3Provider from './utils/getWeb3';
 import {TxnResponse} from './common/TxnResponse';
 
-class Service {
+class Service extends Component{
 
-  constructor(providerUrl) {
-
-    this.web3 = new Web3(new Web3.providers.HttpProvider(providerUrl));
-
+  constructor(props) {
+      super(props);
+      this.state = {web3: null}
   }
 
-  fetchNonceNrg(address, txn) {
+  fetchNrg(txn) {
 
       return new Promise((resolve, reject) => {
-        //For estimateNrg call
+
         let txArgs = {
           to: txn.to,
-          from: address,
-          value: txn.value,
-          data: txn.data,
+          from: txn.address,
+          value: txn.value
         }
 
         try{
-            let estimatedNrg = this.web3.eth.estimateGas(txArgs);
-            let nonce = this.web3.eth.getTransactionCount(address);
-            resolve([nonce, estimatedNrg])
+            web3Provider.then((result) => {
+                let estimatedNrg = result.web3.eth.estimateGas(txArgs);
+                resolve(estimatedNrg)
+            }).catch((e) =>{
+                reject(e)
+            });
         }catch(error){
             reject(error);
         }
@@ -36,14 +38,15 @@ class Service {
       return new Promise((resolve, reject) => {
 
           try{
-              let that = this;
-              this.web3.eth.getBalance(address, function(error, result) {
-                  if(error){
-                      reject(error)
-                  }else{
-                      let balance = result.toString();
-                      resolve(balance)
-                  }
+              web3Provider.then((result) => {
+                  result.eth.getBalance(address, function(error, result) {
+                      if(error){
+                          reject(error)
+                      }else{
+                          let balance = result.toString();
+                          resolve(balance)
+                      }
+                  });
               });
 
           }catch(error){
@@ -55,15 +58,18 @@ class Service {
 
   async sendTransaction(encodedTx) {
 
-      let result = await this.web3.eth.sendRawTransaction(encodedTx);
+      web3Provider.then((result) => {
 
-      if(result){
-          let txn = TxnResponse;
-          txn.txHash = result;
-          return txn;
-      }else{
-          return false
-      }
+          let hash = result.web3.eth.sendRawTransaction(encodedTx);
+
+          if(hash){
+              let txn = TxnResponse;
+              txn.txHash = hash;
+              return txn;
+          }else{
+              return false
+          }
+      })
     }
 }
 export default Service;

@@ -52,7 +52,7 @@ class ConfirmStep extends Component {
 
     async sendTransaction(){
 
-        const transactionHash = await this.state.web3.eth.sendRawTransaction(this.props.signedTransaction);
+        const transactionHash = await this.state.web3.eth.sendRawTransaction(this.props.rawTransaction);
         const timer = setInterval(() => { //fake loading
             if (this.state.completed > 100) {
                 clearInterval(timer);
@@ -65,7 +65,7 @@ class ConfirmStep extends Component {
     }
 
     render() {
-        const { classes, currency, to, from, amount, nrg, nrgPrice, nrgLimit, signedTransaction, onTransactonStepBack } = this.props;
+        const { classes, currency, to, from, amount, nrg, nrgPrice, nrgLimit, rawTransaction, onTransactonStepBack } = this.props;
         const { completed } = this.state;
         return (
             <div>
@@ -142,7 +142,7 @@ class ConfirmStep extends Component {
                                 <Typography variant="subtitle2" className={classes.fatLable}>Raw Transaction</Typography>
                             </Grid>
                             <Grid item xs>
-                                <Typography variant="subtitle2" className={classes.thinLable} style={{ wordBreak: 'break-all' }}>{signedTransaction}</Typography>
+                                <Typography variant="subtitle2" className={classes.thinLable} style={{ wordBreak: 'break-all' }}>{rawTransaction}</Typography>
                             </Grid>
                         </Grid>
                         <Grid spacing={8}
@@ -159,7 +159,7 @@ class ConfirmStep extends Component {
                             <Button
                                 variant="contained"
                                 color="primary"
-                                onClick={(event) => { this.sendTransaction() }}
+                                onClick={this.sendTransaction.bind(this)}
                                 className={classes.continueButton}>
                                 <b>Continue</b>
                                 <ArrowForward className={classes.rightIcon} />
@@ -195,7 +195,7 @@ ConfirmStep.propTypes = {
     nrg: PropTypes.number.isRequired,
     //nrgPrice: PropTypes.number.isRequired, uncomment if needed
     //nrgLimit: PropTypes.number.isRequired,
-    signedTransaction: PropTypes.string.isRequired
+    rawTransaction: PropTypes.string.isRequired
 };
 
 export default withStyles(styles)(ConfirmStep);

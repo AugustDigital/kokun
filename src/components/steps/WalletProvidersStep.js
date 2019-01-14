@@ -132,7 +132,6 @@ class WalletProvidersStep extends Component {
         this.setState({ privateKey: text })
     }
     unlockAccount = (item) => {
-        //todo unlock account there
         let data = item.unlock() // could be a promise
         if(!data) return;
 
