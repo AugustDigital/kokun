@@ -4,6 +4,7 @@ import { withStyles, Typography, Grid, Button, Paper } from '@material-ui/core'
 import { ArrowForward } from '@material-ui/icons';
 import AionLogoLarge from '../../assets/aion_logo_large.png'
 import Animations from '../../Animations.css'
+import web3Provider from '../../utils/getWeb3';
 
 const styles = theme => ({
     paper: {
@@ -36,19 +37,26 @@ class ConfirmStep extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            completed: 0
+            completed: 0,
+            web3: null
         }
     }
 
-    componentDidMount() { }
+    componentDidMount() {
+        web3Provider.then((results) => {
+            this.setState({web3: results.web3});
+        }).catch((err)=>{
+            console.log(err)
+        })
+    }
 
-    sendTransaction = () => {
-        //todo sign transaction data here
+    async sendTransaction(){
 
+        const transactionHash = await this.state.web3.eth.sendRawTransaction(this.props.rawTransaction);
         const timer = setInterval(() => { //fake loading
             if (this.state.completed > 100) {
                 clearInterval(timer);
-                this.props.onTransactonStepContinue('123456789098764321')
+                this.props.onTransactionStepContinue(transactionHash)
             } else {
                 this.setState({ completed: this.state.completed + 10 })
             }
@@ -151,7 +159,7 @@ class ConfirmStep extends Component {
                             <Button
                                 variant="contained"
                                 color="primary"
-                                onClick={(event) => { this.sendTransaction() }}
+                                onClick={this.sendTransaction.bind(this)}
                                 className={classes.continueButton}>
                                 <b>Continue</b>
                                 <ArrowForward className={classes.rightIcon} />
@@ -178,7 +186,7 @@ class ConfirmStep extends Component {
 
 ConfirmStep.propTypes = {
     classes: PropTypes.object.isRequired,
-    onTransactonStepContinue: PropTypes.func.isRequired,
+    onTransactionStepContinue: PropTypes.func.isRequired,
     onTransactonStepBack: PropTypes.func.isRequired,
     currency: PropTypes.string.isRequired,
     from: PropTypes.string.isRequired,

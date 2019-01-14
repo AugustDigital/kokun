@@ -1,8 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles, Typography, TextField, Grid, Button, FormControl, Select, MenuItem } from '@material-ui/core'
-import { ArrowForward } from '@material-ui/icons';
-
+import { Warning, ArrowForward } from '@material-ui/icons';
+import * as TransactionUtil from '../../utils/TransactionUtil';
+import Service from '../../Service.js';
+import web3Provider from '../../utils/getWeb3';
 
 const styles = theme => ({
     dropDownContainer: {
@@ -40,6 +42,20 @@ const styles = theme => ({
         marginLeft: theme.spacing.unit,
         fontSize: 14,
     },
+    error: {
+        width: 'fit-content',
+        backgroundColor: "rgb(224,48,81)",
+        marginTop: theme.spacing.unit,
+        paddingRight: theme.spacing.unit,
+        paddingLeft: theme.spacing.unit,
+        paddingTop: '2px',
+        paddingBottom: '2px'
+    },
+    warningIcon: {
+        marginRight: theme.spacing.unit,
+        fontSize: 12,
+        color: "#fff"
+    },
 })
 class SendStep extends Component {
 
@@ -47,16 +63,30 @@ class SendStep extends Component {
         currencyId: 0,
         labelWidth: 0,
         availableCurrencies: ['Aion', 'Plat'],
-        recipient: this.props.to,
-        amount: this.props.amount,
+        recipient: this.props.to ? this.props.to : '',
+        amount: this.props.amount ? this.props.amount : '',
         customNrg: false,
-        nrgPrice: this.props.nrgPrice, //todo:calculate on load
-        nrgLimit: this.props.nrgLimit, //todo:hardcode when integrating
-        nrg: this.props.nrg ? this.props.nrg : 12456,//todo calculate from nrgPrice and nrgLimit
+        nrgPrice: TransactionUtil.defaultNrgPrice,
+        nrgLimit: TransactionUtil.defaultNrgLimit,
+        nrg: this.props.nrg ? this.props.nrg : TransactionUtil.defaultNrgLimit,
+        error: false,
+        errorMessage: '',
+        account: this.props.account
     }
 
     componentDidMount() {
+    }
 
+    async updateNrg(from, to, amount){
+
+        web3Provider.then((result) => {
+            let totalAions = result.web3.toWei(amount, "ether");
+            let transaction = {from:from, to:to, value: totalAions};
+            let estimatedNrg = result.web3.eth.estimateGas(transaction);
+            this.setState({nrg: estimatedNrg});
+        }).catch((e) =>{
+            console.log(e)
+        });
     }
 
     handleCurrencyChange = event => {
@@ -64,11 +94,17 @@ class SendStep extends Component {
     };
 
     onRecipientEntered = (event) => {
-        this.setState({ recipient: event.target.value })
+        this.setState(
+            { recipient: event.target.value },
+            () => this.isFormValid()
+        )
     }
 
     onAmountEntered = (event) => {
-        this.setState({ amount: event.target.value })
+        this.setState(
+            { amount: event.target.value },
+            () => this.isFormValid()
+        )
     }
 
     onEditNrg = () => {
@@ -78,26 +114,36 @@ class SendStep extends Component {
     onNrgPriceEntered = (event) => {
 
         this.setState({
-            nrgPrice: event.target.value,
-            nrg: 2342342 //todo: recalculate
+            nrgPrice: event.target.value
         })
+        this.updateNrg(this.state.account, this.state.recipient, this.state.amount);
     }
 
     onNrgLimitEntered = (event) => {
+
         this.setState({
-            nrgLimit: event.target.value,
-            nrg: 54635523 //todo: recalculate 
+            nrgLimit: event.target.value
         })
+        this.updateNrg(this.state.account, this.state.recipient, this.state.amount);
     }
 
-    isFormValid = () => {
-        const { recipient, amount } = this.state;
-        return typeof (recipient) !== 'undefined' && recipient.length > 0 && !isNaN(parseFloat(amount)); //todo add nrg validation
+    isFormValid = () =>{
+        const {account, recipient, amount, nrg} = this.state;
+
+        if(typeof (recipient) == 'undefined' || recipient.length < 0 || isNaN(parseInt(amount,10))){
+            this.setState({
+                valid: false,
+                error: true,
+                errorMessage: 'Fields missing'
+            })
+        }else{
+            this.setState({error: false, valid: true, errorMessage:''})
+        }
     }
 
     render() {
         const { classes, onSendStepBack, onSendStepContinue } = this.props;
-        const { availableCurrencies, currencyId, amount, recipient, customNrg, nrg, nrgLimit, nrgPrice } = this.state;
+        const { availableCurrencies, currencyId, amount, recipient, customNrg, nrg, nrgLimit, nrgPrice, error, errorMessage, valid, account } = this.state;
 
         const dropDownItems = availableCurrencies.map((item, index) => {
             return (<MenuItem key={index} value={index}>{item}</MenuItem>)
@@ -136,7 +182,7 @@ class SendStep extends Component {
                     disabled
                     id="standard-disabled"
                     label="FROM"
-                    value={'TODO'}
+                    value={account}
                     className={classes.textField}
                     style={{ marginTop: '45px' }}
                     margin="normal"
@@ -158,7 +204,8 @@ class SendStep extends Component {
                     value={recipient}
                     margin="normal"
                     color="primary"
-                    onChange={this.onRecipientEntered}
+                    onChange={this.onRecipientEntered.bind(this)}
+                    onBlur={this.onRecipientEntered.bind(this)}
                     InputLabelProps={{
                         className: classes.textField,
                     }}
@@ -176,7 +223,8 @@ class SendStep extends Component {
                     margin="normal"
                     color="primary"
                     type="number"
-                    onChange={this.onAmountEntered}
+                    onChange={this.onAmountEntered.bind(this)}
+                    onBlur={this.onAmountEntered.bind(this)}
                     InputLabelProps={{
                         className: classes.textField,
                     }}
@@ -266,6 +314,22 @@ class SendStep extends Component {
                         </Grid>
                     </div>}
 
+                {
+                    (error) ?
+                    <Grid className={classes.error}
+                        container
+                        direction="row"
+                        justify="flex-start"
+                        alignItems="center">
+                        <Grid item>
+                            <Warning className={classes.warningIcon} />
+                        </Grid>
+                        <Grid item>
+                            <Typography variant="subtitle2">{errorMessage}</Typography>
+                        </Grid>
+                    </Grid> : null
+                }
+
                 <Grid spacing={8}
                     container
                     direction="row"
@@ -280,8 +344,8 @@ class SendStep extends Component {
                     <Button
                         variant="contained"
                         color="primary"
-                        disabled={!this.isFormValid()}
-                        onClick={() => { onSendStepContinue(availableCurrencies[currencyId], 'todo', recipient, parseFloat(amount, 10), nrg, nrgPrice, nrgLimit, '1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz') }}
+                        disabled={!valid}
+                        onClick={() => { onSendStepContinue(availableCurrencies[currencyId], account, recipient, parseFloat(amount, 10), nrg, nrgPrice, nrgLimit, '1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz') }}
                         className={classes.continueButton}>
                         <b>Continue</b>
                         <ArrowForward className={classes.rightIcon} />

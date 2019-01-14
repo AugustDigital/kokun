@@ -4,6 +4,7 @@ import { withStyles, Typography, TextField, ExpansionPanel, ExpansionPanelSummar
 import { Warning, ArrowForward, CloudUpload, InsertDriveFile, CheckCircleRounded, Close, Dock } from '@material-ui/icons';
 import classNames from 'classnames'
 import Dropzone from 'react-dropzone'
+const Accounts = require('aion-keystore');
 
 
 const styles = theme => ({
@@ -46,6 +47,15 @@ const styles = theme => ({
     privateKeyWarning: {
         width: 'fit-content',
         backgroundColor: "rgb(224,125,8)",
+        marginTop: theme.spacing.unit,
+        paddingRight: theme.spacing.unit,
+        paddingLeft: theme.spacing.unit,
+        paddingTop: '2px',
+        paddingBottom: '2px'
+    },
+    privateKeyError: {
+        width: 'fit-content',
+        backgroundColor: "rgb(224,48,81)",
         marginTop: theme.spacing.unit,
         paddingRight: theme.spacing.unit,
         paddingLeft: theme.spacing.unit,
@@ -118,6 +128,8 @@ class WalletProvidersStep extends Component {
             keyStoreFilePass: null,
             ledgerConnected: true,
             completed: 0,
+            privateKeyError: false,
+            privateKeyErrorMessage: 'Using a private key online is not safe'
         }
         this.CONTENT_ITEMS = [
             {
@@ -153,7 +165,7 @@ class WalletProvidersStep extends Component {
         this.setState({ privateKey: text })
     }
     onKeystoreFileUploaded = (acceptedFiles, rejectedFiles) => {
-        //todo: check if file is valid 
+        //todo: check if file is valid
         this.setState({ keyStoreFile: acceptedFiles[0] })
     }
     onKeystorePasswordEntered = (text) => {
@@ -166,8 +178,8 @@ class WalletProvidersStep extends Component {
         })
     }
     unlockAccount = (item) => {
-        //todo unlock account there
         let data = item.unlock() // could be a promise
+        if(!data) return;
 
         const timer = setInterval(() => { //fake loading
             if (this.state.completed > 100) {
@@ -186,8 +198,15 @@ class WalletProvidersStep extends Component {
         return { data: 'todo:integrate' }
     }
 
-    unlockPrivateKey = () => {
-        return { data: 'todo:integrate' }
+    unlockPrivateKey=()=>{
+        try{
+            const aion = new Accounts();
+            let account = aion.privateKeyToAccount(this.state.privateKey);
+            return account;
+        }catch(e){
+            this.setState({privateKeyError: true, privateKeyErrorMessage: "Invalid key"})
+            return false;
+        }
     }
 
     createLedgerPanel = (classes) => {
@@ -303,7 +322,7 @@ class WalletProvidersStep extends Component {
                 }}
             />
             <br />
-            <Grid className={classes.privateKeyWarning}
+            <Grid className={(this.state.privateKeyError) ? classes.privateKeyError : classes.privateKeyWarning}
                 container
                 direction="row"
                 justify="flex-start"
@@ -312,7 +331,7 @@ class WalletProvidersStep extends Component {
                     <Warning className={classes.warningIcon} />
                 </Grid>
                 <Grid item>
-                    <Typography variant="subtitle2">Using a private key online is not safe</Typography>
+                    <Typography variant="subtitle2">{this.state.privateKeyErrorMessage}</Typography>
                 </Grid>
             </Grid>
         </div>);
