@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { withStyles, Typography, TextField, ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, Grid, Button, LinearProgress } from '@material-ui/core'
-import { Warning, ArrowForward } from '@material-ui/icons';
+import { withStyles, Typography, TextField, ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, Grid, Button, LinearProgress, IconButton } from '@material-ui/core'
+import { Warning, ArrowForward, CloudUpload, InsertDriveFile, CheckCircleRounded, Close } from '@material-ui/icons';
+import classNames from 'classnames'
+import Dropzone from 'react-dropzone'
 
 
 const styles = theme => ({
@@ -77,6 +79,31 @@ const styles = theme => ({
     },
     progressBarBar: {
         backgroundColor: 'rgb(80,241,175)'
+    },
+    cancelFileUploadButton: {
+        position: 'absolute',
+        top: 0,
+        right: 0,
+    },
+    uploadIcon: {
+        color: 'rgb(210,219,230)',
+        fontSize: '125pt !important',
+    },
+    fileIcon: {
+        color: 'rgb(210,219,230)',
+        fontSize: 85,
+    },
+    checkIcon: {
+        fontSize: 16,
+        color: 'rgb(80,241,175)'
+    },
+    uploadIcon: {
+        color: 'rgb(210,219,230)',
+        fontSize: 85,
+    },
+    uploadIconHover: {
+        color: 'rgb(27,199,254)',
+        fontSize: 85,
     }
 })
 class WalletProvidersStep extends Component {
@@ -87,6 +114,8 @@ class WalletProvidersStep extends Component {
         this.state = {
             expanded: null,
             privateKey: null,
+            keyStoreFile: null,
+            keyStoreFilePass: null,
             completed: 0,
         }
         this.CONTENT_ITEMS = [
@@ -120,6 +149,19 @@ class WalletProvidersStep extends Component {
     onPrivateKeyEntered = (text) => {
         this.setState({ privateKey: text })
     }
+    onKeystoreFileUploaded = (acceptedFiles, rejectedFiles) => {
+        //todo: check if file is valid 
+        this.setState({ keyStoreFile: acceptedFiles[0] })
+    }
+    onKeystorePasswordEntered = (text) => {
+        this.setState({ keyStoreFilePass: text })
+    }
+    onCancelFileUpload = () => {
+        this.setState({
+            keyStoreFile: null,
+            keyStoreFilePass: null
+        })
+    }
     unlockAccount = (item) => {
         //todo unlock account there
         let data = item.unlock() // could be a promise
@@ -149,7 +191,69 @@ class WalletProvidersStep extends Component {
         return (<div className={classes.content}>Todo Ledger</div>)
     }
     createKeyStorePanel = (classes) => {
-        return (<div className={classes.content}>Todo Key store file</div>)
+        return (<div className={classes.content}>
+            {this.state.keyStoreFile ?
+                <div>
+                    <Grid container
+                        direction="column"
+                        justify="center"
+                        alignItems="center">
+                        <InsertDriveFile className={classes.fileIcon} />
+                        <Typography color='textSecondary' variant='h5' style={{ fontWeight: 'bold', marginTop: '15px' }}>{this.state.keyStoreFile.name}</Typography>
+
+                    </Grid>
+                    <IconButton onClick={this.onCancelFileUpload} aria-label="Close" className={classes.cancelFileUploadButton}>
+                        <Close color='primary' />
+                    </IconButton>
+                    <Grid
+                        container
+                        spacing={14}
+                        direction="row"
+                        justify="center"
+                        alignItems="center"
+                        style={{ marginTop: '15px' }}
+                    >
+                        <Typography color='textSecondary' variant="subtitle2" style={{ fontWeight: 'light' }}>Uploaded Successfully</Typography>
+                        <CheckCircleRounded className={classes.checkIcon} />
+                    </Grid>
+                    <TextField
+                        fullWidth
+                        label="PASSWORD"
+                        className={classes.textField}
+                        margin="normal"
+                        color="secondary"
+                        type="password"
+                        onChange={(event) => this.onKeystorePasswordEntered(event.target.value)}
+                        InputProps={{
+                            classes: {
+                                input: classes.textFieldInput,
+                            },
+                        }}
+                    />
+                </div> :
+                <Dropzone onDrop={this.onKeystoreFileUploaded}>
+                    {({ getRootProps, getInputProps, isDragActive }) => {
+                        return (
+                            <div
+                                {...getRootProps()}
+                                className={classNames('dropzone', { 'dropzone--isActive': isDragActive })}>
+                                <input {...getInputProps()} />
+                                <Grid container
+                                    direction="column"
+                                    justify="center"
+                                    alignItems="center">
+                                    <CloudUpload className={isDragActive ? classes.uploadIconHover : classes.uploadIcon} />
+                                    <Typography color='textSecondary' variant='h5'>Drag and drop to upload your file</Typography>
+                                    <Typography color='textSecondary' variant="subtitle2" style={{ fontWeight: 'light', marginTop: '15px' }}>or <span style={{ color: 'rgb(27,199,254)' }}><a href={null}>browse</a></span> to choose a file</Typography>
+                                </Grid>
+
+                            </div>
+                        )
+                    }}
+                </Dropzone>
+            }
+
+        </div>)
     }
     createPrivateKeyPanel = (classes) => {
         return (<div className={classes.content}>
@@ -187,11 +291,12 @@ class WalletProvidersStep extends Component {
         return false;//todo
     }
     validateKeystoreFile = () => {
-        return false;//todo
+        const { keyStoreFile, keyStoreFilePass } = this.state;
+        return keyStoreFile != null && keyStoreFilePass !== null && keyStoreFilePass.length > 0;
     }
     validatePrivateKey = () => {
         const { privateKey } = this.state;
-        return privateKey !== null && privateKey.length > 0;//todo
+        return privateKey !== null && privateKey.length > 0;
     }
     render() {
         const { classes } = this.props;
