@@ -57,39 +57,24 @@ const styles = theme => ({
 })
 class SendStep extends Component {
 
-
-    constructor(props) {
-        super(props);
-        this.state = {
-            currencyId: 0,
-            labelWidth: 0,
-            availableCurrencies: ['Aion', 'Plat'],
-            recipient: '',
-            amount: '',
-            account: this.props.account,
-            nrg: TransactionUtil.defaultNrgLimit,
-            nrgPrice: TransactionUtil.defaultNrgPrice,
-            error: false,
-            errorMessage: '',
-            valid: false
-        }
+    state = {
+        currencyId: 0,
+        labelWidth: 0,
+        availableCurrencies: ['Aion', 'Plat'],
+        recipient: this.props.to,
+        amount: this.props.amount,
+        customNrg: false,
+        nrgPrice: this.props.nrgPrice, //todo:calculate on load
+        nrgLimit: this.props.nrgLimit, //todo:hardcode when integrating
+        nrg: this.props.nrg ? this.props.nrg : 12456,//todo calculate from nrgPrice and nrgLimit
     }
-
 
     componentDidMount() {
 
     }
 
-    componentWillReceiveProps(props) {
-        this.setState({
-            recipient: props.to,
-            amount: props.amount,
-        })
-    }
-
     handleCurrencyChange = event => {
         this.setState({ [event.target.name]: event.target.value });
-        console.log(event)
     };
 
     onRecipientEntered = (event) => {
@@ -107,7 +92,22 @@ class SendStep extends Component {
     }
 
     onEditNrg = () => {
-        //todo
+        this.setState({ customNrg: true })
+    }
+
+    onNrgPriceEntered = (event) => {
+
+        this.setState({
+            nrgPrice: event.target.value,
+            nrg: 2342342 //todo: recalculate
+        })
+    }
+
+    onNrgLimitEntered = (event) => {
+        this.setState({
+            nrgLimit: event.target.value,
+            nrg: 54635523 //todo: recalculate
+        })
     }
 
     isFormValid = () =>{
@@ -126,7 +126,7 @@ class SendStep extends Component {
 
     render() {
         const { classes, onSendStepBack, onSendStepContinue } = this.props;
-        const { availableCurrencies, currencyId, amount, recipient, nrg, nrgPrice, account, error, errorMessage} = this.state;
+        const { availableCurrencies, currencyId, amount, recipient, customNrg, nrg, nrgLimit, nrgPrice } = this.state;
 
         const dropDownItems = availableCurrencies.map((item, index) => {
             return (<MenuItem key={index} value={index}>{item}</MenuItem>)
@@ -217,34 +217,85 @@ class SendStep extends Component {
                         }
                     }
                     } />
-
-                <Grid spacing={8}
-                    container
-                    direction="row"
-                    justify="flex-start"
-                    alignItems="center"
-                    style={{ paddingTop: '15px' }}>
-                    <TextField
-                        disabled
-                        id="standard-disabled"
-                        label="MAX NRG COST"
-                        value={nrg}
-                        className={classes.textField}
-                        margin="normal"
-                        InputLabelProps={{
-                            className: classes.textField,
-                        }}
-                        InputProps={{
-                            disableUnderline: true,
-                            classes: {
-                                input: classes.textFieldInput,
+                {!customNrg ?
+                    <Grid spacing={8}
+                        container
+                        direction="row"
+                        justify="flex-start"
+                        alignItems="center"
+                        style={{ paddingTop: '15px' }}>
+                        <TextField
+                            disabled
+                            id="standard-disabled"
+                            label="MAX NRG COST"
+                            value={nrg}
+                            className={classes.textField}
+                            margin="normal"
+                            InputLabelProps={{
+                                className: classes.textField,
+                            }}
+                            InputProps={{
+                                disableUnderline: true,
+                                classes: {
+                                    input: classes.textFieldInput,
+                                }
                             }
-                        }
-                        }
-                    />
+                            }
+                        />
 
-                    <Button variant="outlined" onClick={this.onEditNrg}>EDIT</Button>
-                </Grid>
+                        <Button variant="outlined" onClick={this.onEditNrg}>EDIT</Button>
+                    </Grid>
+                    : <div>
+                        <Grid
+                            container
+                            spacing={16}
+                            direction="row"
+                            justify="space-evenly"
+                            alignItems="center">
+
+                            <Grid item xs>
+                                <TextField
+                                    fullWidth
+                                    label="NRG Price"
+                                    className={classes.textField}
+                                    value={nrgPrice}
+                                    margin="normal"
+                                    color="primary"
+                                    type="number"
+                                    onChange={this.onNrgPriceEntered}
+                                    InputLabelProps={{
+                                        className: classes.textField,
+                                    }}
+                                    InputProps={{
+                                        classes: {
+                                            input: classes.textFieldInput,
+                                        }
+                                    }
+                                    } />
+                            </Grid>
+                            <Grid item xs>
+                                <TextField
+                                    fullWidth
+                                    label="NRG Limit"
+                                    className={classes.textField}
+                                    value={nrgLimit}
+                                    margin="normal"
+                                    color="primary"
+                                    type="number"
+                                    onChange={this.onNrgLimitEntered}
+                                    InputLabelProps={{
+                                        className: classes.textField,
+                                    }}
+                                    InputProps={{
+                                        classes: {
+                                            input: classes.textFieldInput,
+                                        }
+                                    }
+                                    } />
+                            </Grid>
+
+                        </Grid>
+                    </div>}
 
                 {
                     (error) ?
@@ -276,8 +327,8 @@ class SendStep extends Component {
                     <Button
                         variant="contained"
                         color="primary"
-                        disabled={!this.state.valid}
-                        onClick={() => { onSendStepContinue(availableCurrencies[currencyId], account, recipient, parseFloat(amount, 10), nrg, nrgPrice, nrg) }}
+                        disabled={!this.isFormValid()}
+                        onClick={() => { onSendStepContinue(availableCurrencies[currencyId], 'todo', recipient, parseFloat(amount, 10), nrg, nrgPrice, nrgLimit, '1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz') }}
                         className={classes.continueButton}>
                         <b>Continue</b>
                         <ArrowForward className={classes.rightIcon} />
