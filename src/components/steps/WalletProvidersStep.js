@@ -134,6 +134,7 @@ class WalletProvidersStep extends Component {
     unlockAccount = (item) => {
         //todo unlock account there
         let data = item.unlock() // could be a promise
+        if(!data) return;
 
         const timer = setInterval(() => { //fake loading
             if (this.state.completed > 100) {
@@ -156,7 +157,7 @@ class WalletProvidersStep extends Component {
         try{
             const aion = new Accounts();
             let account = aion.privateKeyToAccount(this.state.privateKey);
-            return account.address;
+            return account;
         }catch(e){
             this.setState({privateKeyError: true, privateKeyErrorMessage: "Invalid key"})
             return false;

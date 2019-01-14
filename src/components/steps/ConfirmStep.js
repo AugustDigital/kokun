@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles, Typography, Grid, Button, Paper } from '@material-ui/core'
 import { ArrowForward } from '@material-ui/icons';
-
+import web3Provider from '../../utils/getWeb3';
 
 const styles = theme => ({
     paper: {
@@ -35,28 +35,34 @@ class ConfirmStep extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            completed: 0
+            completed: 0,
+            web3: null
         }
     }
 
-    componentDidMount() { }
+    componentDidMount() {
+        web3Provider.then((results) => {
+            this.setState({web3: results.web3});
+        }).catch((err)=>{
+            console.log(err)
+        })
+    }
 
-    sendTransaction = () => {
-        //todo sign transaction data here
-
+    async sendTransaction(){
+        
+        const transactionHash = await this.state.web3.eth.sendRawTransaction(this.props.signedTransaction);
         const timer = setInterval(() => { //fake loading
             if (this.state.completed > 100) {
                 clearInterval(timer);
-                this.props.onTransactonStepContinue('123456789098764321')
+                this.props.onTransactionStepContinue(transactionHash)
             } else {
                 this.setState({ completed: this.state.completed + 25 })
             }
         }, 500);
-
     }
 
     render() {
-        const { classes, to, from, amount, nrg, nrgPrice, nrgMax, rawTransaction, onTransactonStepBack } = this.props;
+        const { classes, to, from, amount, nrg, nrgPrice, nrgMax, signedTransaction, onTransactonStepBack } = this.props;
         const { completed } = this.state;
         return (
             <div>
@@ -133,7 +139,7 @@ class ConfirmStep extends Component {
                                 <Typography variant="subtitle2" className={classes.fatLable}>Raw Transaction</Typography>
                             </Grid>
                             <Grid item xs>
-                                <Typography variant="subtitle2" className={classes.thinLable} style={{ wordBreak: 'break-all' }}>{rawTransaction}</Typography>
+                                <Typography variant="subtitle2" className={classes.thinLable} style={{ wordBreak: 'break-all' }}>{signedTransaction}</Typography>
                             </Grid>
                         </Grid>
                         <Grid spacing={8}
@@ -169,7 +175,7 @@ class ConfirmStep extends Component {
 
 ConfirmStep.propTypes = {
     classes: PropTypes.object.isRequired,
-    onTransactonStepContinue: PropTypes.func.isRequired,
+    onTransactionStepContinue: PropTypes.func.isRequired,
     onTransactonStepBack: PropTypes.func.isRequired,
     currency: PropTypes.string.isRequired,
     from: PropTypes.string.isRequired,
@@ -178,7 +184,7 @@ ConfirmStep.propTypes = {
     nrg: PropTypes.number.isRequired,
     nrgPrice: PropTypes.number.isRequired,
     nrgMax: PropTypes.number.isRequired,
-    rawTransaction: PropTypes.string.isRequired
+    signedTransaction: PropTypes.string.isRequired
 };
 
 export default withStyles(styles)(ConfirmStep);

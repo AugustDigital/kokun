@@ -4,6 +4,10 @@ import { withStyles, Button, Grid } from '@material-ui/core'
 import WalletProvidersStep from './steps/WalletProvidersStep'
 import SendStep from './steps/SendStep'
 import ConfirmStep from './steps/ConfirmStep'
+import web3Provider from '../utils/getWeb3';
+
+const Accounts = require('aion-keystore')
+
 const styles = theme => ({
     continueButton: {
         float: 'right',
@@ -17,10 +21,19 @@ class UserTool extends Component {
         step: 0,//todo switch back to 0 after testing
         transactionData: {
 
-        }
+        },
+        account: null,
+        privateKey: null,
+        web3: null
     }
 
-    componentDidMount() { }
+    componentDidMount() {
+        web3Provider.then((results) => {
+            this.setState({web3: results.web3});
+        }).catch((err)=>{
+            console.log(err)
+        })
+    }
     handlePanelChange = panel => (event, expanded) => {
         this.setState({
             expanded: expanded ? panel : false,
@@ -29,14 +42,38 @@ class UserTool extends Component {
     };
     onAccountImported = (account) => {
         this.setState({
-            account: account,
+            account: account.address,
+            privateKey: account.privateKey,
             step: 1
         })
     }
-    onSendStepContinue = (currency, from, to, amount, nrg, nrgPrice, nrgMax, rawTransaction) => {
-        this.setState({
-            step: 2,
-            transactionData: { currency, from, to, amount, nrg, nrgPrice, nrgMax, rawTransaction }
+    async signTransaction(nrgPrice, to, amount, nrg) {
+        const aion = new Accounts();
+        const account = aion.privateKeyToAccount(this.state.privateKey);
+        const nonce = this.state.web3.eth.getTransactionCount(account.address);
+        let totalAions = this.state.web3.toWei(amount, "ether");
+
+        let transaction = {
+            nonce: nonce,
+            gasPrice:nrgPrice,
+            to: to,
+            value: totalAions,
+            gas: nrg,
+            timestamp: Date.now() * 1000
+        };
+
+        const signedTransaction = await account.signTransaction(transaction);
+
+        return signedTransaction;
+    }
+
+    onSendStepContinue = (currency, from, to, amount, nrg, nrgPrice, nrgMax) => {
+        this.signTransaction(nrgPrice, to, amount, nrg).then((signedTransaction)=>{
+            this.setState({
+                step: 2,
+                transactionData: { currency, from, to, amount, nrg, nrgPrice, nrgMax  },
+                signedTransaction: signedTransaction.rawTransaction
+            })
         })
         //todo pass transaction data to next step
     }
@@ -65,7 +102,7 @@ class UserTool extends Component {
     }
     render() {
         const { classes } = this.props;
-        const { step, transactionData, txHash } = this.state;
+        const { step, transactionData, txHash, signedTransaction } = this.state;
         let content = null;
         switch (step) {
             case 0: { // Account import
@@ -86,13 +123,12 @@ class UserTool extends Component {
                     nrg={transactionData.nrg}
                     nrgPrice={transactionData.nrgPrice}
                     nrgMax={transactionData.nrgMax}
-                    rawTransaction={transactionData.rawTransaction}
                 />);
                 break;
             }
             case 2: { // Confirm
                 content = (<ConfirmStep
-                    onTransactonStepContinue={this.onTransactionStepContinue}
+                    onTransactionStepContinue={this.onTransactionStepContinue}
                     onTransactonStepBack={this.onTransactionStepBack}
                     currency={transactionData.currency}
                     from={transactionData.from}
@@ -101,7 +137,7 @@ class UserTool extends Component {
                     nrg={transactionData.nrg}
                     nrgPrice={transactionData.nrgPrice}
                     nrgMax={transactionData.nrgMax}
-                    rawTransaction={transactionData.rawTransaction}
+                    signedTransaction={signedTransaction}
                 />);
                 break;
             }

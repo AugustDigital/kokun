@@ -4,7 +4,6 @@ import { withStyles, Typography, TextField, Grid, Button, FormControl, Select, M
 import { Warning, ArrowForward } from '@material-ui/icons';
 import * as TransactionUtil from '../../utils/TransactionUtil';
 
-
 const styles = theme => ({
     dropDownContainer: {
         borderStyle: 'solid',
@@ -114,7 +113,7 @@ class SendStep extends Component {
     isFormValid = () =>{
         const {account, recipient, amount, nrg} = this.state;
 
-        if(recipient.length < 0 || isNaN(parseInt(amount,10))){
+        if(typeof (recipient) == 'undefined' || recipient.length < 0 || isNaN(parseInt(amount,10))){
             this.setState({
                 valid: false,
                 error: true,
@@ -189,7 +188,7 @@ class SendStep extends Component {
                     margin="normal"
                     color="primary"
                     onChange={this.onRecipientEntered.bind(this)}
-                    onBlur={this.isFormValid}
+                    onBlur={this.onRecipientEntered.bind(this)}
                     InputLabelProps={{
                         className: classes.textField,
                     }}
@@ -208,7 +207,7 @@ class SendStep extends Component {
                     color="primary"
                     type="number"
                     onChange={this.onAmountEntered.bind(this)}
-                    onBlur={this.isFormValid}
+                    onBlur={this.onAmountEntered.bind(this)}
                     InputLabelProps={{
                         className: classes.textField,
                     }}
@@ -277,8 +276,8 @@ class SendStep extends Component {
                     <Button
                         variant="contained"
                         color="primary"
-                        disabled={!this.isFormValid()}
-                        onClick={() => { onSendStepContinue(availableCurrencies[currencyId], 'todo', recipient, parseFloat(amount, 10), 333, 777, 555, '1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz') }}
+                        disabled={!this.state.valid}
+                        onClick={() => { onSendStepContinue(availableCurrencies[currencyId], account, recipient, parseFloat(amount, 10), nrg, nrgPrice, nrg) }}
                         className={classes.continueButton}>
                         <b>Continue</b>
                         <ArrowForward className={classes.rightIcon} />
