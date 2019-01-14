@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles, Typography, TextField, ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, Grid, Button, LinearProgress, IconButton } from '@material-ui/core'
-import { Warning, ArrowForward, CloudUpload, InsertDriveFile, CheckCircleRounded, Close } from '@material-ui/icons';
+import { Warning, ArrowForward, CloudUpload, InsertDriveFile, CheckCircleRounded, Close, Dock } from '@material-ui/icons';
 import classNames from 'classnames'
 import Dropzone from 'react-dropzone'
 
@@ -29,7 +29,7 @@ const styles = theme => ({
     expandedPanelStyle: {
         backgroundColor: theme.palette.background.default,
         borderStyle: 'solid',
-        borderWidth: '3px',
+        borderWidth: '4px',
         borderRadius: '5px',
         borderColor: 'rgb(75,229,167)'
     },
@@ -63,7 +63,7 @@ const styles = theme => ({
     },
     continueButton: {
         float: 'right',
-        marginTop: theme.spacing.unit * 4,
+        marginBottom: theme.spacing.unit * 2,
         backgroundColor: 'rgb(31,133,163)'
     },
     progressBarContainer: {
@@ -85,10 +85,6 @@ const styles = theme => ({
         top: 0,
         right: 0,
     },
-    uploadIcon: {
-        color: 'rgb(210,219,230)',
-        fontSize: '125pt !important',
-    },
     fileIcon: {
         color: 'rgb(210,219,230)',
         fontSize: 85,
@@ -104,6 +100,10 @@ const styles = theme => ({
     uploadIconHover: {
         color: 'rgb(27,199,254)',
         fontSize: 85,
+    },
+    checkIconBig:{
+        fontSize: 85,
+        color: 'rgb(80,241,175)'
     }
 })
 class WalletProvidersStep extends Component {
@@ -116,6 +116,7 @@ class WalletProvidersStep extends Component {
             privateKey: null,
             keyStoreFile: null,
             keyStoreFilePass: null,
+            ledgerConnected: true,
             completed: 0,
         }
         this.CONTENT_ITEMS = [
@@ -140,7 +141,9 @@ class WalletProvidersStep extends Component {
         ];
     }
 
-    componentDidMount() { }
+    componentDidMount() {
+        //todo: observe ledger connection and toggle ledgerConnected boolean
+     }
     handlePanelChange = panel => (event, expanded) => {
         this.setState({
             expanded: expanded ? panel : false,
@@ -188,7 +191,35 @@ class WalletProvidersStep extends Component {
     }
 
     createLedgerPanel = (classes) => {
-        return (<div className={classes.content}>Todo Ledger</div>)
+        return (<div className={classes.content}>
+            {this.state.ledgerConnected ? <div>
+                <Grid
+                    container
+                    spacing={14}
+                    direction="row"
+                    justify="center"
+                    alignItems="center"
+                    style={{ marginTop: '15px' }}>
+
+                    <CheckCircleRounded className={classes.checkIconBig} />
+                    <Typography color='textSecondary' variant='h5'>Ledger connected</Typography>
+                </Grid>
+            </div> :
+                <Grid
+                    container
+                    spacing={14}
+                    direction="row"
+                    justify="center"
+                    alignItems="center"
+                    style={{ marginTop: '15px' }}>
+
+                    <Dock className={classes.fileIcon} />
+                    <Typography color='textSecondary' variant='h5' >Connect your Ledger device</Typography>
+                </Grid>
+            }
+
+
+        </div>)
     }
     createKeyStorePanel = (classes) => {
         return (<div className={classes.content}>
@@ -288,7 +319,8 @@ class WalletProvidersStep extends Component {
     }
 
     validateLedger = () => {
-        return false;//todo
+        const {ledgerConnected} = this.state;
+        return ledgerConnected;
     }
     validateKeystoreFile = () => {
         const { keyStoreFile, keyStoreFilePass } = this.state;
@@ -311,22 +343,11 @@ class WalletProvidersStep extends Component {
                         <ExpansionPanelSummary>
                             <Typography className={expanded === item ? classes.headingExpanded : classes.heading}>{item.title.toUpperCase()}</Typography>
                         </ExpansionPanelSummary>
-                        <ExpansionPanelDetails>
+                        <ExpansionPanelDetails style={{ marginTop: '-20px' }}>
                             {item.create(classes)}
                         </ExpansionPanelDetails>
                     </ExpansionPanel>
-                </Grid>);
-            });
-            content = (<Grid spacing={8}
-                container
-                direction="column"
-                justify="flex-start">
-
-                <Typography variant="h6" style={{ fontWeight: 'bold' }}>AION PAY</Typography>
-                <Typography variant="subtitle2" style={{ fontWeight: 'light', marginTop: '25px' }}> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi posuere diam quis risus fringilla, quis consectetur nunc imperdiet.</Typography>
-                <Typography variant="h4" style={{ fontWeight: 'bold', marginTop: '25px', marginBottom: '25px' }}> Choose your wallet provider</Typography>
-                {innerContent}
-                {expanded ?
+                    {expanded === item ?
                     <Grid item>
                         <Button
                             variant="contained"
@@ -339,7 +360,17 @@ class WalletProvidersStep extends Component {
                         </Button>
                     </Grid>
                     : null}
+                </Grid>);
+            });
+            content = (<Grid spacing={8}
+                container
+                direction="column"
+                justify="flex-start">
 
+                <Typography variant="h6" style={{ fontWeight: 'bold' }}>AION PAY</Typography>
+                <Typography variant="subtitle2" style={{ fontWeight: 'light', marginTop: '25px' }}> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi posuere diam quis risus fringilla, quis consectetur nunc imperdiet.</Typography>
+                <Typography variant="h4" style={{ fontWeight: 'bold', marginTop: '25px', marginBottom: '25px' }}> Choose your wallet provider</Typography>
+                {innerContent}
             </Grid>)
 
         } else { //Unlocking progress screen
