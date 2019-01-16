@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 import { withStyles, Typography, TextField, ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, Grid, Button, LinearProgress, IconButton } from '@material-ui/core'
 import { Warning, ArrowForward, CloudUpload, InsertDriveFile, CheckCircleRounded, Close, Dock } from '@material-ui/icons';
 import classNames from 'classnames'
-import Dropzone from 'react-dropzone'
+import Dropzone from 'react-dropzone';
+import KeystoreWalletProvider from '../../utils/KeystoreWalletProvider';
 import AionLogoLarge from '../../assets/aion_logo_large.png'
 
 const Accounts = require('aion-keystore');
-
 
 const styles = theme => ({
     heading: {
@@ -145,7 +145,10 @@ class WalletProvidersStep extends Component {
             ledgerConnected: true,
             completed: 0,
             privateKeyError: false,
-            privateKeyErrorMessage: 'Using a private key online is not safe'
+            privateKeyErrorMessage: 'Using a private key online is not safe',
+            keyStoreError: false,
+            keyStoreErrorMessage: '',
+            keystoreLoadingPercentage: 0
         }
         this.CONTENT_ITEMS = [
             {
@@ -194,35 +197,65 @@ class WalletProvidersStep extends Component {
         })
     }
     unlockAccount = (item) => {
-        let data = item.unlock() // could be a promise
-        if (!data) return;
-
-        const timer = setInterval(() => { //fake loading
-            if (this.state.completed > 100) {
-                clearInterval(timer);
-                this.props.onAccountImported(data)
-            } else {
-                this.setState({ completed: this.state.completed + 25 })
-            }
-        }, 500);
-
+        item.unlock().then((result)=>{
+            const timer = setInterval(() => { //fake loading
+                if (this.state.completed > 100) {
+                    clearInterval(timer);
+                    this.props.onAccountImported(result)
+                } else {
+                    this.setState({ completed: this.state.completed + 25 })
+                }
+            }, 500);
+        }).catch((error)=>{
+            return
+        })
     }
     unlockLedger = () => {
         return { data: 'todo:integrate' }
     }
     unlockKeyStore = () => {
-        return { data: 'todo:integrate' }
+
+        return new Promise((resolve, reject) => {
+            let reader = new FileReader()
+
+            try {
+              reader.readAsArrayBuffer(this.state.keyStoreFile)
+            } catch (error) {
+              console.error("Error loading keystore file:" + error)
+              reject(error)
+            }
+
+            let me = this;
+            reader.onload =  async function () {
+                let content = reader.result;
+                me.provider = new KeystoreWalletProvider(content, me.state.keyStoreFilePass);
+
+                try {
+                  let [address, publicKey, privateKey] = await me.provider.unlock((progress) => {
+                      console.log(progress)
+                      me.setState({keystoreLoadingPercentage:Math.round(progress)})
+                  })
+
+                  resolve({address: address, privateKey:privateKey })
+                } catch (error) {
+                  me.setState({keyStoreError: true, keyStoreErrorMessage: "Unable to unlock file"})
+                  reject(error)
+                }
+            }
+        })
     }
 
-    unlockPrivateKey = () => {
-        try {
-            const aion = new Accounts();
-            let account = aion.privateKeyToAccount(this.state.privateKey);
-            return account;
-        } catch (e) {
-            this.setState({ privateKeyError: true, privateKeyErrorMessage: "Invalid key" })
-            return false;
-        }
+    unlockPrivateKey=()=>{
+        return new Promise((resolve, reject) => {
+            try{
+                const aion = new Accounts();
+                let account = aion.privateKeyToAccount(this.state.privateKey);
+                resolve(account)
+            }catch(e){
+                this.setState({privateKeyError: true, privateKeyErrorMessage: "Invalid key"})
+                reject(false)
+            }
+        })
     }
 
     createLedgerPanel = (classes) => {

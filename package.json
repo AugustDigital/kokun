@@ -5,6 +5,7 @@
   "dependencies": {
     "@material-ui/core": "^3.8.2",
     "@material-ui/icons": "^3.0.2",
+    "aes-js": "^3.1.2",
     "aion-keystore": "0.0.2",
     "aion-rlp": "0.0.1",
     "aion-web3": "0.0.3",
@@ -55,6 +56,7 @@
     "react-dropzone": "^8.0.3",
     "resolve": "1.6.0",
     "rxjs": "^6.2.2",
+    "scrypt-js": "^2.0.4",
     "semantic-ui-css": "^2.3.3",
     "semantic-ui-react": "^0.82.1",
     "serialize-javascript": "^1.6.1",
