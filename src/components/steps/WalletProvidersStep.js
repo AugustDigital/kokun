@@ -4,6 +4,8 @@ import { withStyles, Typography, TextField, ExpansionPanel, ExpansionPanelSummar
 import { Warning, ArrowForward, CloudUpload, InsertDriveFile, CheckCircleRounded, Close, Dock } from '@material-ui/icons';
 import classNames from 'classnames'
 import Dropzone from 'react-dropzone'
+import AionLogoLarge from '../../assets/aion_logo_large.png'
+
 const Accounts = require('aion-keystore');
 
 
@@ -111,9 +113,23 @@ const styles = theme => ({
         color: 'rgb(27,199,254)',
         fontSize: 85,
     },
-    checkIconBig:{
+    checkIconBig: {
         fontSize: 85,
         color: 'rgb(80,241,175)'
+    },
+    leftIcon: {
+        marginRight: theme.spacing.unit,
+    },
+    iconSmall: {
+        width: '25px',
+        height: '25px',
+    },
+    iconHeading: {
+        float: 'left'
+    },
+    unlockingState: {
+        paddingTop: theme.spacing.unit * 15,
+        paddingBottom: theme.spacing.unit * 15
     }
 })
 class WalletProvidersStep extends Component {
@@ -155,7 +171,7 @@ class WalletProvidersStep extends Component {
 
     componentDidMount() {
         //todo: observe ledger connection and toggle ledgerConnected boolean
-     }
+    }
     handlePanelChange = panel => (event, expanded) => {
         this.setState({
             expanded: expanded ? panel : false,
@@ -179,7 +195,7 @@ class WalletProvidersStep extends Component {
     }
     unlockAccount = (item) => {
         let data = item.unlock() // could be a promise
-        if(!data) return;
+        if (!data) return;
 
         const timer = setInterval(() => { //fake loading
             if (this.state.completed > 100) {
@@ -198,13 +214,13 @@ class WalletProvidersStep extends Component {
         return { data: 'todo:integrate' }
     }
 
-    unlockPrivateKey=()=>{
-        try{
+    unlockPrivateKey = () => {
+        try {
             const aion = new Accounts();
             let account = aion.privateKeyToAccount(this.state.privateKey);
             return account;
-        }catch(e){
-            this.setState({privateKeyError: true, privateKeyErrorMessage: "Invalid key"})
+        } catch (e) {
+            this.setState({ privateKeyError: true, privateKeyErrorMessage: "Invalid key" })
             return false;
         }
     }
@@ -214,7 +230,7 @@ class WalletProvidersStep extends Component {
             {this.state.ledgerConnected ? <div>
                 <Grid
                     container
-                    spacing={14}
+                    spacing={16}
                     direction="row"
                     justify="center"
                     alignItems="center"
@@ -226,7 +242,7 @@ class WalletProvidersStep extends Component {
             </div> :
                 <Grid
                     container
-                    spacing={14}
+                    spacing={16}
                     direction="row"
                     justify="center"
                     alignItems="center"
@@ -257,7 +273,7 @@ class WalletProvidersStep extends Component {
                     </IconButton>
                     <Grid
                         container
-                        spacing={14}
+                        spacing={16}
                         direction="row"
                         justify="center"
                         alignItems="center"
@@ -338,7 +354,7 @@ class WalletProvidersStep extends Component {
     }
 
     validateLedger = () => {
-        const {ledgerConnected} = this.state;
+        const { ledgerConnected } = this.state;
         return ledgerConnected;
     }
     validateKeystoreFile = () => {
@@ -367,18 +383,18 @@ class WalletProvidersStep extends Component {
                         </ExpansionPanelDetails>
                     </ExpansionPanel>
                     {expanded === item ?
-                    <Grid item>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            disabled={!expanded.validate()}
-                            className={classes.continueButton}
-                            onClick={() => this.unlockAccount(expanded)}>
-                            <b>Continue</b>
-                            <ArrowForward className={classes.rightIcon} />
-                        </Button>
-                    </Grid>
-                    : null}
+                        <Grid item>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                disabled={!expanded.validate()}
+                                className={classes.continueButton}
+                                onClick={() => this.unlockAccount(expanded)}>
+                                <b>Continue</b>
+                                <ArrowForward className={classes.rightIcon} />
+                            </Button>
+                        </Grid>
+                        : null}
                 </Grid>);
             });
             content = (<Grid spacing={8}
@@ -386,7 +402,9 @@ class WalletProvidersStep extends Component {
                 direction="column"
                 justify="flex-start">
 
-                <Typography variant="h6" style={{ fontWeight: 'bold' }}>AION PAY</Typography>
+                <Typography variant="h6" style={{ fontWeight: 'bold' }}>
+                    <img alt="Cranberry Logo" className={classNames(classes.leftIcon, 'rotation', classes.iconSmall, classes.iconHeading)} src={AionLogoLarge} />
+                    AION PAY</Typography>
                 <Typography variant="subtitle2" style={{ fontWeight: 'light', marginTop: '25px' }}> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi posuere diam quis risus fringilla, quis consectetur nunc imperdiet.</Typography>
                 <Typography variant="h4" style={{ fontWeight: 'bold', marginTop: '25px', marginBottom: '25px' }}> Choose your wallet provider</Typography>
                 {innerContent}
@@ -397,7 +415,8 @@ class WalletProvidersStep extends Component {
                 container
                 direction="column"
                 justify="center"
-                alignItems="center">
+                alignItems="center"
+                className={classes.unlockingState}>
                 <Typography variant="h5" style={{ fontWeight: 'bold', marginTop: '25px', marginBottom: '25px' }}>Unlocking {expanded.title}...</Typography>
                 <div className={classes.progressBarContainer}>
                     <LinearProgress

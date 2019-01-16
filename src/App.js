@@ -4,26 +4,33 @@ import { withStyles } from '@material-ui/core'
 import TopBar from './components/TopBar.js'
 import UserSection from './components/UserSection'
 import DevSection from './components/DevSection'
-const MARGIN_PERCENT = '10%';
+import BottomBar from './components/BottomBar'
+import Animations from './Animations.css'
+
 const styles = theme => ({
   root: {
     flexGrow: 1,
     height: '100%',
   },
   userSection: {
-    paddingRight: MARGIN_PERCENT,
-    paddingLeft: MARGIN_PERCENT,
-    paddingTop: theme.spacing.unit * 5,
+    paddingRight: '10%',
+    paddingLeft: '10%',
     paddingBottom: theme.spacing.unit * 5,
   },
   devSection: {
-    marginRight: MARGIN_PERCENT,
-    marginLeft: MARGIN_PERCENT,
-    marginTop: theme.spacing.unit * 5,
-    marginBottom: theme.spacing.unit * 5,
   },
   devSectionContainer: {
-    backgroundImage: 'linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.07));'
+    backgroundImage: 'linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.07));',
+    backgroundRepeat: 'no-repeat',
+    backgroundOrigin: 'content-box',
+    paddingRight: '16%',
+    paddingLeft: '16%',
+    paddingTop: theme.spacing.unit * 5,
+    paddingBottom: theme.spacing.unit * 5,
+  },
+  bottomBar: {
+    paddingRight: '16%',
+    paddingLeft: '16%',
   },
   grow: {
     flexGrow: 1,
@@ -33,7 +40,7 @@ class App extends Component {
 
   state = {}
 
-  componentDidMount() {}
+  componentDidMount() { }
 
   render() {
     const { classes } = this.props;
@@ -45,6 +52,7 @@ class App extends Component {
         <div className={classes.devSectionContainer}>
           <DevSection className={classes.devSection} />
         </div>
+        <BottomBar className={classes.bottomBar} />
       </div>
     );
   }

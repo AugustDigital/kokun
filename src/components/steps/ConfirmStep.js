@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { withStyles, Typography, Grid, Button, Paper } from '@material-ui/core'
 import { ArrowForward } from '@material-ui/icons';
 import AionLogoLarge from '../../assets/aion_logo_large.png'
-import Animations from '../../Animations.css'
 import web3Provider from '../../utils/getWeb3';
 
 const styles = theme => ({
@@ -172,7 +171,7 @@ class ConfirmStep extends Component {
                         direction="column"
                         justify="center"
                         alignItems="center">
-                        <img alt="Cranberry Logo" className="rotation" src={AionLogoLarge} width="90px" />
+                        <img alt="Cranberry Logo" className={'rotation'} src={AionLogoLarge} width="90px" />
                         <Typography variant="h4" style={{ fontWeight: 'bold', marginTop: '30px' }}>Sending {currency}</Typography>
                         <Typography variant="subtitle2" style={{ fontWeight: 'light', marginTop: '20px' }}> Sending transaction and waiting for at least one block confirmation.</Typography>
                         <Typography variant="subtitle2" style={{ fontWeight: 'light' }}> Please be patient this wont't take too long...</Typography>
