@@ -71,7 +71,7 @@ class UserSection extends Component {
                             <LinearProgress className={classes.progressBar} variant="determinate" value={currentStep / (totalSteps - 1) * 100} classes={{ bar: classes.progressBarBar }} />
                             <div className={classes.toolContainer}>
                                 {currentStep > 0 ?
-                                    <Typography variant="subtitle1" style={{ fontWeight: '300', marginBottom: '15px' }}>Step {currentStep}/{totalSteps}</Typography>
+                                    <Typography variant="subtitle1" style={{ fontWeight: '300', marginBottom: '15px' }}>Step {currentStep}/{totalSteps - 1}</Typography>
                                     : null}
 
                                 <UserTool
