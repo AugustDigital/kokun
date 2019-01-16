@@ -210,7 +210,6 @@ class WalletProvidersStep extends Component {
             }
 
             let me = this;
-            let result = {address:'', privateKey:''};
             reader.onload =  async function () {
                 let content = reader.result;
                 me.provider = new KeystoreWalletProvider(content, me.state.keyStoreFilePass);
@@ -221,9 +220,7 @@ class WalletProvidersStep extends Component {
                       me.setState({keystoreLoadingPercentage:Math.round(progress)})
                   })
 
-                  result.privateKey = privateKey;
-                  result.address = address;
-                  resolve(result)
+                  resolve({address: address, privateKey:privateKey })
                 } catch (error) {
                   me.setState({keyStoreError: true, keyStoreErrorMessage: "Unable to unlock file"})
                   reject(error)
