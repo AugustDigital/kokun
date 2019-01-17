@@ -11,12 +11,12 @@ const styles = theme => ({
         borderStyle: 'solid',
         borderWidth: '1px',
         borderRadius: '3px',
-        borderColor: 'rgb(255,255,255)',
+        borderColor: theme.palette.common.white,
         paddingLeft: theme.spacing.unit,
         paddingRight: theme.spacing.unit
     },
     dropDownLable: {
-        borderRight: '1px solid rgba(255,255,255,0.2)',
+        borderRight: '1px solid '+theme.palette.divider,
         fontWeight: 'light',
         float: 'left',
         position: 'reltive',
@@ -35,7 +35,7 @@ const styles = theme => ({
         color: 'white !important',
     },
     continueButton: {
-        backgroundColor: 'rgb(31,133,163)',
+        backgroundColor: theme.palette.common.primaryButton,
         marginLeft: theme.spacing.unit * 4
     },
     rightIcon: {

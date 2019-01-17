@@ -7,7 +7,7 @@ import UserTool from './UserTool'
 const styles = theme => ({
     root: {
         flexGrow: 1,
-        backgroundImage: 'linear-gradient(to right, rgba(28,116,147,1), rgba(13,25,70,1));',
+        backgroundImage: theme.palette.background.blueGradient,
     },
     left: {
         paddingRight: theme.spacing.unit * 8
@@ -22,14 +22,14 @@ const styles = theme => ({
         paddingLeft: theme.spacing.unit * 10,
         marginTop: theme.spacing.unit * 8,
 
-        borderLeft: '1px solid rgba(255,255,255,0.2)',
+        borderLeft: '1px solid '+theme.palette.divider,
     },
     progressBar: {
         marginLeft: theme.spacing.unit * 10,
         backgroundColor: 'transparent'
     },
     progressBarBar: {
-        backgroundColor: 'rgb(80,241,175)'
+        backgroundColor: theme.palette.common.green
     },
 })
 class UserSection extends Component {

@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import {Buffer} from "buffer";
 import rlp from "aion-rlp"
 import * as CryptoUtil from "./CryptoUtil";

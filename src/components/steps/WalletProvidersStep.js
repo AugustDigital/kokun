@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { withStyles, Typography, TextField, ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, Grid, Button, LinearProgress, IconButton } from '@material-ui/core'
+import { withStyles, Typography, TextField, ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, Grid, Button, LinearProgress, IconButton, Zoom } from '@material-ui/core'
 import { Warning, ArrowForward, CloudUpload, InsertDriveFile, CheckCircleRounded, Close, Dock } from '@material-ui/icons';
 import classNames from 'classnames'
 import Dropzone from 'react-dropzone';
 import KeystoreWalletProvider from '../../utils/KeystoreWalletProvider';
-import AionLogoLarge from '../../assets/aion_logo_large.png'
+import AionLogoLight from '../../assets/aion_logo_light.svg'
+import LockIcon from '../../assets/lock_icon.svg'
 
 const Accounts = require('aion-keystore');
 
@@ -27,14 +28,14 @@ const styles = theme => ({
         width: '100%'
     },
     normalPanelStyle: {
-        backgroundColor: theme.palette.background.default
+        backgroundColor: theme.palette.background.white
     },
     expandedPanelStyle: {
-        backgroundColor: theme.palette.background.default,
+        backgroundColor: theme.palette.background.white,
         borderStyle: 'solid',
         borderWidth: '4px',
         borderRadius: '5px',
-        borderColor: 'rgb(75,229,167)'
+        borderColor: theme.palette.common.green
     },
     secondaryHeading: {
         fontSize: theme.typography.pxToRem(15),
@@ -76,7 +77,7 @@ const styles = theme => ({
     continueButton: {
         float: 'right',
         marginBottom: theme.spacing.unit * 2,
-        backgroundColor: 'rgb(31,133,163)'
+        backgroundColor: theme.palette.common.primaryButton,
     },
     progressBarContainer: {
         position: 'relative',
@@ -90,7 +91,7 @@ const styles = theme => ({
         right: 0,
     },
     progressBarBar: {
-        backgroundColor: 'rgb(80,241,175)'
+        backgroundColor: theme.palette.common.green
     },
     cancelFileUploadButton: {
         position: 'absolute',
@@ -98,15 +99,15 @@ const styles = theme => ({
         right: 0,
     },
     fileIcon: {
-        color: 'rgb(210,219,230)',
+        color: theme.palette.common.icon,
         fontSize: 85,
     },
     checkIcon: {
         fontSize: 16,
-        color: 'rgb(80,241,175)'
+        color: theme.palette.common.green
     },
     uploadIcon: {
-        color: 'rgb(210,219,230)',
+        color: theme.palette.common.icon,
         fontSize: 85,
     },
     uploadIconHover: {
@@ -115,7 +116,7 @@ const styles = theme => ({
     },
     checkIconBig: {
         fontSize: 85,
-        color: 'rgb(80,241,175)'
+        color: theme.palette.common.green
     },
     leftIcon: {
         marginRight: theme.spacing.unit,
@@ -436,7 +437,7 @@ class WalletProvidersStep extends Component {
                 justify="flex-start">
 
                 <Typography variant="h6" style={{ fontWeight: 'bold' }}>
-                    <img alt="Cranberry Logo" className={classNames(classes.leftIcon, 'rotation', classes.iconSmall, classes.iconHeading)} src={AionLogoLarge} />
+                    <img alt="Aion Logo" className={classNames(classes.leftIcon, classes.iconSmall, classes.iconHeading)} src={AionLogoLight} />
                     AION PAY</Typography>
                 <Typography variant="subtitle2" style={{ fontWeight: 'light', marginTop: '25px' }}> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi posuere diam quis risus fringilla, quis consectetur nunc imperdiet.</Typography>
                 <Typography variant="h4" style={{ fontWeight: 'bold', marginTop: '25px', marginBottom: '25px' }}> Choose your wallet provider</Typography>
@@ -450,6 +451,9 @@ class WalletProvidersStep extends Component {
                 justify="center"
                 alignItems="center"
                 className={classes.unlockingState}>
+                <Zoom in={true}>
+                    <img alt='Lock' src={LockIcon} width='50px'/>
+                </Zoom>
                 <Typography variant="h5" style={{ fontWeight: 'bold', marginTop: '25px', marginBottom: '25px' }}>Unlocking {expanded.title}...</Typography>
                 <div className={classes.progressBarContainer}>
                     <LinearProgress

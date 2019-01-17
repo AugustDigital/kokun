@@ -12,11 +12,11 @@ const styles = theme => ({
     continueButton: {
         float: 'right',
         marginTop: theme.spacing.unit * 4,
-        backgroundColor: 'rgb(31,133,163)'
+        backgroundColor: theme.palette.common.primaryButton,
     },
     checkIcon: {
         fontSize: 84,
-        color: 'rgb(80,241,175)'
+        color: theme.palette.common.green
     }
 })
 class UserTool extends Component {

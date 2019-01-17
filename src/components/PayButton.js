@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { withStyles, Button } from '@material-ui/core'
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import AionLogoLarge from '../assets/aion_logo_large.png'
+import AionLogoLight from '../assets/aion_logo_light.svg'
 
 const styles = theme => ({
     leftIcon: {
@@ -22,7 +22,7 @@ class PayButton extends Component{
             color="primary"
             size='large'
             onClick={onClick}>
-            <img alt="Cranberry Logo" src={AionLogoLarge} className={classNames(classes.leftIcon, 'rotation', classes.iconSmall)} />
+            <img alt="Aion Logo" src={AionLogoLight} className={classNames(classes.leftIcon, classes.iconSmall)} />
             <b>Aion Pay</b>
         </Button>)
     }

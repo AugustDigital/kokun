@@ -2,18 +2,18 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { withStyles, Typography, Button, Grid, Paper } from '@material-ui/core'
-import AionLogoLarge from '../assets/aion_logo_large.png'
+import AionLogoDark from '../assets/aion_logo_dark.svg'
 import AionPayDialog from './AionPayDialog'
 import PayButton from './PayButton'
 
 const styles = theme => ({
     card: {
-        backgroundColor: '#ffffff',
+        backgroundColor: theme.palette.background.white,
         marginTop: theme.spacing.unit * 2,
         borderRadius: '6px'
     },
     cardHeading: {
-        backgroundImage: 'linear-gradient(to right, rgba(28,116,147,1), rgba(13,25,70,1));',
+        backgroundImage: theme.palette.background.blueGradient,
         padding: theme.spacing.unit * 4,
         borderTopLeftRadius: '4px',
         borderTopRightRadius: '4px'
@@ -97,7 +97,7 @@ class DevSection extends Component {
         return (
             <div className={this.props.className}>
                 <Typography color='textSecondary' variant="h6" style={{ fontWeight: 'bold' }}>
-                    <img alt="Cranberry Logo" className={classNames(classes.leftIcon, 'rotation', classes.iconSmall, classes.iconHeading)} src={AionLogoLarge} />
+                    <img alt="Aion Logo" className={classNames(classes.leftIcon,  classes.iconSmall, classes.iconHeading)} src={AionLogoDark} />
                     AION PAY
                 </Typography>
                 <Paper className={classes.card}>

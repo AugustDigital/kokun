@@ -25,8 +25,8 @@ const styles = theme => ({
     backgroundOrigin: 'content-box',
     paddingRight: '16%',
     paddingLeft: '16%',
-    paddingTop: theme.spacing.unit * 5,
-    paddingBottom: theme.spacing.unit * 5,
+    paddingTop: theme.spacing.unit * 6,
+    paddingBottom: theme.spacing.unit * 12,
   },
   bottomBar: {
     paddingRight: '16%',

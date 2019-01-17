@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { withStyles, Typography, Grid, Button } from '@material-ui/core'
-import AionLogoLarge from '../assets/aion_logo_large.png'
+import AionLogoDark from '../assets/aion_logo_dark.svg'
+import AugustLogoLight from  '../assets/august_logo_light.svg'
 
 const styles = theme => ({
     root: {
@@ -79,7 +80,7 @@ class BottomBar extends Component {
                                     size='large'
                                     onClick={this.onDonateClick}//.bind(this)
                                     className={classes.continueButton}>
-                                    <img alt="Cranberry Logo" className={classNames(classes.leftIcon, 'rotation', classes.iconSmall)} src={AionLogoLarge} />
+                                    <img alt="Aion Logo" className={classNames(classes.leftIcon, classes.iconSmall)} src={AionLogoDark} />
                                     <b>Donate</b>
                                 </Button>
                             </div>
@@ -87,7 +88,7 @@ class BottomBar extends Component {
 
                     </Grid>
                     <div className={classes.bottomSection}>
-                        <img alt="Cranberry Logo" className={classNames(classes.leftIcon, 'rotation', classes.iconMedium)} src={AionLogoLarge} />
+                        <img alt="August Logo" className={classNames(classes.leftIcon, classes.iconMedium)} src={AugustLogoLight} />
                         <Typography variant="subtitle2" style={{ fontWeight: 'light', marginTop: '15px' }}>Powered by <a target='_blank' rel='noopener noreferrer' href='https://alwaysaugust.co/'>August</a></Typography>
                     </div>
                 </Grid>
