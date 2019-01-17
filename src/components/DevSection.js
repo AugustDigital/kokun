@@ -3,6 +3,8 @@ import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { withStyles, Typography, Button, Grid, Paper } from '@material-ui/core'
 import AionLogoLarge from '../assets/aion_logo_large.png'
+import AionPayDialog from './AionPayDialog'
+import PayButton from './PayButton'
 
 const styles = theme => ({
     card: {
@@ -46,12 +48,14 @@ const styles = theme => ({
 })
 class DevSection extends Component {
 
-    state = {}
+    state = {
+        dialogData: null
+    }
     content = [
-        { description: 'Pay to any address with default button style', onClick: null, snippet: '<aion-pay></aion-pay' },
-        { description: 'Pay to a given address with default button style', onClick: null, snippet: '<aion-pay></aion-pay' },
-        { description: 'Pay to a given address with custom text and background but with AION icon on the button.', onClick: null, snippet: '<aion-pay></aion-pay' },
-        { description: 'Pay to a given address with custom style.', onClick: null, snippet: '<aion-pay></aion-pay' },
+        { description: 'Pay to any address with default button style', onClick: this.onPayButtonClick, snippet: '<aion-pay></aion-pay' },
+        { description: 'Pay to a given address with default button style', onClick: this.onPayButtonClick, snippet: '<aion-pay></aion-pay' },
+        { description: 'Pay to a given address with custom text and background but with AION icon on the button.', onClick: this.onPayButtonClick, snippet: '<aion-pay></aion-pay' },
+        { description: 'Pay to a given address with custom style.', onClick: this.onPayButtonClick, snippet: '<aion-pay></aion-pay' },
     ]
     componentDidMount() { }
 
@@ -59,8 +63,16 @@ class DevSection extends Component {
         window.open('https://github.com/alwaysaugust');
     }
 
+    onPayButtonClick = () => {
+        this.setState({
+            dialogData: { field: 'todo' }
+        })
+    }
+
     render() {
         const { classes } = this.props;
+        const { dialogData } = this.state;
+        console.log(dialogData)
         const contentItems = this.content.map((item, index) => {
             return <Grid key={index} item>
                 <div style={{ marginTop: '30px' }}>
@@ -71,15 +83,8 @@ class DevSection extends Component {
                         direction="row"
                         justify="space-between"
                         alignItems="center">
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            size='large'
-                            onClick={item.onClick}//.bind(this)
-                            className={classes.continueButton}>
-                            <img alt="Cranberry Logo" className={classNames(classes.leftIcon, 'rotation', classes.iconSmall)} src={AionLogoLarge} />
-                            <b>Aion Pay</b>
-                        </Button>
+                        <PayButton
+                            onClick={this.onPayButtonClick} />
                         <Grid item xs>
                             <Typography variant="subtitle2" className={classes.snippet} style={{ fontWeight: 'light' }}> {item.snippet} </Typography>
                         </Grid>
@@ -136,6 +141,9 @@ class DevSection extends Component {
                         </div>
                     </div>
                 </Paper>
+                <AionPayDialog
+                    dialogData={dialogData}
+                />
             </div>
         );
     }

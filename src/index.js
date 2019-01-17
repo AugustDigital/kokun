@@ -11,7 +11,7 @@ import 'typeface-lato';
 ReactDOM.render(
     <MuiThemeProvider theme={AppTheme}>
         <CssBaseline>
-            <App/>
+            <App />
         </CssBaseline>
     </MuiThemeProvider>,
     document.getElementById('root'));
