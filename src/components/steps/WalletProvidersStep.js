@@ -136,7 +136,6 @@ const styles = theme => ({
 })
 class WalletProvidersStep extends Component {
 
-
     constructor(props) {
         super(props);
         this.state = {
@@ -173,9 +172,8 @@ class WalletProvidersStep extends Component {
             }
         ];
     }
-
     componentDidMount() {
-        //todo: observe ledger connection and toggle ledgerConnected boolean
+
         const timer = setInterval(() => {
 
             if (this.state.ledgerConnected) {
@@ -189,9 +187,7 @@ class WalletProvidersStep extends Component {
                 })
             }
         }, 5000);
-
      }
-
      connectToLedger(){
          return new Promise((resolve, reject) => {
              try{

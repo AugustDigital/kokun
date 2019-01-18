@@ -81,12 +81,17 @@ class UserTool extends Component {
 
             let transaction = {
                 nonce: nonce,
-                gasPrice:nrgPrice,
+                from: from,
                 to: to,
-                value: totalAions,
+                value: parseInt(totalAions,10),
+                gasPrice:nrgPrice,
                 gas: nrg,
-                timestamp: Date.now() * 1000
+                timestamp: Date.now() * 1000,
+                data:'0x'
             };
+            console.log("===")
+            console.log(transaction)
+            console.log("===")
             let ledgerConnection = new LedgerProvider()
             ledgerConnection.unlock(null).then((address) => {
 
