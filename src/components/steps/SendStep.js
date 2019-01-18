@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { withStyles, Typography, TextField, Grid, Button, FormControl, Select, MenuItem } from '@material-ui/core'
 import { Warning, ArrowForward } from '@material-ui/icons';
 import * as TransactionUtil from '../../utils/TransactionUtil';
-import Service from '../../Service.js';
 import web3Provider from '../../utils/getWeb3';
 
 const styles = theme => ({
@@ -345,7 +344,7 @@ class SendStep extends Component {
                         variant="contained"
                         color="primary"
                         disabled={!valid}
-                        onClick={() => { onSendStepContinue(availableCurrencies[currencyId], account, recipient, parseFloat(amount, 10), nrg, nrgPrice, nrgLimit, '1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz') }}
+                        onClick={() => { onSendStepContinue(availableCurrencies[currencyId], account, recipient, parseFloat(amount, 10), nrg, nrgPrice, nrgLimit) }}
                         className={classes.continueButton}>
                         <b>Continue</b>
                         <ArrowForward className={classes.rightIcon} />

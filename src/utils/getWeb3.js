@@ -1,7 +1,7 @@
 import Web3 from 'aion-web3'
 import provider from '../../titanrc'
 
-const host = provider.blockchains.aion.networks.testnet.host;
+const host = provider.blockchains.aion.networks.mainnet.host;
 
 let getWeb3 = new Promise(function (resolve, reject) {
     // Wait for loading completion to avoid race conditions with web3 injection timing.

@@ -1,6 +1,6 @@
 import {Transaction} from "./Transaction";
 
-export const SignedTransaction = {
+export let SignedTransaction = {
 
   messageHash: '',
   signature: '',

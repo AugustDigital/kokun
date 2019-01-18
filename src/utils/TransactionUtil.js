@@ -3,8 +3,6 @@ import {AionLong} from "aion-rlp";
 import BN from "bn.js";
 import nacl from 'tweetnacl';
 import {Buffer} from 'buffer'
-
-import {Transaction} from "../common/Transaction"
 import * as CryptoUtil from "./CryptoUtil"
 import {SignedTransaction} from "../common/SignedTransaction";
 
@@ -104,7 +102,7 @@ export function verifyAndEncodedSignTransaction(transaction, rlpEncoded, signatu
     // @ts-ignore
     console.log(rawTransactionHash)
 
-    let signedTransaction = new SignedTransaction()
+    let signedTransaction = SignedTransaction
     signedTransaction.messageHash = CryptoUtil.uia2hex(hash)
     signedTransaction.signature = CryptoUtil.uia2hex(aionPubSig)
     signedTransaction.rawTransaction = CryptoUtil.uia2hex(rawTransaction)

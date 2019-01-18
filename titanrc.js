@@ -10,7 +10,7 @@ module.exports = {
           },
           mainnet: {
             host:
-              "http://api.nodesmith.io/v1/aion/mainnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8",
+              "https://api.nodesmith.io/v1/aion/mainnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8",
             defaultAccount: "",
             password: ""
           },

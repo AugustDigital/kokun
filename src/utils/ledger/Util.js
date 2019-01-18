@@ -1,5 +1,5 @@
-export class Util {
-  splitPath(path){
+
+export function splitPath(path){
     let result = [];
     let components = path.split("/");
     components.forEach(element => {
@@ -15,7 +15,7 @@ export class Util {
     return result;
   }
 
-  foreach(arr, callback){
+  export function foreach(arr, callback){
     function iterate(index, array, result) {
         if (index >= array.length) {
             return result;
@@ -27,5 +27,4 @@ export class Util {
             });
     }
     return Promise.resolve().then(function () { return iterate(0, arr, []); });
-}
 }
