@@ -6,7 +6,7 @@ import AionPayDialog from './AionPayDialog'
 import PayButton from './PayButton'
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import AppTheme from '../themes/AppTheme';
+import { WidgetTheme } from '../themes/AppTheme';
 import 'typeface-lato';
 
 const styles = theme => ({
@@ -21,9 +21,8 @@ class AionPayButton extends Component {
         })
     }
     render() {
-        const { classes } = this.props;
         const { dialogData } = this.state;
-        return (<MuiThemeProvider theme={AppTheme}>
+        return (<MuiThemeProvider theme={WidgetTheme}>
             <CssBaseline>
                 <div>
                     <PayButton
@@ -40,15 +39,28 @@ AionPayButton.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-// Find all DOM containers, and render buttons into them.
-document.querySelectorAll('.aion_pay_button_container')
-    .forEach(domContainer => {
-        const someParams = parseInt(domContainer.dataset.todoproperty, 10); //prams are lower case
-        console.log(someParams);
-        ReactDOM.render(
-            React.createElement(withStyles(styles)(AionPayButton), { someParams: someParams }),
-            domContainer
-        );
-    });
+export const inject = () => {
+    console.log('...injecting aion-pay buttons')
+    //Register our custom element
+    document.createElement('aion-pay');
+
+    // Find all DOM containers, and render buttons into them.
+    document.querySelectorAll('aion-pay')
+        .forEach(domContainer => {
+            const address = domContainer.dataset.address;
+            const buttonText = domContainer.dataset.buttonText;
+            const buttonBackground = domContainer.dataset.buttonBackground;
+            const style = domContainer.dataset.style;
+            const propData = { address, buttonText, buttonBackground, style }
+            console.log('aion-pay button parameters:')
+            console.log(propData);
+            ReactDOM.render(
+                React.createElement(withStyles(styles)(AionPayButton), propData),
+                domContainer
+            );
+        });
+}
+
+inject();
 
 export default withStyles(styles)(AionPayButton);

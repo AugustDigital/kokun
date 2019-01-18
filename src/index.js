@@ -6,8 +6,10 @@ import App from './App';
 import registerServiceWorker from './registerServiceWorker';
 import { MuiThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
-import AppTheme from './themes/AppTheme';
+import {AppTheme} from './themes/AppTheme';
 import 'typeface-lato';
+
+window.AionPayTheme = AppTheme
 ReactDOM.render(
     <MuiThemeProvider theme={AppTheme}>
         <CssBaseline>

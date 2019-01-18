@@ -1,13 +1,99 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Dialog from '@material-ui/core/Dialog';
-import DialogContent from '@material-ui/core/DialogContent';
-import withMobileDialog from '@material-ui/core/withMobileDialog';
+import classNames from 'classnames';
+import compose from 'recompose/compose';
+import { withStyles, Grid, Dialog, DialogTitle, DialogContent, withMobileDialog, IconButton, Typography, LinearProgress } from '@material-ui/core';
 import UserTool from './UserTool'
+import CloseIcon from '@material-ui/icons/Close';
+import AionLogoLight from '../assets/aion_logo_light.svg'
+import PaperPlane from '../assets/paperplane.svg'
+
+const styles = theme => ({
+  progressBar: {
+    backgroundColor: 'transparent',
+    marginLeft: '-' + theme.spacing.unit * 3 + 'px',
+    marginRight: '-' + theme.spacing.unit * 3 + 'px',
+    height: '6px'
+  },
+  progressBarBar: {
+    backgroundColor: theme.palette.common.green
+  },
+  stepText: {
+    color: theme.palette.text.primaryLight
+  }
+})
+
+const WhiteDialogContent = withStyles(theme => ({
+  root: {
+    backgroundColor: theme.palette.background.white
+  },
+}))(DialogContent);
+
+const BlueDialogTitle = withStyles(theme => ({
+  root: {
+    padding: theme.spacing.unit * 4,
+    background: theme.palette.background.blueGradient,
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  closeButton: {
+    position: 'absolute',
+    right: theme.spacing.unit,
+    top: theme.spacing.unit,
+    color: theme.palette.white,
+  },
+  leftIcon: {
+    marginRight: theme.spacing.unit,
+  },
+  iconSmall: {
+    width: '25px',
+    height: '25px',
+  },
+  iconHeading: {
+    float: 'left'
+  },
+  planeIcon: {
+    position: 'absolute',
+    marginRight: '50px',
+    right: 0,
+    width: '100px'
+  }
+}))(props => {
+  const { children, classes, onClose } = props;
+  return (
+    <DialogTitle disableTypography className={classes.root}>
+      <img alt='Plaine Icon' className={classes.planeIcon} src={PaperPlane} />
+      <Grid spacing={24}
+        container
+        wrap="wrap"
+        direction="row"
+        alignItems="center"
+        justify='space-between'>
+        <Grid item >
+          <Typography color='textSecondary' variant="h6" style={{ fontWeight: 'bold' }}>
+            <img alt="Aion Logo" className={classNames(classes.leftIcon, classes.iconSmall, classes.iconHeading)} src={AionLogoLight} />
+            AION PAY</Typography>
+        </Grid>
+        <Grid item xs>
+          <Typography color='textSecondary' variant="subtitle2" style={{ fontWeight: 'light', marginRight: '55px' }}>{children}</Typography>
+        </Grid>
+        <Grid item >
+          {onClose ? (
+            <IconButton aria-label="Close" className={classes.closeButton} onClick={onClose}>
+              <CloseIcon />
+            </IconButton>
+          ) : null}
+        </Grid>
+
+      </Grid>
+
+    </DialogTitle>
+  );
+});
 
 class AionPayDialog extends React.Component {
   state = {
-    dialogData:this.props.dialogData,
+    dialogData: this.props.dialogData,
     currentStep: 0,
     totalSteps: 0
   };
@@ -26,27 +112,35 @@ class AionPayDialog extends React.Component {
 
   onStepChanged = (current, total) => {
     this.setState({
-        currentStep: current,
-        totalSteps: total
+      currentStep: current,
+      totalSteps: total
     })
-}
+  }
 
   render() {
-    const { fullScreen } = this.props;
-    const {dialogData} = this.state;
+    const { fullScreen, classes } = this.props;
+    const { dialogData, currentStep, totalSteps } = this.state;
     console.log(dialogData)
     return (
       <Dialog
-          fullScreen={fullScreen}
-          open={dialogData!=null}
-          onClose={this.handleClose}
-          aria-labelledby="responsive-dialog-title">
-          <DialogContent>
-            <UserTool
-              onStepChanged={this.onStepChanged}/>
-          </DialogContent>
-          
-        </Dialog>
+        fullScreen={fullScreen}
+        open={dialogData != null}
+        onClose={this.handleClose}
+        fullWidth={true}
+        maxWidth={fullScreen ? false : 'sm'}
+        aria-labelledby="responsive-dialog-title">
+        <BlueDialogTitle onClose={this.handleClose}>
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi posuere diam quis risus fringilla.
+          </BlueDialogTitle>
+        <WhiteDialogContent>
+          <LinearProgress className={classes.progressBar} variant="determinate" value={currentStep / (totalSteps - 1) * 100} classes={{ bar: classes.progressBarBar }} />
+          <Typography variant="subtitle1" className={classes.stepText} style={{ fontWeight: '300', marginTop: '25px' }}>Step {currentStep + 1}/{totalSteps}</Typography>
+          <UserTool
+            style={{ marginTop: '25px' }}
+            onStepChanged={this.onStepChanged} />
+        </WhiteDialogContent>
+
+      </Dialog>
     );
   }
 }
@@ -55,4 +149,7 @@ AionPayDialog.propTypes = {
   fullScreen: PropTypes.bool.isRequired,
 };
 
-export default withMobileDialog()(AionPayDialog);
+export default compose(
+  withStyles(styles, { name: 'AionPayDialog' }),
+  withMobileDialog()
+)(AionPayDialog);

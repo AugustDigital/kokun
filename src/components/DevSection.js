@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import { withStyles, Typography, Button, Grid, Paper } from '@material-ui/core'
 import AionLogoDark from '../assets/aion_logo_dark.svg'
 import AionPayDialog from './AionPayDialog'
-import PayButton from './PayButton'
+import { inject } from './AionPayButton'
 
 const styles = theme => ({
     card: {
@@ -52,12 +52,14 @@ class DevSection extends Component {
         dialogData: null
     }
     content = [
-        { description: 'Pay to any address with default button style', onClick: this.onPayButtonClick, snippet: '<aion-pay></aion-pay' },
-        { description: 'Pay to a given address with default button style', onClick: this.onPayButtonClick, snippet: '<aion-pay></aion-pay' },
-        { description: 'Pay to a given address with custom text and background but with AION icon on the button.', onClick: this.onPayButtonClick, snippet: '<aion-pay></aion-pay' },
-        { description: 'Pay to a given address with custom style.', onClick: this.onPayButtonClick, snippet: '<aion-pay></aion-pay' },
+        { description: 'Pay to any address with default button style', onClick: this.onPayButtonClick, params: {} },
+        { description: 'Pay to a given address with default button style', onClick: this.onPayButtonClick, params: { 'data-address': '0x0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827' } },
+        { description: 'Pay to a given address with custom text and background but with AION icon on the button.', onClick: this.onPayButtonClick, params: { 'data-button-text': 'AION PAY', 'data-button-background': '#ff0000', 'data-address': '0x0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827' } },
+        { description: 'Pay to a given address with custom style.', onClick: this.onPayButtonClick, params: { 'data-style': 'todo json string', 'data-address': '0x0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827' } },
     ]
-    componentDidMount() { }
+    componentDidMount() {
+        inject()
+    }
 
     onGithubButtonPressed = () => {
         window.open('https://github.com/alwaysaugust');
@@ -68,7 +70,12 @@ class DevSection extends Component {
             dialogData: { field: 'todo' }
         })
     }
-
+    paramsToString = (item) => {
+        const paramsJson = Object.keys(item).map((key) => {
+            return key + '=\'' + item[key] + '\''
+        }).join(' ');
+        return paramsJson.length > 0 ? ' ' + paramsJson : '';
+    }
     render() {
         const { classes } = this.props;
         const { dialogData } = this.state;
@@ -83,10 +90,9 @@ class DevSection extends Component {
                         direction="row"
                         justify="space-between"
                         alignItems="center">
-                        <PayButton
-                            onClick={this.onPayButtonClick} />
+                        <aion-pay {...item.params} />
                         <Grid item xs>
-                            <Typography variant="subtitle2" className={classes.snippet} style={{ fontWeight: 'light' }}> {item.snippet} </Typography>
+                            <Typography variant="subtitle2" className={classes.snippet} style={{ fontWeight: 'light' }}> &lt;aion-pay{this.paramsToString(item.params)}&gt;&lt;/aion-pay&gt; </Typography>
                         </Grid>
                     </Grid>
 
@@ -97,7 +103,7 @@ class DevSection extends Component {
         return (
             <div className={this.props.className}>
                 <Typography color='textSecondary' variant="h6" style={{ fontWeight: 'bold' }}>
-                    <img alt="Aion Logo" className={classNames(classes.leftIcon,  classes.iconSmall, classes.iconHeading)} src={AionLogoDark} />
+                    <img alt="Aion Logo" className={classNames(classes.leftIcon, classes.iconSmall, classes.iconHeading)} src={AionLogoDark} />
                     AION PAY
                 </Typography>
                 <Paper className={classes.card}>

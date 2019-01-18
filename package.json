@@ -54,6 +54,7 @@
     "react-dev-utils": "^5.0.1",
     "react-dom": "^16.4.1",
     "react-dropzone": "^8.0.3",
+    "recompose": "^0.30.0",
     "resolve": "1.6.0",
     "rxjs": "^6.2.2",
     "scrypt-js": "^2.0.4",
