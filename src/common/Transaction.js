@@ -1,4 +1,4 @@
-export const Transaction = {
+export let Transaction = {
   nonce:'',
   to: '',
   value: '',

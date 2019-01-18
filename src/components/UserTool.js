@@ -6,6 +6,7 @@ import SendStep from './steps/SendStep'
 import ConfirmStep from './steps/ConfirmStep'
 import { CheckCircleRounded } from '@material-ui/icons'
 import web3Provider from '../utils/getWeb3';
+import LedgerProvider from '../utils/ledger/LedgerProvider';
 const Accounts = require('aion-keystore')
 
 const styles = theme => ({
@@ -71,14 +72,41 @@ class UserTool extends Component {
 
         return signedTransaction;
     }
-    onSendStepContinue = (currency, from, to, amount, nrg, nrgPrice, nrgLimit, rawTransaction) => {
-        this.signTransaction(nrgPrice, to, amount, nrg).then((signedTransaction)=>{
-            this.setState({
-                step: 2,
-                transactionData: { currency, from, to, amount, nrg, nrgPrice, nrgLimit  },
-                rawTransaction: signedTransaction.rawTransaction
+    onSendStepContinue = (currency, from, to, amount, nrg, nrgPrice, nrgLimit) => {
+        if(this.state.privateKey == 'ledger'){
+            const nonce = this.state.web3.eth.getTransactionCount(from);
+            let totalAions = this.state.web3.toWei(amount, "ether");
+
+            let transaction = {
+                nonce: nonce,
+                gasPrice:nrgPrice,
+                to: to,
+                value: totalAions,
+                gas: nrg,
+                timestamp: Date.now() * 1000
+            };
+            let ledgerConnection = new LedgerProvider()
+            ledgerConnection.unlock(null).then((address) => {
+
+                ledgerConnection.sign(transaction).then((signedTransaction) => {
+                    this.setState({
+                        step: 2,
+                        transactionData: { currency, from, to, amount, nrg, nrgPrice, nrgLimit },
+                        rawTransaction: signedTransaction.rawTransaction
+                    })
+
+                })
             })
-        })
+        }else{
+            this.signTransaction(nrgPrice, to, amount, nrg).then((signedTransaction)=>{
+                this.setState({
+                    step: 2,
+                    transactionData: { currency, from, to, amount, nrg, nrgPrice, nrgLimit },
+                    rawTransaction: signedTransaction.rawTransaction
+                })
+            })
+        }
+
     }
     onSendStepBack = () => {
         this.setState({
@@ -105,11 +133,9 @@ class UserTool extends Component {
     }
     render() {
         const { classes } = this.props;
-        const { step, transactionData, txHash, rawTransaction, account } = this.state;
+        const { step, transactionData, txHash, rawTransaction, account, privateKey } = this.state;
         let content = null;
 
-
-        console.log(transactionData)
         switch (step) {
             case 0: { // Account import
                 content = (<WalletProvidersStep
@@ -145,6 +171,7 @@ class UserTool extends Component {
                     nrgPrice={transactionData.nrgPrice}
                     nrgLimit={transactionData.nrgLimit}
                     rawTransaction={rawTransaction}
+                    privateKey={privateKey}
                 />);
                 break;
             }

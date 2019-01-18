@@ -345,7 +345,7 @@ class SendStep extends Component {
                         variant="contained"
                         color="primary"
                         disabled={!valid}
-                        onClick={() => { onSendStepContinue(availableCurrencies[currencyId], account, recipient, parseFloat(amount, 10), nrg, nrgPrice, nrgLimit, '1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz1234567890abcdefghijklmnopqrstuvwxyz') }}
+                        onClick={() => { onSendStepContinue(availableCurrencies[currencyId], account, recipient, parseFloat(amount, 10), nrg, nrgPrice, nrgLimit) }}
                         className={classes.continueButton}>
                         <b>Continue</b>
                         <ArrowForward className={classes.rightIcon} />

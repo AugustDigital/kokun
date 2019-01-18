@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import Transport from "@ledgerhq/hw-transport-u2f";
 
 import {Buffer} from "buffer";
-import {Util} from "./Util";
-import {CryptoUtil} from "../CryptoUtil";
+import * as Util from "./Util";
+import * as CryptoUtil from "../CryptoUtil";
 import {Transaction} from "../../common/Transaction";
 import {SignedTransaction} from "../../common/SignedTransaction";
 import * as TransactionUtil from "../TransactionUtil";
@@ -11,38 +11,37 @@ import * as TransactionUtil from "../TransactionUtil";
 class LedgerProvider extends Component{
 
   state = {
-      transport: '',
       path: "44'/425'/0'/0'/0'",
-      address: '',
       publicKey: ''
   }
-
+  publicKey:
+  transport;
   constructor() {
-    this.connect()
+      super();
+      this.connect()
   }
 
-  private async connect() {
+  async connect() {
     // await
-
     return Transport.create().then(_transport => {
       _transport.decorateAppAPIMethods(
         this,
         [
           "getAddress",
           "sign"
-
         ],
         "aion"
       );
       return _transport
+    }).catch((error)=>{
+        return error;
     })
   }
 
    async unlock(progressCallback){
     try {
-      if (!this.state.transport){
-        let transport = await this.connect()
-        this.setState({transport: transport})
+      if (!this.transport){
+        this.transport = await this.connect()
       }
 
 
@@ -51,14 +50,12 @@ class LedgerProvider extends Component{
       if (progressCallback)
         progressCallback(100)
 
-        this.setState({
-            address: result.address,
-            publicKey:result.publicKey
-        })
+
+      this.publicKey = result.publicKey;
 
       return [result.address, result.publicKey]
     } catch (e) {
-      console.log("Error getting address", e)
+      //console.log("Error getting address", e)
       throw e
     }
   }
@@ -80,7 +77,7 @@ class LedgerProvider extends Component{
     });
 
     // let buffer1 = new Buffer("15058000002c800001a9800000008000000080000000", 'hex')
-    return this.state.transport.send(
+    return this.transport.send(
       0xe0,
       0x02,
       boolDisplay ? 0x01 : 0x00,
@@ -91,7 +88,6 @@ class LedgerProvider extends Component{
 
         let result = {
           publicKey: '',
-          address: ''
         }
 
         if (response.length < 64)
@@ -143,7 +139,7 @@ class LedgerProvider extends Component{
     }
 
     return Util.foreach(toSend, (data, i) => {
-      return this.state.transport
+      return this.transport
         .send(0xe0, 0x04, i === 0 ? 0x00 : 0x80, 0x00, data)
         .then(apduResponse => {
           response = apduResponse;
@@ -155,7 +151,7 @@ class LedgerProvider extends Component{
       //return { v, r, s };
       let signature = response.slice(0, 64) //get first 64 bytes for signature
 
-      return TransactionUtil.verifyAndEncodedSignTransaction(transaction, rawTransaction, signature, CryptoUtil.hex2ua(this.state.publicKey))
+      return TransactionUtil.verifyAndEncodedSignTransaction(transaction, rawTransaction, signature, CryptoUtil.hex2ua(this.publicKey))
     });
 
   }

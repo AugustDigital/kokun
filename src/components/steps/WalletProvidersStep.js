@@ -5,6 +5,7 @@ import { Warning, ArrowForward, CloudUpload, InsertDriveFile, CheckCircleRounded
 import classNames from 'classnames'
 import Dropzone from 'react-dropzone';
 import KeystoreWalletProvider from '../../utils/KeystoreWalletProvider';
+import LedgerProvider from '../../utils/ledger/LedgerProvider';
 const Accounts = require('aion-keystore');
 
 const styles = theme => ({
@@ -126,13 +127,13 @@ class WalletProvidersStep extends Component {
             privateKey: null,
             keyStoreFile: null,
             keyStoreFilePass: null,
-            ledgerConnected: true,
+            ledgerConnected: false,
+            ledgerAddress: '',
             completed: 0,
             privateKeyError: false,
             privateKeyErrorMessage: 'Using a private key online is not safe',
             keyStoreError: false,
-            keyStoreErrorMessage: '',
-            keystoreLoadingPercentage: 0
+            keyStoreErrorMessage: ''
         }
         this.CONTENT_ITEMS = [
             {
@@ -158,6 +159,35 @@ class WalletProvidersStep extends Component {
 
     componentDidMount() {
         //todo: observe ledger connection and toggle ledgerConnected boolean
+        const timer = setInterval(() => {
+
+            if (this.state.ledgerConnected) {
+                clearInterval(timer);
+            } else {
+                this.connectToLedger().then((result) => {
+                    if(result)
+                        this.setState({ledgerConnected: true , ledgerAddress: result})
+                }).catch((error)=>{
+                    //console.log(error)
+                })
+            }
+        }, 5000);
+
+     }
+
+     connectToLedger(){
+         return new Promise((resolve, reject) => {
+             try{
+                 let ledgerConnection = new LedgerProvider()
+                 ledgerConnection.unlock(null).then((address) => {
+                    resolve(address[0]);
+                 }).catch((e)=>{
+                    reject(false);
+                 })
+             }catch(e){
+                 reject(false);
+             }
+        })
      }
     handlePanelChange = panel => (event, expanded) => {
         this.setState({
@@ -182,20 +212,15 @@ class WalletProvidersStep extends Component {
     }
     unlockAccount = (item) => {
         item.unlock().then((result)=>{
-            const timer = setInterval(() => { //fake loading
-                if (this.state.completed > 100) {
-                    clearInterval(timer);
-                    this.props.onAccountImported(result)
-                } else {
-                    this.setState({ completed: this.state.completed + 25 })
-                }
-            }, 500);
+            this.props.onAccountImported(result)
         }).catch((error)=>{
-            return
+            return error;
         })
     }
     unlockLedger = () => {
-        return { data: 'todo:integrate' }
+        return new Promise((resolve, reject) => {
+            resolve({address: this.state.ledgerAddress, privateKey: 'ledger' })
+        })
     }
     unlockKeyStore = () => {
 
@@ -212,15 +237,14 @@ class WalletProvidersStep extends Component {
             let me = this;
             reader.onload =  async function () {
                 let content = reader.result;
-                me.provider = new KeystoreWalletProvider(content, me.state.keyStoreFilePass);
+                let keystoreProvider = new KeystoreWalletProvider(content, me.state.keyStoreFilePass);
 
                 try {
-                  let [address, publicKey, privateKey] = await me.provider.unlock((progress) => {
-                      console.log(progress)
-                      me.setState({keystoreLoadingPercentage:Math.round(progress)})
+                  let [address, publicKey, privateKey] = await keystoreProvider.unlock((progress) => {
+                      me.setState({ completed: Math.round(progress) });
                   })
 
-                  resolve({address: address, privateKey:privateKey })
+                  resolve({address: address, privateKey: privateKey })
                 } catch (error) {
                   me.setState({keyStoreError: true, keyStoreErrorMessage: "Unable to unlock file"})
                   reject(error)
@@ -234,7 +258,15 @@ class WalletProvidersStep extends Component {
             try{
                 const aion = new Accounts();
                 let account = aion.privateKeyToAccount(this.state.privateKey);
-                resolve(account)
+                const timer = setInterval(() => {
+                    if (this.state.completed == 100) {
+                        clearInterval(timer);
+                        resolve(account)
+                    } else {
+                        this.setState({ completed: this.state.completed + 25 })
+                    }
+                }, 500);
+
             }catch(e){
                 this.setState({privateKeyError: true, privateKeyErrorMessage: "Invalid key"})
                 reject(false)
@@ -247,7 +279,7 @@ class WalletProvidersStep extends Component {
             {this.state.ledgerConnected ? <div>
                 <Grid
                     container
-                    spacing={14}
+                    spacing={16}
                     direction="row"
                     justify="center"
                     alignItems="center"
@@ -259,7 +291,7 @@ class WalletProvidersStep extends Component {
             </div> :
                 <Grid
                     container
-                    spacing={14}
+                    spacing={16}
                     direction="row"
                     justify="center"
                     alignItems="center"
@@ -371,6 +403,7 @@ class WalletProvidersStep extends Component {
     }
 
     validateLedger = () => {
+
         const {ledgerConnected} = this.state;
         return ledgerConnected;
     }

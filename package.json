@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "private": true,
   "dependencies": {
+    "@ledgerhq/hw-transport-u2f": "^4.32.0",
     "@material-ui/core": "^3.8.2",
     "@material-ui/icons": "^3.0.2",
     "aes-js": "^3.1.2",
@@ -10,10 +11,8 @@
     "aion-rlp": "0.0.1",
     "aion-web3": "0.0.3",
     "autoprefixer": "7.1.6",
-    "babel-core": "6.26.0",
     "babel-eslint": "7.2.3",
     "babel-jest": "20.0.3",
-    "babel-loader": "7.1.2",
     "babel-preset-env": "^1.7.0",
     "babel-preset-react-app": "^3.1.1",
     "babel-register": "^6.26.0",
@@ -117,5 +116,11 @@
   "eslintConfig": {
     "extends": "react-app"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1"
+  }
 }
