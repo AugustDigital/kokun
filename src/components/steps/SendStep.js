@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { withStyles, Typography, TextField, Grid, Button, FormControl, Select, MenuItem } from '@material-ui/core'
 import { Warning, ArrowForward } from '@material-ui/icons';
 import * as TransactionUtil from '../../utils/TransactionUtil';
-import Service from '../../Service.js';
 import web3Provider from '../../utils/getWeb3';
 
 const styles = theme => ({
@@ -11,12 +10,12 @@ const styles = theme => ({
         borderStyle: 'solid',
         borderWidth: '1px',
         borderRadius: '3px',
-        borderColor: 'rgb(255,255,255)',
+        borderColor: theme.palette.common.white,
         paddingLeft: theme.spacing.unit,
         paddingRight: theme.spacing.unit
     },
     dropDownLable: {
-        borderRight: '1px solid rgba(255,255,255,0.2)',
+        borderRight: '1px solid '+theme.palette.divider,
         fontWeight: 'light',
         float: 'left',
         position: 'reltive',
@@ -35,7 +34,7 @@ const styles = theme => ({
         color: 'white !important',
     },
     continueButton: {
-        backgroundColor: 'rgb(31,133,163)',
+        backgroundColor: theme.palette.common.primaryButton,
         marginLeft: theme.spacing.unit * 4
     },
     rightIcon: {
@@ -77,14 +76,14 @@ class SendStep extends Component {
     componentDidMount() {
     }
 
-    async updateNrg(from, to, amount){
+    async updateNrg(from, to, amount) {
 
         web3Provider.then((result) => {
             let totalAions = result.web3.toWei(amount, "ether");
-            let transaction = {from:from, to:to, value: totalAions};
+            let transaction = { from: from, to: to, value: totalAions };
             let estimatedNrg = result.web3.eth.estimateGas(transaction);
-            this.setState({nrg: estimatedNrg});
-        }).catch((e) =>{
+            this.setState({ nrg: estimatedNrg });
+        }).catch((e) => {
             console.log(e)
         });
     }
@@ -127,17 +126,17 @@ class SendStep extends Component {
         this.updateNrg(this.state.account, this.state.recipient, this.state.amount);
     }
 
-    isFormValid = () =>{
-        const {account, recipient, amount, nrg} = this.state;
+    isFormValid = () => {
+        const { account, recipient, amount, nrg } = this.state;
 
-        if(typeof (recipient) === 'undefined' || recipient.length < 0 || isNaN(parseInt(amount,10))){
+        if (typeof (recipient) === 'undefined' || recipient.length < 0 || isNaN(parseInt(amount, 10))) {
             this.setState({
                 valid: false,
                 error: true,
                 errorMessage: 'Fields missing'
             })
-        }else{
-            this.setState({error: false, valid: true, errorMessage:''})
+        } else {
+            this.setState({ error: false, valid: true, errorMessage: '' })
         }
     }
 
@@ -150,11 +149,11 @@ class SendStep extends Component {
         })
 
         return (
-            <Grid spacing={8}
+            <Grid
                 container
                 direction="column"
                 justify="flex-start">
-                <Grid spacing={8}
+                <Grid
                     container
                     direction="row"
                     justify="space-between"
@@ -316,18 +315,18 @@ class SendStep extends Component {
 
                 {
                     (error) ?
-                    <Grid className={classes.error}
-                        container
-                        direction="row"
-                        justify="flex-start"
-                        alignItems="center">
-                        <Grid item>
-                            <Warning className={classes.warningIcon} />
-                        </Grid>
-                        <Grid item>
-                            <Typography variant="subtitle2">{errorMessage}</Typography>
-                        </Grid>
-                    </Grid> : null
+                        <Grid className={classes.error}
+                            container
+                            direction="row"
+                            justify="flex-start"
+                            alignItems="center">
+                            <Grid item>
+                                <Warning className={classes.warningIcon} />
+                            </Grid>
+                            <Grid item>
+                                <Typography variant="subtitle2">{errorMessage}</Typography>
+                            </Grid>
+                        </Grid> : null
                 }
 
                 <Grid spacing={8}

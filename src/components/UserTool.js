@@ -13,11 +13,11 @@ const styles = theme => ({
     continueButton: {
         float: 'right',
         marginTop: theme.spacing.unit * 4,
-        backgroundColor: 'rgb(31,133,163)'
+        backgroundColor: theme.palette.common.primaryButton,
     },
     checkIcon: {
         fontSize: 84,
-        color: 'rgb(80,241,175)'
+        color: theme.palette.common.green
     }
 })
 class UserTool extends Component {
@@ -35,10 +35,11 @@ class UserTool extends Component {
 
     componentDidMount() {
         web3Provider.then((results) => {
-            this.setState({web3: results.web3});
-        }).catch((err)=>{
+            this.setState({ web3: results.web3 });
+        }).catch((err) => {
             console.log(err)
         })
+        this.onChangeStep(0)
     }
     handlePanelChange = panel => (event, expanded) => {
         this.setState({
@@ -48,10 +49,11 @@ class UserTool extends Component {
     };
     onAccountImported = (account) => {
         this.setState({
+            step: 1,
             account: account.address,
             privateKey: account.privateKey,
-            step: 1
         })
+        this.onChangeStep(1)
     }
     async signTransaction(nrgPrice, to, amount, nrg) {
         const aion = new Accounts();
@@ -61,7 +63,7 @@ class UserTool extends Component {
 
         let transaction = {
             nonce: nonce,
-            gasPrice:nrgPrice,
+            gasPrice: nrgPrice,
             to: to,
             value: totalAions,
             gas: nrg,
@@ -112,24 +114,31 @@ class UserTool extends Component {
         this.setState({
             step: 0
         })
+        this.onChangeStep(0)
     }
 
     onTransactionStepContinue = (txHash) => {
 
         this.setState({
-            step: 3,
-            txHash
+            txHash,
+            step: 3
         })
+        this.onChangeStep(3)
     }
     onTransactionStepBack = () => {
         this.setState({
             step: 1
         })
+        this.onChangeStep(1)
     }
     onSentSuccess = () => {
         this.setState({
             step: 0
         })
+        this.onChangeStep(0)
+    }
+    onChangeStep = (step) => {
+        this.props.onStepChanged(step, 4)
     }
     render() {
         const { classes } = this.props;
@@ -184,7 +193,7 @@ class UserTool extends Component {
                         alignItems="center">
                         <CheckCircleRounded className={classes.checkIcon} />
                         <Typography variant="h4" style={{ fontWeight: 'bold', marginTop: '30px' }}>Succesfully Sent!</Typography>
-                        <Typography variant="subtitle2" style={{ fontWeight: 'light', marginTop: '20px' }}> Transaction Hash: <a href={'https://mastery.aion.network/#/transaction/' + txHash}>{txHash}</a></Typography>
+                        <Typography variant="subtitle2" style={{ fontWeight: 'light', marginTop: '20px' }}> Transaction Hash: <a target='_blank' rel='noopener noreferrer' href={'https://mastery.aion.network/#/transaction/' + txHash}>{txHash}</a></Typography>
                         <Button
                             variant="contained"
                             color="primary"
@@ -208,6 +217,7 @@ class UserTool extends Component {
 
 UserTool.propTypes = {
     classes: PropTypes.object.isRequired,
+    onStepChanged: PropTypes.func.isRequired,
 };
 
 export default withStyles(styles)(UserTool);

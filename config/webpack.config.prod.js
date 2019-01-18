@@ -146,7 +146,10 @@ module.exports = {
           // Process JS with Babel.
           {
             test: /\.(js|jsx|mjs)$/,
-            include: paths.appSrc,
+            include: [
+              paths.appSrc,
+              ['aion-keystore','aion-rlp'].map(moduleName => `${ paths.appNodeModules }/${ moduleName }`)
+            ],
             loader: require.resolve('babel-loader'),
             options: {
 

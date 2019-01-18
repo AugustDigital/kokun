@@ -1,11 +1,14 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { withStyles, Typography, TextField, ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, Grid, Button, LinearProgress, IconButton } from '@material-ui/core'
+import { withStyles, Typography, TextField, ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, Grid, Button, LinearProgress, IconButton, Zoom } from '@material-ui/core'
 import { Warning, ArrowForward, CloudUpload, InsertDriveFile, CheckCircleRounded, Close, Dock } from '@material-ui/icons';
 import classNames from 'classnames'
 import Dropzone from 'react-dropzone';
 import KeystoreWalletProvider from '../../utils/KeystoreWalletProvider';
-import LedgerProvider from '../../utils/ledger/LedgerProvider';
+import AionLogoLight from '../../assets/aion_logo_light.svg'
+import LockIcon from '../../assets/lock_icon.svg'
+import LedgerProvider from '../../utils/ledger/LedgerProvider'
+
 const Accounts = require('aion-keystore');
 
 const styles = theme => ({
@@ -26,14 +29,14 @@ const styles = theme => ({
         width: '100%'
     },
     normalPanelStyle: {
-        backgroundColor: theme.palette.background.default
+        backgroundColor: theme.palette.background.white
     },
     expandedPanelStyle: {
-        backgroundColor: theme.palette.background.default,
+        backgroundColor: theme.palette.background.white,
         borderStyle: 'solid',
         borderWidth: '4px',
         borderRadius: '5px',
-        borderColor: 'rgb(75,229,167)'
+        borderColor: theme.palette.common.green
     },
     secondaryHeading: {
         fontSize: theme.typography.pxToRem(15),
@@ -75,7 +78,7 @@ const styles = theme => ({
     continueButton: {
         float: 'right',
         marginBottom: theme.spacing.unit * 2,
-        backgroundColor: 'rgb(31,133,163)'
+        backgroundColor: theme.palette.common.primaryButton,
     },
     progressBarContainer: {
         position: 'relative',
@@ -89,7 +92,7 @@ const styles = theme => ({
         right: 0,
     },
     progressBarBar: {
-        backgroundColor: 'rgb(80,241,175)'
+        backgroundColor: theme.palette.common.green
     },
     cancelFileUploadButton: {
         position: 'absolute',
@@ -97,24 +100,38 @@ const styles = theme => ({
         right: 0,
     },
     fileIcon: {
-        color: 'rgb(210,219,230)',
+        color: theme.palette.common.icon,
         fontSize: 85,
     },
     checkIcon: {
         fontSize: 16,
-        color: 'rgb(80,241,175)'
+        color: theme.palette.common.green
     },
     uploadIcon: {
-        color: 'rgb(210,219,230)',
+        color: theme.palette.common.icon,
         fontSize: 85,
     },
     uploadIconHover: {
         color: 'rgb(27,199,254)',
         fontSize: 85,
     },
-    checkIconBig:{
+    checkIconBig: {
         fontSize: 85,
-        color: 'rgb(80,241,175)'
+        color: theme.palette.common.green
+    },
+    leftIcon: {
+        marginRight: theme.spacing.unit,
+    },
+    iconSmall: {
+        width: '25px',
+        height: '25px',
+    },
+    iconHeading: {
+        float: 'left'
+    },
+    unlockingState: {
+        paddingTop: theme.spacing.unit * 15,
+        paddingBottom: theme.spacing.unit * 15
     }
 })
 class WalletProvidersStep extends Component {
@@ -322,7 +339,7 @@ class WalletProvidersStep extends Component {
                     </IconButton>
                     <Grid
                         container
-                        spacing={14}
+                        spacing={16}
                         direction="row"
                         justify="center"
                         alignItems="center"
@@ -433,18 +450,18 @@ class WalletProvidersStep extends Component {
                         </ExpansionPanelDetails>
                     </ExpansionPanel>
                     {expanded === item ?
-                    <Grid item>
-                        <Button
-                            variant="contained"
-                            color="primary"
-                            disabled={!expanded.validate()}
-                            className={classes.continueButton}
-                            onClick={() => this.unlockAccount(expanded)}>
-                            <b>Continue</b>
-                            <ArrowForward className={classes.rightIcon} />
-                        </Button>
-                    </Grid>
-                    : null}
+                        <Grid item>
+                            <Button
+                                variant="contained"
+                                color="primary"
+                                disabled={!expanded.validate()}
+                                className={classes.continueButton}
+                                onClick={() => this.unlockAccount(expanded)}>
+                                <b>Continue</b>
+                                <ArrowForward className={classes.rightIcon} />
+                            </Button>
+                        </Grid>
+                        : null}
                 </Grid>);
             });
             content = (<Grid spacing={8}
@@ -452,7 +469,9 @@ class WalletProvidersStep extends Component {
                 direction="column"
                 justify="flex-start">
 
-                <Typography variant="h6" style={{ fontWeight: 'bold' }}>AION PAY</Typography>
+                <Typography variant="h6" style={{ fontWeight: 'bold' }}>
+                    <img alt="Aion Logo" className={classNames(classes.leftIcon, classes.iconSmall, classes.iconHeading)} src={AionLogoLight} />
+                    AION PAY</Typography>
                 <Typography variant="subtitle2" style={{ fontWeight: 'light', marginTop: '25px' }}> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi posuere diam quis risus fringilla, quis consectetur nunc imperdiet.</Typography>
                 <Typography variant="h4" style={{ fontWeight: 'bold', marginTop: '25px', marginBottom: '25px' }}> Choose your wallet provider</Typography>
                 {innerContent}
@@ -463,7 +482,11 @@ class WalletProvidersStep extends Component {
                 container
                 direction="column"
                 justify="center"
-                alignItems="center">
+                alignItems="center"
+                className={classes.unlockingState}>
+                <Zoom in={true}>
+                    <img alt='Lock' src={LockIcon} width='50px'/>
+                </Zoom>
                 <Typography variant="h5" style={{ fontWeight: 'bold', marginTop: '25px', marginBottom: '25px' }}>Unlocking {expanded.title}...</Typography>
                 <div className={classes.progressBarContainer}>
                     <LinearProgress
