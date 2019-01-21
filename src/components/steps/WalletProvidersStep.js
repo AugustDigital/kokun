@@ -8,6 +8,7 @@ import KeystoreWalletProvider from '../../utils/KeystoreWalletProvider';
 import AionLogoLight from '../../assets/aion_logo_light.svg'
 import LockIcon from '../../assets/lock_icon.svg'
 import LedgerProvider from '../../utils/ledger/LedgerProvider'
+import {promiseTimeout} from '../../utils/promiseTimeout';
 
 const Accounts = require('aion-keystore');
 
@@ -142,7 +143,6 @@ const styles = theme => ({
 })
 class WalletProvidersStep extends Component {
 
-
     constructor(props) {
         super(props);
         this.state = {
@@ -179,37 +179,33 @@ class WalletProvidersStep extends Component {
             }
         ];
     }
-
     componentDidMount() {
-        //todo: observe ledger connection and toggle ledgerConnected boolean
         const timer = setInterval(() => {
-
-            if (this.state.ledgerConnected) {
-                clearInterval(timer);
-            } else {
-                this.connectToLedger().then((result) => {
-                    if(result)
-                        this.setState({ledgerConnected: true , ledgerAddress: result})
-                }).catch((error)=>{
-                    //console.log(error)
-                })
+            if(this.state.expanded != null){
+                let expanded={title:''};
+                expanded = this.state.expanded;
+                if(expanded.title == "Ledger"){
+                    let doIt = promiseTimeout(3000, this.connectToLedger());
+                    doIt.then(result => {
+                        if(result){
+                            this.setState({ledgerConnected: true , ledgerAddress: result})
+                        }else{
+                            this.setState({ledgerConnected: false, ledgerAddress: ''});
+                        }
+                    }).catch(error => {
+                        this.setState({ledgerConnected: false, ledgerAddress: ''});
+                    });
+                }
             }
         }, 5000);
-
-     }
-
+    }
      connectToLedger(){
          return new Promise((resolve, reject) => {
-             try{
-                 let ledgerConnection = new LedgerProvider()
-                 ledgerConnection.unlock(null).then((address) => {
-                    resolve(address[0]);
-                 }).catch((e)=>{
-                    reject(false);
-                 })
-             }catch(e){
-                 reject(false);
-             }
+
+            let ledgerConnection = new LedgerProvider();
+            ledgerConnection.unlock(null).then((address) => {
+                resolve(address[0]);
+            }).catch((error) => reject(error))
         })
      }
     handlePanelChange = panel => (event, expanded) => {
@@ -253,7 +249,6 @@ class WalletProvidersStep extends Component {
             try {
               reader.readAsArrayBuffer(this.state.keyStoreFile)
             } catch (error) {
-              console.error("Error loading keystore file:" + error)
               reject(error)
             }
 

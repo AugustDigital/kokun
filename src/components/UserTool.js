@@ -30,7 +30,8 @@ class UserTool extends Component {
         account: null,
         privateKey: null,
         web3: null,
-        rawTransaction: null
+        rawTransaction: null,
+        checkLedger: false
     }
 
     componentDidMount() {
@@ -81,22 +82,29 @@ class UserTool extends Component {
 
             let transaction = {
                 nonce: nonce,
-                gasPrice:nrgPrice,
+                from: from,
                 to: to,
-                value: totalAions,
+                value: parseInt(totalAions,10),
+                gasPrice:nrgPrice,
                 gas: nrg,
-                timestamp: Date.now() * 1000
+                timestamp: Date.now() * 1000,
+                data:'0x'
             };
+
             let ledgerConnection = new LedgerProvider()
             ledgerConnection.unlock(null).then((address) => {
-
+                this.setState({checkLedger:true});
                 ledgerConnection.sign(transaction).then((signedTransaction) => {
                     this.setState({
+                        checkLedger:false,
                         step: 2,
                         transactionData: { currency, from, to, amount, nrg, nrgPrice, nrgLimit },
                         rawTransaction: signedTransaction.rawTransaction
                     })
 
+                }).catch((error) => {
+                    this.setState({checkLedger:false});
+                    this.onSendStepBack();
                 })
             })
         }else{
@@ -142,7 +150,7 @@ class UserTool extends Component {
     }
     render() {
         const { classes, showInfoHeader } = this.props;
-        const { step, transactionData, txHash, rawTransaction, account, privateKey } = this.state;
+        const { step, transactionData, txHash, rawTransaction, account, privateKey, checkLedger } = this.state;
         let content = null;
 
         switch (step) {
@@ -166,6 +174,7 @@ class UserTool extends Component {
                     nrgPrice={transactionData.nrgPrice}
                     nrgLimit={transactionData.nrgLimit}
                     rawTransaction={rawTransaction}
+                    checkLedger={checkLedger}
                 />);
                 break;
             }
