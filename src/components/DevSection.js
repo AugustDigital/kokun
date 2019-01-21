@@ -53,7 +53,7 @@ class DevSection extends Component {
     }
     content = [
         { description: 'Pay to any address with default button style', onClick: this.onPayButtonClick, params: {} },
-        { description: 'Pay to a given address with default button style', onClick: this.onPayButtonClick, params: { 'data-address': '0x0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827' } },
+        { description: 'Pay to a given address with default button style', onClick: this.onPayButtonClick, params: { 'data-address': '0x0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827', 'data-node': 'https://api.nodesmith.io/v1/aion/testnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b9' } },
         { description: 'Pay to a given address with custom text and background but with AION icon on the button.', onClick: this.onPayButtonClick, params: { 'data-button-text': 'AION PAY', 'data-button-background': '#ff0000', 'data-address': '0x0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827' } },
         { description: 'Pay to a given address with custom style.', onClick: this.onPayButtonClick, params: { 'data-style': 'todo json string', 'data-address': '0x0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827' } },
     ]

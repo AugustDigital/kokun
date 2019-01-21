@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles, Typography, Grid, Button, Paper } from '@material-ui/core'
 import { ArrowForward } from '@material-ui/icons';
-import AionLogoLight from '../../assets/aion_logo_light.svg'
 import web3Provider from '../../utils/getWeb3';
 
 const styles = theme => ({
@@ -36,7 +35,6 @@ class ConfirmStep extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            completed: 0,
             web3: null
         }
     }
@@ -50,7 +48,6 @@ class ConfirmStep extends Component {
     }
 
     async sendTransaction(){
-        this.setState({ completed: 1 })
         try{
             const transactionHash = await this.state.web3.eth.sendRawTransaction(this.props.rawTransaction)
             this.props.onTransactionStepContinue(transactionHash)
@@ -64,7 +61,6 @@ class ConfirmStep extends Component {
         const { completed } = this.state;
         return (
             <div>
-                {completed === 0 ?
                     <Grid spacing={0}
                         container
                         direction="column"
@@ -161,17 +157,6 @@ class ConfirmStep extends Component {
                             </Button>
                         </Grid>
                     </Grid>
-                    :
-                    <Grid spacing={0}
-                        container
-                        direction="column"
-                        justify="center"
-                        alignItems="center">
-                        <img alt="Aion Logo" className={'rotation'} src={AionLogoLight} width="90px" />
-                        <Typography variant="h4" style={{ fontWeight: 'bold', marginTop: '30px' }}>Sending {currency}</Typography>
-                        <Typography variant="subtitle2" style={{ fontWeight: 'light', marginTop: '20px' }}> Sending transaction and waiting for at least one block confirmation.</Typography>
-                        <Typography variant="subtitle2" style={{ fontWeight: 'light' }}> Please be patient this wont't take too long...</Typography>
-                    </Grid>}
 
             </div>
 

@@ -54,6 +54,7 @@ export const inject = () => {
             const propData = { address, buttonText, buttonBackground, style }
             console.log('aion-pay button parameters:')
             console.log(propData);
+
             ReactDOM.render(
                 React.createElement(withStyles(styles)(AionPayButton), propData),
                 domContainer
