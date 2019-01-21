@@ -30,14 +30,17 @@ const styles = theme => ({
         width: '100%'
     },
     normalPanelStyle: {
-        backgroundColor: theme.palette.background.white
+        backgroundColor: theme.palette.providerPanel.background
     },
     expandedPanelStyle: {
-        backgroundColor: theme.palette.background.white,
+        backgroundColor: theme.palette.providerPanel.background,
         borderStyle: 'solid',
-        borderWidth: '4px',
+        borderWidth: '3px',
         borderRadius: '5px',
-        borderColor: theme.palette.common.green
+        borderColor: theme.palette.providerPanel.border
+    },
+    panelText:{
+        color:theme.palette.providerPanel.text
     },
     secondaryHeading: {
         fontSize: theme.typography.pxToRem(15),
@@ -51,16 +54,19 @@ const styles = theme => ({
     },
     privateKeyWarning: {
         width: 'fit-content',
-        backgroundColor: "rgb(224,125,8)",
+        backgroundColor: theme.palette.background.warning,
         marginTop: theme.spacing.unit,
         paddingRight: theme.spacing.unit,
         paddingLeft: theme.spacing.unit,
         paddingTop: '2px',
         paddingBottom: '2px'
     },
+    warningText:{
+        color:theme.palette.common.white
+    },
     privateKeyError: {
         width: 'fit-content',
-        backgroundColor: "rgb(224,48,81)",
+        backgroundColor: theme.palette.background.error,
         marginTop: theme.spacing.unit,
         paddingRight: theme.spacing.unit,
         paddingLeft: theme.spacing.unit,
@@ -298,7 +304,7 @@ class WalletProvidersStep extends Component {
                     style={{ marginTop: '15px' }}>
 
                     <CheckCircleRounded className={classes.checkIconBig} />
-                    <Typography color='textSecondary' variant='h5'>Ledger connected</Typography>
+                    <Typography className={classes.panelText} variant='h5'>Ledger connected</Typography>
                 </Grid>
             </div> :
                 <Grid
@@ -310,7 +316,7 @@ class WalletProvidersStep extends Component {
                     style={{ marginTop: '15px' }}>
 
                     <Dock className={classes.fileIcon} />
-                    <Typography color='textSecondary' variant='h5' >Connect your Ledger device</Typography>
+                    <Typography className={classes.panelText} variant='h5' >Connect your Ledger device</Typography>
                 </Grid>
             }
 
@@ -326,7 +332,7 @@ class WalletProvidersStep extends Component {
                         justify="center"
                         alignItems="center">
                         <InsertDriveFile className={classes.fileIcon} />
-                        <Typography color='textSecondary' variant='h5' style={{ fontWeight: 'bold', marginTop: '15px' }}>{this.state.keyStoreFile.name}</Typography>
+                        <Typography className={classes.panelText} variant='h5' style={{ fontWeight: 'bold', marginTop: '15px' }}>{this.state.keyStoreFile.name}</Typography>
 
                     </Grid>
                     <IconButton onClick={this.onCancelFileUpload} aria-label="Close" className={classes.cancelFileUploadButton}>
@@ -340,7 +346,7 @@ class WalletProvidersStep extends Component {
                         alignItems="center"
                         style={{ marginTop: '15px' }}
                     >
-                        <Typography color='textSecondary' variant="subtitle2" style={{ fontWeight: 'light' }}>Uploaded Successfully</Typography>
+                        <Typography className={classes.panelText} variant="subtitle2" style={{ fontWeight: 'light' }}>Uploaded Successfully</Typography>
                         <CheckCircleRounded className={classes.checkIcon} />
                     </Grid>
                     <TextField
@@ -370,8 +376,8 @@ class WalletProvidersStep extends Component {
                                     justify="center"
                                     alignItems="center">
                                     <CloudUpload className={isDragActive ? classes.uploadIconHover : classes.uploadIcon} />
-                                    <Typography color='textSecondary' variant='h5'>Drag and drop to upload your file</Typography>
-                                    <Typography color='textSecondary' variant="subtitle2" style={{ fontWeight: 'light', marginTop: '15px' }}>or <span style={{ color: 'rgb(27,199,254)' }}><a href={null}>browse</a></span> to choose a file</Typography>
+                                    <Typography className={classes.panelText} variant='h5'>Drag and drop to upload your file</Typography>
+                                    <Typography className={classes.panelText} variant="subtitle2" style={{ fontWeight: 'light', marginTop: '15px' }}>or <span style={{ color: 'rgb(27,199,254)' }}><a href={null}>browse</a></span> to choose a file</Typography>
                                 </Grid>
 
                             </div>
@@ -408,7 +414,7 @@ class WalletProvidersStep extends Component {
                     <Warning className={classes.warningIcon} />
                 </Grid>
                 <Grid item>
-                    <Typography variant="subtitle2">{this.state.privateKeyErrorMessage}</Typography>
+                    <Typography className={classes.warningText} variant="subtitle2">{this.state.privateKeyErrorMessage}</Typography>
                 </Grid>
             </Grid>
         </div>);
@@ -428,7 +434,7 @@ class WalletProvidersStep extends Component {
         return privateKey !== null && privateKey.length > 0;
     }
     render() {
-        const { classes } = this.props;
+        const { classes, showInfoHeader } = this.props;
         const { expanded, completed } = this.state;
 
         let content;
@@ -463,12 +469,15 @@ class WalletProvidersStep extends Component {
                 container
                 direction="column"
                 justify="flex-start">
-
-                <Typography variant="h6" style={{ fontWeight: 'bold' }}>
+                {showInfoHeader?
+                    <div>
+                        <Typography variant="h6" style={{ fontWeight: 'bold' }}>
                     <img alt="Aion Logo" className={classNames(classes.leftIcon, classes.iconSmall, classes.iconHeading)} src={AionLogoLight} />
                     AION PAY</Typography>
                 <Typography variant="subtitle2" style={{ fontWeight: 'light', marginTop: '25px' }}> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi posuere diam quis risus fringilla, quis consectetur nunc imperdiet.</Typography>
-                <Typography variant="h4" style={{ fontWeight: 'bold', marginTop: '25px', marginBottom: '25px' }}> Choose your wallet provider</Typography>
+                        </div>
+                    :null}
+                <Typography variant="h5" style={{ fontWeight: 'bold', marginTop: '25px', marginBottom: '25px' }}> Choose your wallet provider</Typography>
                 {innerContent}
             </Grid>)
 

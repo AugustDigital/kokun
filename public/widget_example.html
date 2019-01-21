@@ -1,9 +1,18 @@
 <html>
-	<head>
-	</head>
-	<body>
-			<div class="aion_pay_button_container" data-todoProperty="1"></div>
-			<div class="aion_pay_button_container" data-todoProperty="2"></div>
-			<script type="text/javascript" src="./aion_pay.js"></script>
-	</body>
+
+<head>
+</head>
+
+<body>
+	1. Pay to any address with default button style
+	<aion-pay></aion-pay>
+	2. Pay to a given address with default button style
+	<aion-pay data-address='0x0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827'></aion-pay>
+	3. Pay to a given address with custom text and background but with AION icon on the button.
+	<aion-pay data-button-text='AION PAY' data-button-background='#ff0000' data-address='0x0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827'></aion-pay>
+	4. Pay to a given address with custom style.
+	<aion-pay data-style='todo json string' data-address='0x0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827'></aion-pay>
+	<script type="text/javascript" src="./aion_pay.js"></script>
+</body>
+
 </html>

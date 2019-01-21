@@ -6,6 +6,7 @@ import UserSection from './components/UserSection'
 import DevSection from './components/DevSection'
 import BottomBar from './components/BottomBar'
 import Animations from './Animations.css'
+import PaperPlane from './assets/paperplane.svg'
 
 const styles = theme => ({
   root: {
@@ -35,6 +36,12 @@ const styles = theme => ({
   grow: {
     flexGrow: 1,
   },
+  planeIcon: {
+    position:'absolute',
+    marginTop:'240px',
+    marginLeft:'-20px',
+    width:'150px'
+  }
 })
 class App extends Component {
 
@@ -48,7 +55,8 @@ class App extends Component {
 
       <div className={classes.root}>
         <TopBar />
-        <UserSection className={classes.userSection} />
+        <img alt='Plaine Icon' className={classes.planeIcon} src={PaperPlane}/>
+        <UserSection className={classes.userSection}/>
         <div className={classes.devSectionContainer}>
           <DevSection className={classes.devSection} />
         </div>

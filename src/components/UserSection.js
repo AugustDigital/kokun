@@ -31,6 +31,9 @@ const styles = theme => ({
     progressBarBar: {
         backgroundColor: theme.palette.common.green
     },
+    stepText:{
+      color:theme.palette.text.primaryLight
+    }
 })
 class UserSection extends Component {
 
@@ -71,10 +74,11 @@ class UserSection extends Component {
                             <LinearProgress className={classes.progressBar} variant="determinate" value={currentStep / (totalSteps - 1) * 100} classes={{ bar: classes.progressBarBar }} />
                             <div className={classes.toolContainer}>
                                 {currentStep > 0 ?
-                                    <Typography variant="subtitle1" style={{ fontWeight: '300', marginBottom: '15px' }}>Step {currentStep}/{totalSteps - 1}</Typography>
+                                    <Typography variant="subtitle1" className={classes.stepText} style={{ fontWeight: '300', marginBottom: '15px' }}>Step {currentStep}/{totalSteps - 1}</Typography>
                                     : null}
 
                                 <UserTool
+                                    showInfoHeader={true}
                                     onStepChanged={this.onStepChanged}
                                 />
                             </div>

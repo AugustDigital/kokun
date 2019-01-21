@@ -149,7 +149,7 @@ class UserTool extends Component {
         this.props.onStepChanged(step, 4)
     }
     render() {
-        const { classes } = this.props;
+        const { classes, showInfoHeader } = this.props;
         const { step, transactionData, txHash, rawTransaction, account, privateKey, checkLedger } = this.state;
         let content = null;
 
@@ -157,6 +157,7 @@ class UserTool extends Component {
             case 0: { // Account import
                 content = (<WalletProvidersStep
                     onAccountImported={this.onAccountImported}
+                    showInfoHeader={showInfoHeader}
                 />);
                 break;
             }
