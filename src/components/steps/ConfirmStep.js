@@ -50,17 +50,13 @@ class ConfirmStep extends Component {
     }
 
     async sendTransaction(){
-        const transactionHash = await this.state.web3.eth.sendRawTransaction(this.props.rawTransaction);
-
-        const timer = setInterval(() => { //fake loading
-            if (this.state.completed > 100) {
-                clearInterval(timer);
-                this.props.onTransactionStepContinue(transactionHash)
-            } else {
-                this.setState({ completed: this.state.completed + 10 })
-            }
-        }, 1000);
-
+        this.setState({ completed: 1 })
+        try{
+            const transactionHash = await this.state.web3.eth.sendRawTransaction(this.props.rawTransaction)
+            this.props.onTransactionStepContinue(transactionHash)
+        }catch(error){
+            console.log(error)
+        }
     }
 
     render() {

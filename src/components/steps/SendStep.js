@@ -83,9 +83,7 @@ class SendStep extends Component {
             let transaction = { from: from, to: to, value: totalAions };
             let estimatedNrg = result.web3.eth.estimateGas(transaction);
             this.setState({ nrg: estimatedNrg });
-        }).catch((e) => {
-            console.log(e)
-        });
+        }).catch((e) => console.log(e));
     }
 
     handleCurrencyChange = event => {
@@ -141,7 +139,7 @@ class SendStep extends Component {
     }
 
     render() {
-        const { classes, onSendStepBack, onSendStepContinue } = this.props;
+        const { classes, onSendStepBack, onSendStepContinue, checkLedger } = this.props;
         const { availableCurrencies, currencyId, amount, recipient, customNrg, nrg, nrgLimit, nrgPrice, error, errorMessage, valid, account } = this.state;
 
         const dropDownItems = availableCurrencies.map((item, index) => {
@@ -327,6 +325,22 @@ class SendStep extends Component {
                                 <Typography variant="subtitle2">{errorMessage}</Typography>
                             </Grid>
                         </Grid> : null
+                }
+
+                {
+                    (checkLedger) ?
+                    <Grid className={classes.error}
+                        container
+                        direction="row"
+                        justify="flex-start"
+                        alignItems="center">
+                        <Grid item>
+                            <Warning className={classes.warningIcon} />
+                        </Grid>
+                        <Grid item>
+                            <Typography variant="subtitle2">Please confirm transaction on Ledger</Typography>
+                        </Grid>
+                    </Grid> :null
                 }
 
                 <Grid spacing={8}

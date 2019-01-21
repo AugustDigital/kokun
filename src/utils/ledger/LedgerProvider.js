@@ -1,20 +1,16 @@
 import React, { Component } from 'react';
 import Transport from "@ledgerhq/hw-transport-u2f";
-
 import {Buffer} from "buffer";
 import * as Util from "./Util";
 import * as CryptoUtil from "../CryptoUtil";
-import {Transaction} from "../../common/Transaction";
-import {SignedTransaction} from "../../common/SignedTransaction";
 import * as TransactionUtil from "../TransactionUtil";
 
 class LedgerProvider extends Component{
 
   state = {
-      path: "44'/425'/0'/0'/0'",
-      publicKey: ''
+      path: "44'/425'/0'/0'/0'"
   }
-  publicKey:
+  publicKey;
   transport;
   constructor() {
       super();
@@ -22,7 +18,7 @@ class LedgerProvider extends Component{
   }
 
   async connect() {
-    // await
+
     return Transport.create().then(_transport => {
       _transport.decorateAppAPIMethods(
         this,
@@ -44,19 +40,17 @@ class LedgerProvider extends Component{
         this.transport = await this.connect()
       }
 
-
       let result = await this.getAddress(this.state.path, true, false)
 
       if (progressCallback)
         progressCallback(100)
-
 
       this.publicKey = result.publicKey;
 
       return [result.address, result.publicKey]
     } catch (e) {
       //console.log("Error getting address", e)
-      throw e
+      return e
     }
   }
 
