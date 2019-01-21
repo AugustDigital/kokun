@@ -5,7 +5,7 @@ import WalletProvidersStep from './steps/WalletProvidersStep'
 import SendStep from './steps/SendStep'
 import ConfirmStep from './steps/ConfirmStep'
 import { CheckCircleRounded } from '@material-ui/icons'
-import web3Provider from '../utils/getWeb3';
+import getWeb3 from '../utils/getWeb3';
 import LedgerProvider from '../utils/ledger/LedgerProvider';
 const Accounts = require('aion-keystore')
 
@@ -35,11 +35,7 @@ class UserTool extends Component {
     }
 
     componentDidMount() {
-        web3Provider.then((results) => {
-            this.setState({ web3: results.web3 });
-        }).catch((err) => {
-            console.log(err)
-        })
+        this.setState({ web3: getWeb3(this.props.web3Provider)});
         this.onChangeStep(0)
     }
     handlePanelChange = panel => (event, expanded) => {
@@ -76,7 +72,7 @@ class UserTool extends Component {
         return signedTransaction;
     }
     onSendStepContinue = (currency, from, to, amount, nrg, nrgPrice, nrgLimit) => {
-        if(this.state.privateKey == 'ledger'){
+        if(this.state.privateKey === 'ledger'){
             const nonce = this.state.web3.eth.getTransactionCount(from);
             let totalAions = this.state.web3.toWei(amount, "ether");
 
@@ -149,7 +145,7 @@ class UserTool extends Component {
         this.props.onStepChanged(step, 4)
     }
     render() {
-        const { classes, showInfoHeader } = this.props;
+        const { classes, showInfoHeader, web3Provider, defaultRecipient } = this.props;
         const { step, transactionData, txHash, rawTransaction, account, privateKey, checkLedger } = this.state;
         let content = null;
 
@@ -175,6 +171,7 @@ class UserTool extends Component {
                     nrgLimit={transactionData.nrgLimit}
                     rawTransaction={rawTransaction}
                     checkLedger={checkLedger}
+                    defaultRecipient={defaultRecipient}
                 />);
                 break;
             }
@@ -191,6 +188,7 @@ class UserTool extends Component {
                     nrgLimit={transactionData.nrgLimit}
                     rawTransaction={rawTransaction}
                     privateKey={privateKey}
+                    web3Provider={web3Provider}
                 />);
                 break;
             }
@@ -228,6 +226,7 @@ class UserTool extends Component {
 UserTool.propTypes = {
     classes: PropTypes.object.isRequired,
     onStepChanged: PropTypes.func.isRequired,
+    web3Provider: PropTypes.string.isRequired,
 };
 
 export default withStyles(styles)(UserTool);

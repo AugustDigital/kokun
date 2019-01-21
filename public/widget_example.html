@@ -5,13 +5,13 @@
 
 <body>
 	1. Pay to any address with default button style
-	<aion-pay></aion-pay>
+	<aion-pay  data-web3-provider='https://api.nodesmith.io/v1/aion/mainnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8'></aion-pay>
 	2. Pay to a given address with default button style
-	<aion-pay data-address='0x0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827'></aion-pay>
+	<aion-pay  data-address='0x0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827' data-web3-provider='https://api.nodesmith.io/v1/aion/mainnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8'></aion-pay>
 	3. Pay to a given address with custom text and background but with AION icon on the button.
-	<aion-pay data-button-text='AION PAY' data-button-background='#ff0000' data-address='0x0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827'></aion-pay>
+	<aion-pay  data-button-text='Hello World' data-button-background='#ff0000' data-address='0x0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827' data-web3-provider='https://api.nodesmith.io/v1/aion/mainnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8'></aion-pay>
 	4. Pay to a given address with custom style.
-	<aion-pay data-style='todo json string' data-address='0x0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827'></aion-pay>
+	<aion-pay  data-style='todo json string' data-address='0x0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827' data-web3-provider='https://api.nodesmith.io/v1/aion/mainnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8'></aion-pay>
 	<script type="text/javascript" src="./aion_pay.js"></script>
 </body>
 

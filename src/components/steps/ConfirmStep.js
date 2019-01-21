@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles, Typography, Grid, Button, Paper } from '@material-ui/core'
 import { ArrowForward } from '@material-ui/icons';
 import AionLogoLight from '../../assets/aion_logo_light.svg'
-import web3Provider from '../../utils/getWeb3';
+import getWeb3 from '../../utils/getWeb3';
 
 const styles = theme => ({
     paper: {
@@ -42,11 +42,7 @@ class ConfirmStep extends Component {
     }
 
     componentDidMount() {
-        web3Provider.then((results) => {
-            this.setState({web3: results.web3});
-        }).catch((err)=>{
-            console.log(err)
-        })
+        this.setState({ web3: getWeb3(this.props.web3Provider)});
     }
 
     async sendTransaction(){
@@ -190,7 +186,8 @@ ConfirmStep.propTypes = {
     nrg: PropTypes.number.isRequired,
     //nrgPrice: PropTypes.number.isRequired, uncomment if needed
     //nrgLimit: PropTypes.number.isRequired,
-    rawTransaction: PropTypes.string.isRequired
+    rawTransaction: PropTypes.string.isRequired,
+    web3Provider:PropTypes.string.isRequired,
 };
 
 export default withStyles(styles)(ConfirmStep);

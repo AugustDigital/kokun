@@ -28,7 +28,7 @@ const WidgetPalette = {
     primary: { main: '#113665', contrastText: '#fff' },
     secondary: { main: '#F2F6FA', contrastText: '#113665' },
     type: 'dark',
-    background: { default: '#DCE1ED', white: '#fff', warning: '#E89000', error: '#e03051', blueGradient: 'linear-gradient(225deg, #08023C, #229DB7);' },//can cause issues when exported as a widget lib
+    background: { default: '#DCE1ED', white: '#fff', warning: '#E89000', error: '#e03051', blueGradient: 'linear-gradient(225deg, #08023C, #229DB7);',aionPay:'#113665' },//can cause issues when exported as a widget lib
     text: {
         primary: '#113665',
         secondary: '#F2F6FA',
