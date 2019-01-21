@@ -12,24 +12,28 @@ const styles = theme => ({
         width: '25px',
         height: '25px',
     },
+    button:{
+        backgroundColor: theme.palette.background.aionPay+' !important'
+    }
 })
-class PayButton extends Component{
-    render(){
-        const {classes, onClick} = this.props;
-        
-        return(<Button
+class PayButton extends Component {
+    render() {
+        const { classes, onClick, buttonText } = this.props;
+
+        return (<Button
+            className={classes.button}
             variant="contained"
-            color="primary"
             size='large'
+            color='primary'
             onClick={onClick}>
             <img alt="Aion Logo" src={AionLogoLight} className={classNames(classes.leftIcon, classes.iconSmall)} />
-            <b>Aion Pay</b>
+            <b>{typeof (buttonText) !== 'undefined' && buttonText !== null ? buttonText : 'Aion Pay'}</b>
         </Button>)
     }
 }
 
 PayButton.propTypes = {
-    classes: PropTypes.object.isRequired,
+    classes: PropTypes.object.isRequired
 };
 
 

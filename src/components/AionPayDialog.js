@@ -120,7 +120,14 @@ class AionPayDialog extends React.Component {
   render() {
     const { fullScreen, classes } = this.props;
     const { dialogData, currentStep, totalSteps } = this.state;
-    console.log(dialogData)
+    let dialogContent;
+    if (dialogData) {
+      dialogContent = <UserTool
+        style={{ marginTop: '25px' }}
+        onStepChanged={this.onStepChanged}
+        web3Provider={dialogData.web3Provider}
+        defaultRecipient={dialogData.defaultRecipient} />;
+    }
     return (
       <Dialog
         fullScreen={fullScreen}
@@ -135,9 +142,9 @@ class AionPayDialog extends React.Component {
         <WhiteDialogContent>
           <LinearProgress className={classes.progressBar} variant="determinate" value={currentStep / (totalSteps - 1) * 100} classes={{ bar: classes.progressBarBar }} />
           <Typography variant="subtitle1" className={classes.stepText} style={{ fontWeight: '300', marginTop: '25px' }}>Step {currentStep + 1}/{totalSteps}</Typography>
-          <UserTool
-            style={{ marginTop: '25px' }}
-            onStepChanged={this.onStepChanged} />
+          {dialogContent ? dialogContent : <div>
+            Please check the Aion-Pay button parameters.
+          </div>}
         </WhiteDialogContent>
 
       </Dialog>

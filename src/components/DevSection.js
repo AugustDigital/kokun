@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { withStyles, Typography, Button, Grid, Paper } from '@material-ui/core'
+import { withStyles, Typography, Button, Grid, Paper, IconButton, Input, InputAdornment } from '@material-ui/core'
+import { FileCopy } from '@material-ui/icons'
 import AionLogoDark from '../assets/aion_logo_dark.svg'
 import AionPayDialog from './AionPayDialog'
 import { inject } from './AionPayButton'
@@ -25,12 +26,17 @@ const styles = theme => ({
     githubButtonContainer: {
         textAlign: 'right'
     },
+    snippetContainer: {
+
+    },
     snippet: {
         padding: theme.spacing.unit * 2,
         backgroundColor: 'rgb(239,244,249)',
         color: 'black',
         marginLeft: theme.spacing.unit * 2,
-        borderRadius: '4px'
+        borderRadius: '4px',
+        border: 'none',
+        width: '100%'
     },
     cardContent: {
         padding: theme.spacing.unit * 4,
@@ -44,6 +50,9 @@ const styles = theme => ({
     },
     iconHeading: {
         float: 'left'
+    },
+    copyButton: {
+        marginLeft: theme.spacing.unit * 2
     }
 })
 class DevSection extends Component {
@@ -52,10 +61,10 @@ class DevSection extends Component {
         dialogData: null
     }
     content = [
-        { description: 'Pay to any address with default button style', onClick: this.onPayButtonClick, params: {} },
-        { description: 'Pay to a given address with default button style', onClick: this.onPayButtonClick, params: { 'data-address': '0x0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827', 'data-node': 'https://api.nodesmith.io/v1/aion/testnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b9' } },
-        { description: 'Pay to a given address with custom text and background but with AION icon on the button.', onClick: this.onPayButtonClick, params: { 'data-button-text': 'AION PAY', 'data-button-background': '#ff0000', 'data-address': '0x0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827' } },
-        { description: 'Pay to a given address with custom style.', onClick: this.onPayButtonClick, params: { 'data-style': 'todo json string', 'data-address': '0x0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827' } },
+        { description: 'Pay to any address with default button style', onClick: this.onPayButtonClick, params: { 'data-web3-provider': 'https://api.nodesmith.io/v1/aion/mainnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
+        { description: 'Pay to a given address with default button style', onClick: this.onPayButtonClick, params: { 'data-address': '0x0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827', 'data-web3-provider': 'https://api.nodesmith.io/v1/aion/mainnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
+        { description: 'Pay to a given address with custom text and background but with AION icon on the button.', onClick: this.onPayButtonClick, params: { 'data-button-text': 'Aion Pay', 'data-button-background': '#113665', 'data-address': '0x0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827', 'data-web3-provider': 'https://api.nodesmith.io/v1/aion/mainnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
+        { description: 'Pay to a given address with custom style.', onClick: this.onPayButtonClick, params: { 'data-style': 'todo json string', 'data-address': '0x0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827', 'data-web3-provider': 'https://api.nodesmith.io/v1/aion/mainnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
     ]
     componentDidMount() {
         inject()
@@ -76,11 +85,20 @@ class DevSection extends Component {
         }).join(' ');
         return paramsJson.length > 0 ? ' ' + paramsJson : '';
     }
+    copyToClipboard = str => {
+        const el = document.createElement('textarea');
+        el.value = str;
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand('copy');
+        document.body.removeChild(el);
+    };
     render() {
         const { classes } = this.props;
         const { dialogData } = this.state;
         console.log(dialogData)
         const contentItems = this.content.map((item, index) => {
+            const snippetText = '<aion-pay ' + this.paramsToString(item.params) + '></aion-pay>';
             return <Grid key={index} item>
                 <div style={{ marginTop: '30px' }}>
                     <Typography color='textSecondary' variant="h6" style={{ fontWeight: '400' }}>{index + 1}. {item.description}</Typography>
@@ -91,8 +109,21 @@ class DevSection extends Component {
                         justify="space-between"
                         alignItems="center">
                         <aion-pay {...item.params} />
-                        <Grid item xs>
-                            <Typography variant="subtitle2" className={classes.snippet} style={{ fontWeight: 'light' }}> &lt;aion-pay{this.paramsToString(item.params)}&gt;&lt;/aion-pay&gt; </Typography>
+
+                        <Grid item xs className={classes.snippetContainer}>
+                            <Input
+                                className={classes.snippet}
+                                type={'text'}
+                                value={snippetText}
+                                readOnly
+                                endAdornment={
+                                    <InputAdornment position="end">
+                                        <IconButton title='Copy to clipboard' className={classes.copyButton} color="primary" aria-label="Copy" onClick={() => { this.copyToClipboard(snippetText) }}>
+                                            <FileCopy />
+                                        </IconButton>
+                                    </InputAdornment>
+                                }
+                            />
                         </Grid>
                     </Grid>
 

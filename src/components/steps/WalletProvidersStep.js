@@ -184,7 +184,7 @@ class WalletProvidersStep extends Component {
             if(this.state.expanded != null){
                 let expanded={title:''};
                 expanded = this.state.expanded;
-                if(expanded.title == "Ledger"){
+                if(expanded.title === "Ledger"){
                     let doIt = promiseTimeout(3000, this.connectToLedger());
                     doIt.then(result => {
                         if(result){
@@ -277,7 +277,7 @@ class WalletProvidersStep extends Component {
                 const aion = new Accounts();
                 let account = aion.privateKeyToAccount(this.state.privateKey);
                 const timer = setInterval(() => {
-                    if (this.state.completed == 100) {
+                    if (this.state.completed === 100) {
                         clearInterval(timer);
                         resolve(account)
                     } else {

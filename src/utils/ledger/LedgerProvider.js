@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import Transport from "@ledgerhq/hw-transport-u2f";
 import {Buffer} from "buffer";
 import * as Util from "./Util";

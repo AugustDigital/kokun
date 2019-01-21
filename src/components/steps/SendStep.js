@@ -139,7 +139,7 @@ class SendStep extends Component {
     }
 
     render() {
-        const { classes, onSendStepBack, onSendStepContinue, checkLedger } = this.props;
+        const { classes, onSendStepBack, onSendStepContinue, checkLedger, defaultRecipient } = this.props;
         const { availableCurrencies, currencyId, amount, recipient, customNrg, nrg, nrgLimit, nrgPrice, error, errorMessage, valid, account } = this.state;
 
         const dropDownItems = availableCurrencies.map((item, index) => {
@@ -198,9 +198,10 @@ class SendStep extends Component {
                     fullWidth
                     label="To"
                     className={classes.textField}
-                    value={recipient}
+                    value={defaultRecipient?defaultRecipient:recipient}
                     margin="normal"
                     color="primary"
+                    disabled={defaultRecipient}
                     onChange={this.onRecipientEntered.bind(this)}
                     onBlur={this.onRecipientEntered.bind(this)}
                     InputLabelProps={{
