@@ -2,9 +2,11 @@ const webpack = require("webpack");
 const paths = require('./paths');
 
 module.exports = {
-  entry: {
-    "bundle": "./src/components/AionPayButton.js",
-  },
+  entry: [
+    'babel-polyfill',
+    require.resolve('./polyfills'),
+    "./src/components/AionPayButton.js",
+  ],
   devtool: "source-map",
   output: {
     path: paths.appBuild,
