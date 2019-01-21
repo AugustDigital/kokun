@@ -27,8 +27,8 @@ class AionPayButton extends Component {
     render() {
         const { dialogData } = this.state;
         const { buttonText, theme } = this.props;
-        
-        
+
+
         return (<MuiThemeProvider theme={theme}>
             <CssBaseline>
                 <div>
@@ -60,7 +60,7 @@ export const inject = () => {
             const buttonBackground = domContainer.dataset.buttonBackground;
             const style = domContainer.dataset.style;
             const web3Provider = domContainer.dataset.web3Provider
-            
+
 
             let theme =  cloneDeep(WidgetTheme);
             if(buttonBackground){

@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import Web3 from 'aion-web3';
 import { withStyles, Typography, Grid, Button, Paper } from '@material-ui/core'
 import { ArrowForward } from '@material-ui/icons';
 import AionLogoLight from '../../assets/aion_logo_light.svg'
-import getWeb3 from '../../utils/getWeb3';
 
 const styles = theme => ({
     paper: {
@@ -41,7 +41,7 @@ class ConfirmStep extends Component {
     }
 
     componentDidMount() {
-        this.setState({ web3: getWeb3(this.props.web3Provider)});
+        this.setState({ web3: new Web3(new Web3.providers.HttpProvider(this.props.web3Provider))});
     }
 
     async sendTransaction(){

@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import Web3 from 'aion-web3';
 import { withStyles, Typography, TextField, Grid, Button, FormControl, Select, MenuItem } from '@material-ui/core'
 import { Warning, ArrowForward } from '@material-ui/icons';
 import * as TransactionUtil from '../../utils/TransactionUtil';
-import web3Provider from '../../utils/getWeb3';
 
 const styles = theme => ({
     dropDownContainer: {
@@ -74,16 +74,20 @@ class SendStep extends Component {
     }
 
     componentDidMount() {
+        this.setState({ web3: new Web3(new Web3.providers.HttpProvider(this.props.web3Provider))});
     }
 
     async updateNrg(from, to, amount) {
 
-        web3Provider.then((result) => {
-            let totalAions = result.web3.toWei(amount, "ether");
+        try{
+            let totalAions = this.state.web3.toWei(amount, "ether");
             let transaction = { from: from, to: to, value: totalAions };
-            let estimatedNrg = result.web3.eth.estimateGas(transaction);
+            let estimatedNrg = this.state.web3.eth.estimateGas(transaction);
             this.setState({ nrg: estimatedNrg });
-        }).catch((e) => console.log(e));
+        }catch(e){
+            console.log(e)
+        }
+
     }
 
     handleCurrencyChange = event => {

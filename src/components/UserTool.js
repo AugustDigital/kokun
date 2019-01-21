@@ -1,11 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import Web3 from 'aion-web3';
 import { withStyles, Button, Grid, Typography } from '@material-ui/core'
 import WalletProvidersStep from './steps/WalletProvidersStep'
 import SendStep from './steps/SendStep'
 import ConfirmStep from './steps/ConfirmStep'
 import { CheckCircleRounded, HighlightOffRounded } from '@material-ui/icons'
-import getWeb3 from '../utils/getWeb3';
 import LedgerProvider from '../utils/ledger/LedgerProvider';
 import AionLogoLight from '../assets/aion_logo_light.svg'
 const Accounts = require('aion-keystore')
@@ -44,7 +44,7 @@ class UserTool extends Component {
     }
 
     componentDidMount() {
-        this.setState({ web3: getWeb3(this.props.web3Provider)});
+        this.setState({ web3: new Web3(new Web3.providers.HttpProvider(this.props.web3Provider))});
         this.onChangeStep(0)
     }
     handlePanelChange = panel => (event, expanded) => {
