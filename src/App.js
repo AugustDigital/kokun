@@ -17,6 +17,10 @@ const styles = theme => ({
     paddingRight: '10%',
     paddingLeft: '10%',
     paddingBottom: theme.spacing.unit * 5,
+    [theme.breakpoints.down('xs')]: {
+      paddingRight: '5%',
+      paddingLeft: '5%',
+    }
   },
   devSection: {
   },
@@ -28,6 +32,11 @@ const styles = theme => ({
     paddingLeft: '16%',
     paddingTop: theme.spacing.unit * 6,
     paddingBottom: theme.spacing.unit * 12,
+    [theme.breakpoints.down('xs')]: {
+      paddingRight: '5%',
+      paddingLeft: '5%',
+      paddingBottom: theme.spacing.unit * 6,
+    }
   },
   bottomBar: {
     paddingRight: '16%',
@@ -40,7 +49,10 @@ const styles = theme => ({
     position:'absolute',
     marginTop:'240px',
     marginLeft:'-20px',
-    width:'150px'
+    width:'150px',
+    [theme.breakpoints.down('xs')]: {
+      display:'none'
+    }
   }
 })
 class App extends Component {

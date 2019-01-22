@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { withStyles, Typography, Button, Grid, Paper, IconButton, Input, InputAdornment } from '@material-ui/core'
+import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
+import compose from 'recompose/compose';
 import { FileCopy } from '@material-ui/icons'
 import AionLogoDark from '../assets/aion_logo_dark.svg'
 import AionPayDialog from './AionPayDialog'
@@ -54,10 +56,29 @@ const styles = theme => ({
         marginRight: theme.spacing.unit * 4
     },
     githubButtonContainer: {
-        textAlign: 'right'
+        textAlign: 'right',
+        [theme.breakpoints.down('xs')]: {
+            textAlign: 'center',
+            marginTop: theme.spacing.unit * 2
+        }
+    },
+    sampleInfo:{
+        marginTop: theme.spacing.unit * 3,
+        [theme.breakpoints.down('xs')]: {
+            marginTop: theme.spacing.unit * 4
+        }
     },
     snippetContainer: {
-
+        [theme.breakpoints.down('xs')]: {
+            marginTop: theme.spacing.unit * 2
+        }
+    },
+    buttonContainer:{
+        textAlign:'left',
+        [theme.breakpoints.down('xs')]: {
+            textAlign:'center',
+            width: '100%'
+        }
     },
     snippet: {
         padding: theme.spacing.unit * 2,
@@ -66,7 +87,10 @@ const styles = theme => ({
         marginLeft: theme.spacing.unit * 2,
         borderRadius: '4px',
         border: 'none',
-        width: '100%'
+        width: '100%',
+        [theme.breakpoints.down('xs')]: {
+            marginLeft:'0px'
+        }
     },
     cardContent: {
         padding: theme.spacing.unit * 4,
@@ -82,7 +106,10 @@ const styles = theme => ({
         float: 'left'
     },
     copyButton: {
-        marginLeft: theme.spacing.unit * 2
+        marginLeft: theme.spacing.unit * 2,
+        [theme.breakpoints.down('xs')]: {
+            marginLeft:'0px'
+        }
     }
 })
 class DevSection extends Component {
@@ -125,13 +152,14 @@ class DevSection extends Component {
         document.body.removeChild(el);
     };
     render() {
-        const { classes } = this.props;
+        const { classes, width } = this.props;
         const { dialogData } = this.state;
         console.log(dialogData)
+        console.log(isWidthUp('sm', width))
         const contentItems = this.content.map((item, index) => {
             const snippetText = '<aion-pay ' + this.paramsToString(item.params) + '></aion-pay>';
             return <Grid key={index} item>
-                <div style={{ marginTop: '30px' }}>
+                <div className={classes.sampleInfo}>
                     <Typography color='textSecondary' variant="h6" style={{ fontWeight: '400' }}>{index + 1}. {item.description}</Typography>
                     <Grid
                         container
@@ -139,14 +167,19 @@ class DevSection extends Component {
                         direction="row"
                         justify="space-between"
                         alignItems="center">
-                        <aion-pay {...item.params} />
+                        <div className={classes.buttonContainer}>
+                            <aion-pay  {...item.params} />
+                        </div>
+                        
 
-                        <Grid item xs className={classes.snippetContainer}>
+                        <Grid item xs={12} sm className={classes.snippetContainer}>
                             <Input
                                 className={classes.snippet}
                                 type={'text'}
                                 value={snippetText}
                                 readOnly
+                                multiline={!isWidthUp('sm', width)}
+                                rowsMax={5}
                                 endAdornment={
                                     <InputAdornment position="end">
                                         <IconButton title='Copy to clipboard' className={classes.copyButton} color="primary" aria-label="Copy" onClick={() => { this.copyToClipboard(snippetText) }}>
@@ -177,7 +210,7 @@ class DevSection extends Component {
                                 justify="space-between"
                                 alignItems="center"
                                 wrap="wrap">
-                                <Grid item xs>
+                                <Grid item xs={12} sm={7}>
                                     <div>
                                         <Typography variant="h6" style={{ fontWeight: '400' }}>Connect with the Aion network</Typography>
                                         <Typography variant="subtitle2" style={{ fontWeight: 'light', marginTop: '15px' }}> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi posuere diam quis risus fringilla, quis consectetur nunc imperdiet. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi posuere diam quis risus fringilla, quis consectetur nunc imperdiet.</Typography>
@@ -185,7 +218,7 @@ class DevSection extends Component {
                                     </div>
                                 </Grid>
 
-                                <Grid item xs
+                                <Grid item xs={12} sm={5}
                                     className={classes.githubButtonContainer}>
                                     <Button
                                         className={classes.githubButton}
@@ -221,4 +254,7 @@ DevSection.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(DevSection);
+export default compose(
+    withStyles(styles, { name: 'DevSection' }),
+    withWidth()
+  )(DevSection);
