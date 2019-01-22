@@ -86,6 +86,9 @@ const styles = theme => ({
         float: 'right',
         marginBottom: theme.spacing.unit * 2,
         backgroundColor: theme.palette.common.primaryButton,
+        "&:disabled": {
+            backgroundColor: theme.palette.common.primaryButtonDisabled
+        }
     },
     progressBarContainer: {
         position: 'relative',
@@ -139,6 +142,17 @@ const styles = theme => ({
     unlockingState: {
         paddingTop: theme.spacing.unit * 15,
         paddingBottom: theme.spacing.unit * 15
+    },
+    underline: {
+        '&:before': {
+            borderBottom: '2px solid '+theme.palette.common.underline,
+        },
+        '&:after': {
+            borderBottom: `2px solid ${theme.palette.common.underlineFocused}`
+        }
+    },
+    inputPlaceholder: {
+        color: theme.palette.text.hint,
     }
 })
 class WalletProvidersStep extends Component {
@@ -360,7 +374,11 @@ class WalletProvidersStep extends Component {
                         InputProps={{
                             classes: {
                                 input: classes.textFieldInput,
+                                underline: classes.underline
                             },
+                        }}
+                        InputLabelProps={{
+                            classes:{root:classes.inputPlaceholder},
                         }}
                     />
                 </div> :
@@ -401,7 +419,11 @@ class WalletProvidersStep extends Component {
                 InputProps={{
                     classes: {
                         input: classes.textFieldInput,
+                        underline: classes.underline
                     },
+                }}
+                InputLabelProps={{
+                    classes:{root:classes.inputPlaceholder},
                 }}
             />
             <br />

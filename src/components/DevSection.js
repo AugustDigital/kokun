@@ -7,6 +7,36 @@ import AionLogoDark from '../assets/aion_logo_dark.svg'
 import AionPayDialog from './AionPayDialog'
 import { inject } from './AionPayButton'
 
+const themeExample = {
+    primary: { main: '#113665', contrastText: '#fff' },
+    secondary: { main: '#F2F6FA', contrastText: '#113665' },
+    type: 'dark',
+    background: { default: '#DCE1ED', white: '#fff', warning: '#E89000', error: '#e03051', blueGradient: 'linear-gradient(225deg, #08023C, #229DB7);' },
+    text: {
+        primary: '#F2F6FA',
+        secondary: '#00ff00',
+        disabled: '#113665',
+        hint: '#2A2C2E',
+        primaryLight: '#819ABA'
+    },
+    common: {
+        green: '#5AF0BD',
+        black: '#000',
+        white: '#fff',
+        icon: '#d2dbe6',
+        primaryButton: '#00ff00',
+        primaryButtonDisabled: 'rgba(33,151,179,0.4)',
+        underline:'#D8D8D8',
+        underlineFocused:'#113665',
+        underlineContrast:'#D8D8D8',
+        underlineFocusedContrast:'#D8D8D8',
+    },
+    providerPanel: {
+        background: '#00ff00',
+        border: '#5AF0BD',
+        text: '#113665'
+    }
+}
 const styles = theme => ({
     card: {
         backgroundColor: theme.palette.background.white,
@@ -60,11 +90,12 @@ class DevSection extends Component {
     state = {
         dialogData: null
     }
+    
     content = [
         { description: 'Pay to any address with default button style', onClick: this.onPayButtonClick, params: { 'data-web3-provider': 'https://api.nodesmith.io/v1/aion/mainnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
         { description: 'Pay to a given address with default button style', onClick: this.onPayButtonClick, params: { 'data-address': '0x0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827', 'data-web3-provider': 'https://api.nodesmith.io/v1/aion/mainnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
         { description: 'Pay to a given address with custom text and background but with AION icon on the button.', onClick: this.onPayButtonClick, params: { 'data-button-text': 'Aion Pay', 'data-button-background': '#113665', 'data-address': '0x0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827', 'data-web3-provider': 'https://api.nodesmith.io/v1/aion/mainnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
-        { description: 'Pay to a given address with custom style.', onClick: this.onPayButtonClick, params: { 'data-style': 'todo json string', 'data-address': '0x0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827', 'data-web3-provider': 'https://api.nodesmith.io/v1/aion/mainnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
+        { description: 'Pay to a given address with custom style.', onClick: this.onPayButtonClick, params: { 'data-style': JSON.stringify(themeExample), 'data-address': '0x0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827', 'data-web3-provider': 'https://api.nodesmith.io/v1/aion/mainnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
     ]
     componentDidMount() {
         inject()

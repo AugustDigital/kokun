@@ -10,12 +10,12 @@ const styles = theme => ({
         borderStyle: 'solid',
         borderWidth: '1px',
         borderRadius: '3px',
-        borderColor: theme.palette.common.white,
+        borderColor: theme.palette.secondary.main,
         paddingLeft: theme.spacing.unit,
         paddingRight: theme.spacing.unit
     },
     dropDownLable: {
-        borderRight: '1px solid '+theme.palette.divider,
+        borderRight: '1px solid '+theme.palette.secondary.main,
         fontWeight: 'light',
         float: 'left',
         position: 'reltive',
@@ -28,14 +28,17 @@ const styles = theme => ({
         marginTop: '4px'
     },
     textFieldInput: {
-        color: 'white !important'
+        color: theme.palette.text.primary+' !important'
     },
     textField: {
-        color: 'white !important',
+        color: theme.palette.text.primary+' !important',
     },
     continueButton: {
         backgroundColor: theme.palette.common.primaryButton,
-        marginLeft: theme.spacing.unit * 4
+        marginLeft: theme.spacing.unit * 4,
+        "&:disabled": {
+            backgroundColor: theme.palette.common.primaryButtonDisabled
+        }
     },
     rightIcon: {
         marginLeft: theme.spacing.unit,
@@ -55,6 +58,17 @@ const styles = theme => ({
         fontSize: 12,
         color: "#fff"
     },
+    underline: {
+        '&:before': {
+            borderBottom: '2px solid '+theme.palette.common.underlineContrast,
+        },
+        '&:after': {
+            borderBottom: `2px solid ${theme.palette.common.underlineFocusedContrast}`
+        }
+    },
+    menuItem: {
+        color:theme.palette.common.white
+    }
 })
 class SendStep extends Component {
 
@@ -143,7 +157,7 @@ class SendStep extends Component {
         const { availableCurrencies, currencyId, amount, recipient, customNrg, nrg, nrgLimit, nrgPrice, error, errorMessage, valid, account } = this.state;
 
         const dropDownItems = availableCurrencies.map((item, index) => {
-            return (<MenuItem key={index} value={index}>{item}</MenuItem>)
+            return (<MenuItem key={index} value={index} className={classes.menuItem}>{item} </MenuItem>)
         })
 
         return (
@@ -177,7 +191,6 @@ class SendStep extends Component {
                 </Grid>
                 <TextField
                     disabled
-                    id="standard-disabled"
                     label="FROM"
                     value={account}
                     className={classes.textField}
@@ -210,6 +223,7 @@ class SendStep extends Component {
                     InputProps={{
                         classes: {
                             input: classes.textFieldInput,
+                            underline: classes.underline
                         },
                     }} />
 
@@ -229,6 +243,7 @@ class SendStep extends Component {
                     InputProps={{
                         classes: {
                             input: classes.textFieldInput,
+                            underline: classes.underline
                         }
                     }
                     } />
@@ -241,7 +256,6 @@ class SendStep extends Component {
                         style={{ paddingTop: '15px' }}>
                         <TextField
                             disabled
-                            id="standard-disabled"
                             label="MAX NRG COST"
                             value={nrg}
                             className={classes.textField}
@@ -253,12 +267,13 @@ class SendStep extends Component {
                                 disableUnderline: true,
                                 classes: {
                                     input: classes.textFieldInput,
+                                    underline: classes.underline
                                 }
                             }
                             }
                         />
 
-                        <Button variant="outlined" onClick={this.onEditNrg}>EDIT</Button>
+                        <Button variant="outlined" color="secondary" onClick={this.onEditNrg}>EDIT</Button>
                     </Grid>
                     : <div>
                         <Grid
@@ -284,6 +299,7 @@ class SendStep extends Component {
                                     InputProps={{
                                         classes: {
                                             input: classes.textFieldInput,
+                                            underline: classes.underline
                                         }
                                     }
                                     } />
@@ -304,6 +320,7 @@ class SendStep extends Component {
                                     InputProps={{
                                         classes: {
                                             input: classes.textFieldInput,
+                                            underline: classes.underline
                                         }
                                     }
                                     } />
@@ -352,6 +369,7 @@ class SendStep extends Component {
                     style={{ paddingTop: '25px' }}>
                     <Button
                         variant="outlined"
+                        color="secondary"
                         onClick={onSendStepBack}>
                         <b>Back</b>
                     </Button>
