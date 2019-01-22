@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { withStyles, Grid, Typography, LinearProgress } from '@material-ui/core'
 import classNames from 'classnames';
 import UserTool from './UserTool'
+import Provider from '../../global_config'
 
 const styles = theme => ({
     root: {
@@ -80,7 +81,7 @@ class UserSection extends Component {
                                 <UserTool
                                     showInfoHeader={true}
                                     onStepChanged={this.onStepChanged}
-                                    web3Provider={'https://api.nodesmith.io/v1/aion/mainnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8'}/>
+                                    web3Provider={Provider}/>
 
                             </div>
                         </div>

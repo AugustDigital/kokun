@@ -30,7 +30,6 @@ class AionPayButton extends Component {
         const { dialogData } = this.state;
         const { buttonText, theme } = this.props;
 
-        console.log(theme);
         return (<MuiThemeProvider theme={theme}>
             <CssBaseline>
                 <div>
@@ -78,6 +77,7 @@ export const inject = () => {
             let propData = { address, buttonText, web3Provider, theme }
 
             console.log(propData);
+
             ReactDOM.render(
                 React.createElement(withStyles(styles)(AionPayButton), propData),
                 domContainer

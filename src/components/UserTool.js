@@ -1,12 +1,13 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import Web3 from 'aion-web3';
 import { withStyles, Button, Grid, Typography } from '@material-ui/core'
 import WalletProvidersStep from './steps/WalletProvidersStep'
 import SendStep from './steps/SendStep'
 import ConfirmStep from './steps/ConfirmStep'
-import { CheckCircleRounded } from '@material-ui/icons'
-import getWeb3 from '../utils/getWeb3';
+import { CheckCircleRounded, HighlightOffRounded } from '@material-ui/icons'
 import LedgerProvider from '../utils/ledger/LedgerProvider';
+import AionLogoLight from '../assets/aion_logo_light.svg'
 const Accounts = require('aion-keystore')
 
 const styles = theme => ({
@@ -18,7 +19,12 @@ const styles = theme => ({
     checkIcon: {
         fontSize: 84,
         color: theme.palette.common.green
+    },
+    errorIcon: {
+        fontSize: 84,
+        color: theme.palette.common.red
     }
+
 })
 class UserTool extends Component {
 
@@ -31,11 +37,14 @@ class UserTool extends Component {
         privateKey: null,
         web3: null,
         rawTransaction: null,
-        checkLedger: false
+        checkLedger: false,
+        transactionMessage: null,
+        transactionStatus: 2,
+        completed:0
     }
 
     componentDidMount() {
-        this.setState({ web3: getWeb3(this.props.web3Provider)});
+        this.setState({ web3: new Web3(new Web3.providers.HttpProvider(this.props.web3Provider))});
         this.onChangeStep(0)
     }
     handlePanelChange = panel => (event, expanded) => {
@@ -122,12 +131,28 @@ class UserTool extends Component {
     }
 
     onTransactionStepContinue = (txHash) => {
-
+        this.checkTransactionStatus(txHash)
         this.setState({
             txHash,
             step: 3
         })
         this.onChangeStep(3)
+    }
+    checkTransactionStatus = (hash) => {
+        const timer = setInterval(() => {
+            this.state.web3.eth.getTransactionReceipt(hash, (error, receipt) => {
+
+                if(receipt){
+                    clearInterval(timer);
+                    let message = receipt.status == 1 ? 'Succesfully Sent!' : 'Transaction error!';
+                    this.setState({
+                        completed:1,
+                        transactionStatus: receipt.status,
+                        transactionMessage: message
+                    })
+                }
+            })
+        }, 5000);
     }
     onTransactionStepBack = () => {
         this.setState({
@@ -145,9 +170,16 @@ class UserTool extends Component {
         this.props.onStepChanged(step, 4)
     }
     render() {
-        const { classes, showInfoHeader, web3Provider, defaultRecipient } = this.props;
-        const { step, transactionData, txHash, rawTransaction, account, privateKey, checkLedger } = this.state;
+        const { classes, showInfoHeader, web3Provider, defaultRecipient, currency } = this.props;
+        const { step, transactionData, txHash, rawTransaction, account, privateKey, checkLedger, transactionStatus, completed } = this.state;
         let content = null;
+        let status = null;
+
+        if(transactionStatus == 1){
+            status = <CheckCircleRounded className={classes.checkIcon} />
+        }else if(transactionStatus == 0){
+            status = <HighlightOffRounded className={classes.errorIcon} />
+        }
 
         switch (step) {
             case 0: { // Account import
@@ -199,8 +231,21 @@ class UserTool extends Component {
                         direction="column"
                         justify="center"
                         alignItems="center">
-                        <CheckCircleRounded className={classes.checkIcon} />
-                        <Typography variant="h4" style={{ fontWeight: 'bold', marginTop: '30px' }}>Succesfully Sent!</Typography>
+                        {
+                            (completed == 1) ?
+                            status :
+                            <Grid spacing={0}
+                                container
+                                direction="column"
+                                justify="center"
+                                alignItems="center">
+                                <img alt="Aion Logo" className={'rotation'} src={AionLogoLight} width="90px" />
+                                <Typography variant="h4" style={{ fontWeight: 'bold', marginTop: '30px' }}>Sending {currency}</Typography>
+                                <Typography variant="subtitle2" style={{ fontWeight: 'light', marginTop: '20px' }}> Sending transaction and waiting for at least one block confirmation.</Typography>
+                                <Typography variant="subtitle2" style={{ fontWeight: 'light' }}> Please be patient this wont't take too long...</Typography>
+                            </Grid>
+                        }
+                        <Typography variant="h4" style={{ fontWeight: 'bold', marginTop: '30px' }}>{this.state.transactionMessage}</Typography>
                         <Typography variant="subtitle2" style={{ fontWeight: 'light', marginTop: '20px' }}> Transaction Hash: <a target='_blank' rel='noopener noreferrer' href={'https://mastery.aion.network/#/transaction/' + txHash}>{txHash}</a></Typography>
                         <Button
                             variant="contained"

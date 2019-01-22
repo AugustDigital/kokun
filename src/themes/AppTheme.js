@@ -13,6 +13,7 @@ const AppPalette = {
     },
     common: {
         green: '#5AF0BD',
+        red: '#e50000',
         black: '#000',
         white: '#fff',
         icon: '#d2dbe6',
