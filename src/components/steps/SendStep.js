@@ -4,6 +4,7 @@ import Web3 from 'aion-web3';
 import { withStyles, Typography, TextField, Grid, Button, FormControl, Select, MenuItem } from '@material-ui/core'
 import { Warning, ArrowForward } from '@material-ui/icons';
 import * as TransactionUtil from '../../utils/TransactionUtil';
+import Provider from '../../../global_config'
 
 const styles = theme => ({
     dropDownContainer: {
@@ -74,7 +75,7 @@ class SendStep extends Component {
     }
 
     componentDidMount() {
-        this.setState({ web3: new Web3(new Web3.providers.HttpProvider(this.props.web3Provider))});
+        this.setState({ web3: new Web3(new Web3.providers.HttpProvider(Provider))});
     }
 
     async updateNrg(from, to, amount) {
