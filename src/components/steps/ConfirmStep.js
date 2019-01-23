@@ -55,7 +55,7 @@ class ConfirmStep extends Component {
 
     render() {
         const { classes, currency, to, from, amount, nrg, nrgPrice, nrgLimit, rawTransaction, onTransactonStepBack } = this.props;
-        const { completed } = this.state;
+
         return (
             <div>
                     <Grid spacing={0}
