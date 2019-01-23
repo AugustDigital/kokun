@@ -110,8 +110,9 @@ const styles = theme => ({
         right: 0,
     },
     fileIcon: {
+        padding:theme.spacing.unit,
         color: theme.palette.common.icon,
-        fontSize: 85,
+        fontSize: 75,
     },
     checkIcon: {
         fontSize: 16,
@@ -126,7 +127,8 @@ const styles = theme => ({
         fontSize: 85,
     },
     checkIconBig: {
-        fontSize: 85,
+        padding:theme.spacing.unit,
+        fontSize: 75,
         color: theme.palette.common.green
     },
     leftIcon: {
@@ -318,7 +320,10 @@ class WalletProvidersStep extends Component {
                     style={{ marginTop: '15px' }}>
 
                     <CheckCircleRounded className={classes.checkIconBig} />
-                    <Typography className={classes.panelText} variant='h5'>Ledger connected</Typography>
+                    <Grid item xs>
+                        <Typography className={classes.panelText} variant='h6'>Ledger is ready</Typography>
+                    </Grid>
+                    
                 </Grid>
             </div> :
                 <Grid
@@ -327,10 +332,14 @@ class WalletProvidersStep extends Component {
                     direction="row"
                     justify="center"
                     alignItems="center"
+                    wrap='wrap'
                     style={{ marginTop: '15px' }}>
-
+                    
                     <Dock className={classes.fileIcon} />
-                    <Typography className={classes.panelText} variant='h5' >Connect your Ledger device</Typography>
+                    <Grid item xs>
+                        <Typography className={classes.panelText} variant='h6' >Please connect your Ledger and open the Aion app</Typography>
+                    </Grid>
+                    
                 </Grid>
             }
 
