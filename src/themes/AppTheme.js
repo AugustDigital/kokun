@@ -8,7 +8,7 @@ const AppPalette = {
         primary: '#F2F6FA',
         secondary: '#113665',
         disabled: '#113665',
-        hint: '#113665',
+        hint: '#2A2C2E',
         primaryLight: '#819ABA'
     },
     common: {
@@ -18,6 +18,11 @@ const AppPalette = {
         white: '#fff',
         icon: '#d2dbe6',
         primaryButton: '#2197B3',
+        primaryButtonDisabled: 'rgba(33,151,179,0.4)',
+        underline:'#D8D8D8',
+        underlineFocused:'#113665',
+        underlineContrast:'#D8D8D8',
+        underlineFocusedContrast:'#D8D8D8',
     },
     providerPanel: {
         background: '#fff',
@@ -27,14 +32,14 @@ const AppPalette = {
 }
 const WidgetPalette = {
     primary: { main: '#113665', contrastText: '#fff' },
-    secondary: { main: '#F2F6FA', contrastText: '#113665' },
+    secondary: { main: '#113665', contrastText: '#fff' },
     type: 'dark',
-    background: { default: '#DCE1ED', white: '#fff', warning: '#E89000', error: '#e03051', blueGradient: 'linear-gradient(225deg, #08023C, #229DB7);',aionPay:'#113665' },//can cause issues when exported as a widget lib
+    background: { default: '#ECF1F7', white: '#fff', warning: '#E89000', error: '#e03051', blueGradient: 'linear-gradient(225deg, #08023C, #229DB7);',aionPay:'#113665' },//can cause issues when exported as a widget lib
     text: {
         primary: '#113665',
         secondary: '#F2F6FA',
         disabled: '#F2F6FA',
-        hint: '#F2F6FA',
+        hint: '#2A2C2E',
         primaryLight: '#819ABA'
     },
     common: {
@@ -43,6 +48,11 @@ const WidgetPalette = {
         white: '#fff',
         icon: '#d2dbe6',
         primaryButton: '#113665',
+        primaryButtonDisabled: 'rgba(17, 54, 101, 0.4)',
+        underline:'#D8D8D8',
+        underlineFocused:'#113665',
+        underlineContrast:'#113665',
+        underlineFocusedContrast:'#113665',
     },
     providerPanel: {
         background: '#ECF1F7',

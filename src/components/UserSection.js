@@ -11,7 +11,11 @@ const styles = theme => ({
         backgroundImage: theme.palette.background.blueGradient,
     },
     left: {
-        paddingRight: theme.spacing.unit * 8
+        paddingRight: theme.spacing.unit * 8,
+        [theme.breakpoints.down('xs')]: {
+            paddingRight: theme.spacing.unit, 
+            marginTop: theme.spacing.unit * 3,
+        }
     },
     right: {
     },
@@ -24,10 +28,23 @@ const styles = theme => ({
         marginTop: theme.spacing.unit * 8,
 
         borderLeft: '1px solid '+theme.palette.divider,
+        [theme.breakpoints.down('xs')]: {
+            borderLeft: '0px',
+            borderTop: '1px solid '+theme.palette.divider,
+            marginLeft: '0px',
+            marginTop: '0px',
+            paddingTop: theme.spacing.unit * 3,
+            paddingLeft: '0px',
+        }
+        
     },
     progressBar: {
         marginLeft: theme.spacing.unit * 10,
-        backgroundColor: 'transparent'
+        backgroundColor: 'transparent',
+        [theme.breakpoints.down('xs')]: {
+            marginLeft: '0px',
+            marginTop: theme.spacing.unit * 3,
+        }
     },
     progressBarBar: {
         backgroundColor: theme.palette.common.green
@@ -62,7 +79,7 @@ class UserSection extends Component {
                     direction="row"
                     justify="center"
                     alignItems="center">
-                    <Grid item xs={4}>
+                    <Grid item xs={12} sm={4}>
                         <div className={classes.left}>
                             <div className={classes.infoContainer}>
                                 <Typography variant="h4" style={{ fontWeight: 300 }}> Connect With the Aion network</Typography>
@@ -70,7 +87,7 @@ class UserSection extends Component {
                             </div>
                         </div>
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={12} sm={6}>
                         <div className={classes.right}>
                             <LinearProgress className={classes.progressBar} variant="determinate" value={currentStep / (totalSteps - 1) * 100} classes={{ bar: classes.progressBarBar }} />
                             <div className={classes.toolContainer}>

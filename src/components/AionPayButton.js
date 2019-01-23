@@ -20,21 +20,22 @@ class AionPayButton extends Component {
     componentDidMount() { }
     onPayButtonClick = () => {
         this.setState({
-            dialogData: { web3Provider: this.props.web3Provider,
-            defaultRecipient: this.props.address }
+            dialogData: {
+                web3Provider: this.props.web3Provider,
+                defaultRecipient: this.props.address
+            }
         })
     }
     render() {
         const { dialogData } = this.state;
         const { buttonText, theme } = this.props;
 
-
         return (<MuiThemeProvider theme={theme}>
             <CssBaseline>
                 <div>
                     <PayButton
                         onClick={this.onPayButtonClick}
-                        buttonText={buttonText}/>
+                        buttonText={buttonText} />
                     <AionPayDialog
                         dialogData={dialogData} />
                 </div>
@@ -55,22 +56,25 @@ export const inject = () => {
     // Find all DOM containers, and render buttons into them.
     document.querySelectorAll('aion-pay')
         .forEach(domContainer => {
-            const address = domContainer.dataset.address;
-            const buttonText = domContainer.dataset.buttonText;
-            const buttonBackground = domContainer.dataset.buttonBackground;
-            const style = domContainer.dataset.style;
-            const web3Provider = domContainer.dataset.web3Provider
+            let address = domContainer.dataset.address;
+            let buttonText = domContainer.dataset.buttonText;
+            let buttonBackground = domContainer.dataset.buttonBackground;
+            let style = domContainer.dataset.style;
+            let web3Provider = domContainer.dataset.web3Provider
 
 
-            let theme =  cloneDeep(WidgetTheme);
-            if(buttonBackground){
+            let theme = cloneDeep(WidgetTheme);
+            if (buttonBackground) {
                 theme.palette.background.aionPay = buttonBackground;
-                console.log(buttonBackground)
             }
 
-            //todo parse style
+            if (style) {
+                let customPalette = JSON.parse(style);
+                let themePallete = Object.assign({}, theme.palette, customPalette);
+                theme.palette = themePallete;
+            }
 
-            const propData = { address, buttonText, web3Provider, theme }
+            let propData = { address, buttonText, web3Provider, theme }
 
             console.log(propData);
 
