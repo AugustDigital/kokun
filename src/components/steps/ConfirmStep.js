@@ -4,7 +4,6 @@ import Web3 from 'aion-web3';
 import { withStyles, Typography, Grid, Button, Paper } from '@material-ui/core'
 import { ArrowForward } from '@material-ui/icons';
 import AionLogoLight from '../../assets/aion_logo_light.svg'
-import Provider from '../../../global_config'
 
 const styles = theme => ({
     paper: {
@@ -14,21 +13,10 @@ const styles = theme => ({
     },
     fatLable: {
         fontWeight: 'bold',
-        marginRight: theme.spacing.unit * 2,
-        color:theme.palette.primary.main,
+        marginRight: theme.spacing.unit * 2
     },
     thinLable: {
-        fontWeight: 300,
-        color:theme.palette.primary.main,
-    },
-    rawTitle: {
-        fontWeight: 'bold',
-        marginRight: theme.spacing.unit * 2,
-        color:theme.palette.text.primary,
-    },
-    rawDetail: {
-        fontWeight: 300,
-        color:theme.palette.text.primary,
+        fontWeight: 300
     },
     transactionRow: {
         marginTop: theme.spacing.unit * 1
@@ -53,7 +41,7 @@ class ConfirmStep extends Component {
     }
 
     componentDidMount() {
-        this.setState({ web3: new Web3(new Web3.providers.HttpProvider(Provider))});
+        this.setState({ web3: new Web3(new Web3.providers.HttpProvider(this.props.web3Provider))});
     }
 
     async sendTransaction(){
@@ -80,8 +68,7 @@ class ConfirmStep extends Component {
                                 container
                                 direction="row"
                                 justify="space-between"
-                                alignItems="center"
-                                wrap='nowrap'>
+                                alignItems="center">
                                 <Typography color="textSecondary" variant="subtitle2" className={classes.fatLable}>TO</Typography>
                                 <Typography color="textSecondary" variant="subtitle2" className={classes.thinLable}>{to}</Typography>
                             </Grid>
@@ -90,7 +77,6 @@ class ConfirmStep extends Component {
                                 direction="row"
                                 justify="space-between"
                                 alignItems="center"
-                                wrap='nowrap'
                                 className={classes.transactionRow}>
                                 <Typography color="textSecondary" variant="subtitle2" className={classes.fatLable}>FROM</Typography>
                                 <Typography color="textSecondary" variant="subtitle2" className={classes.thinLable}>{from}</Typography>
@@ -100,17 +86,15 @@ class ConfirmStep extends Component {
                                 direction="row"
                                 justify="space-between"
                                 alignItems="center"
-                                wrap='nowrap'
                                 className={classes.transactionRow}>
                                 <Typography color="textSecondary" variant="subtitle2" className={classes.fatLable}>AMOUNT</Typography>
-                                <Typography color="textSecondary" variant="subtitle2" style={{ fontWeight: 'bold', color:'#113665' }}>{amount}</Typography>
+                                <Typography color="textSecondary" variant="subtitle2" style={{ fontWeight: 'bold' }}>{amount}</Typography>
                             </Grid>
                             <Grid
                                 container
                                 direction="row"
                                 justify="space-between"
                                 alignItems="center"
-                                wrap='nowrap'
                                 className={classes.transactionRow}>
                                 <Typography color="textSecondary" variant="subtitle2" className={classes.fatLable}>NRG</Typography>
                                 <Typography color="textSecondary" variant="subtitle2" className={classes.thinLable}>{nrg}</Typography>
@@ -120,7 +104,6 @@ class ConfirmStep extends Component {
                                 direction="row"
                                 justify="space-between"
                                 alignItems="center"
-                                wrap='nowrap'
                                 className={classes.transactionRow}>
                                 <Typography color="textSecondary" variant="subtitle2" className={classes.fatLable}>NRG PRICE</Typography>
                                 <Typography color="textSecondary" variant="subtitle2" className={classes.thinLable}>{nrgPrice}</Typography>
@@ -130,7 +113,6 @@ class ConfirmStep extends Component {
                                 direction="row"
                                 justify="space-between"
                                 alignItems="center"
-                                wrap='nowrap'
                                 className={classes.transactionRow}>
                                 <Typography color="textSecondary" variant="subtitle2" className={classes.fatLable}>Maximum NRG</Typography>
                                 <Typography color="textSecondary" variant="subtitle2" className={classes.thinLable}>{nrgLimit}</Typography>
@@ -145,10 +127,10 @@ class ConfirmStep extends Component {
                             alignItems="flex-start"
                             style={{ marginTop: '25px' }}>
                             <Grid item>
-                                <Typography variant="subtitle2" className={classes.rawTitle}>Raw Transaction</Typography>
+                                <Typography variant="subtitle2" className={classes.fatLable}>Raw Transaction</Typography>
                             </Grid>
                             <Grid item xs>
-                                <Typography variant="subtitle2" className={classes.rawDetail} style={{ wordBreak: 'break-all' }}>{rawTransaction}</Typography>
+                                <Typography variant="subtitle2" className={classes.thinLable} style={{ wordBreak: 'break-all' }}>{rawTransaction}</Typography>
                             </Grid>
                         </Grid>
                         <Grid spacing={8}
@@ -159,7 +141,6 @@ class ConfirmStep extends Component {
                             style={{ paddingTop: '45px' }}>
                             <Button
                                 variant="outlined"
-                                color="secondary"
                                 onClick={onTransactonStepBack}>
                                 <b>Back</b>
                             </Button>

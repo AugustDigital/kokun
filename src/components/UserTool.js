@@ -8,9 +8,7 @@ import ConfirmStep from './steps/ConfirmStep'
 import { CheckCircleRounded, HighlightOffRounded } from '@material-ui/icons'
 import LedgerProvider from '../utils/ledger/LedgerProvider';
 import AionLogoLight from '../assets/aion_logo_light.svg'
-import Provider from '../../global_config'
 const Accounts = require('aion-keystore')
-
 
 const styles = theme => ({
     continueButton: {
@@ -46,7 +44,7 @@ class UserTool extends Component {
     }
 
     componentDidMount() {
-        this.setState({ web3: new Web3(new Web3.providers.HttpProvider(Provider))});
+        this.setState({ web3: new Web3(new Web3.providers.HttpProvider(this.props.web3Provider))});
         this.onChangeStep(0)
     }
     handlePanelChange = panel => (event, expanded) => {
