@@ -46,7 +46,7 @@ class UserTool extends Component {
     }
 
     componentDidMount() {
-        this.setState({ web3: new Web3(new Web3.providers.HttpProvider(this.props.web3Provider))});
+        this.setState({ web3: new Web3(new Web3.providers.HttpProvider(Provider))});
         this.onChangeStep(0)
     }
     handlePanelChange = panel => (event, expanded) => {
