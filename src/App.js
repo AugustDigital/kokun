@@ -5,7 +5,7 @@ import TopBar from './components/TopBar.js'
 import UserSection from './components/UserSection'
 import DevSection from './components/DevSection'
 import BottomBar from './components/BottomBar'
-import Animations from './Animations.css'
+import './Animations.css'
 import PaperPlane from './assets/paperplane.svg'
 
 const styles = theme => ({

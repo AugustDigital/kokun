@@ -49,7 +49,6 @@ AionPayButton.propTypes = {
 };
 
 export const inject = () => {
-    console.log('...injecting aion-pay buttons')
     //Register our custom element
     document.createElement('aion-pay');
     window.AionPayWidgetThemes = [];
@@ -59,6 +58,8 @@ export const inject = () => {
             let address = domContainer.dataset.address;
             let buttonText = domContainer.dataset.buttonText;
             let buttonBackground = domContainer.dataset.buttonBackground;
+            let buttonTextColor = domContainer.dataset.buttonTextColor;
+            //let buttonIconType = domContainer.dataset.buttonIconType;
             let style = domContainer.dataset.style;
             let web3Provider = domContainer.dataset.web3Provider
 
@@ -66,6 +67,9 @@ export const inject = () => {
             let theme = cloneDeep(WidgetTheme);
             if (buttonBackground) {
                 theme.palette.background.aionPay = buttonBackground;
+            }
+            if(buttonTextColor) {
+                theme.palette.text.aionPay = buttonTextColor;
             }
 
             if (style) {
@@ -75,8 +79,6 @@ export const inject = () => {
             }
             window.AionPayWidgetThemes.push(theme)
             let propData = { address, buttonText, web3Provider, theme }
-
-            console.log(propData);
 
             ReactDOM.render(
                 React.createElement(withStyles(styles)(AionPayButton), propData),

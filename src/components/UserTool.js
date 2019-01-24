@@ -12,6 +12,7 @@ import LedgerProvider from '../utils/ledger/LedgerProvider';
 import AionLogoLight from '../assets/aion_logo_light.svg'
 import AionLogoDark from '../assets/aion_logo_dark.svg'
 import PrimaryButton from '../components/PrimaryButton'
+import { developmentProvider } from '../../global_config'
 const Accounts = require('aion-keystore')
 
 const styles = theme => ({
@@ -32,7 +33,7 @@ const styles = theme => ({
         fontWeight: 'light',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
-        display:'block',
+        display: 'block',
     },
     linkText: {
         marginTop: '20px'
@@ -48,16 +49,14 @@ class UserTool extends Component {
         },
         account: null,
         privateKey: null,
-        web3: null,
+        web3: new Web3(new Web3.providers.HttpProvider(this.props.web3Provider)),
         rawTransaction: null,
         checkLedger: false,
         transactionMessage: null,
         transactionStatus: 2,
         completed: 0
     }
-
     componentDidMount() {
-        this.setState({ web3: new Web3(new Web3.providers.HttpProvider(this.props.web3Provider)) });
         this.onChangeStep(0)
     }
     handlePanelChange = panel => (event, expanded) => {
@@ -158,11 +157,12 @@ class UserTool extends Component {
 
                 if (receipt) {
                     clearInterval(timer);
-                    let message = receipt.status == 1 ? 'Succesfully Sent!' : 'Transaction error!';
+                    let status = parseInt(receipt.status,16)
+                    let message = status === 1 ? 'Succesfully Sent!' : 'Transaction error!';
                     this.setState({
                         step: 4,
                         completed: 1,
-                        transactionStatus: receipt.status,
+                        transactionStatus: status,
                         transactionMessage: message
                     })
                     this.onChangeStep(4)
@@ -191,9 +191,11 @@ class UserTool extends Component {
         let content = null;
         let status = null;
 
-        if (transactionStatus == 1) {
+        const isTestnet =  web3Provider === developmentProvider;
+
+        if (transactionStatus === 1) {
             status = <CheckCircleRounded className={classes.checkIcon} />
-        } else if (transactionStatus == 0) {
+        } else if (transactionStatus === 0) {
             status = <HighlightOffRounded className={classes.errorIcon} />
         }
 
@@ -250,7 +252,7 @@ class UserTool extends Component {
                         alignItems="center"
                         wrap='nowrap'>
                         {
-                            (completed == 1) ?
+                            (completed === 1) ?
                                 status :
                                 <Grid spacing={0}
                                     container
@@ -274,7 +276,7 @@ class UserTool extends Component {
                             className={classes.linkText}
                             wrap='nowrap'>
                             <Typography variant="subtitle2">{'Transaction\u00A0Hash:\u00A0'}</Typography>
-                            <a target='_blank' rel='noopener noreferrer' className={classes.link} href={'https://mastery.aion.network/#/transaction/' + txHash}>{txHash}</a>
+                            <a target='_blank' rel='noopener noreferrer' className={classes.link} href={`https://${isTestnet ? 'mastery' : 'mainnet'}.aion.network/#/transaction/${txHash}`}>{txHash}</a>
 
                         </Grid>
 

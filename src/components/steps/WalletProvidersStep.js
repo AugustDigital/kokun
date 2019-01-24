@@ -197,7 +197,7 @@ class WalletProvidersStep extends Component {
         ];
     }
     componentDidMount() {
-        const timer = setInterval(() => {
+        setInterval(() => {
             if(this.state.expanded != null){
                 let expanded={title:''};
                 expanded = this.state.expanded;
@@ -276,6 +276,7 @@ class WalletProvidersStep extends Component {
 
                 try {
                   let [address, publicKey, privateKey] = await keystoreProvider.unlock((progress) => {
+                      console.log('unlocked:'+publicKey)
                       me.setState({ completed: Math.round(progress) });
                   })
 

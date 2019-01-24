@@ -120,10 +120,10 @@ class DevSection extends Component {
     }
     
     content = [
-        { description: 'Pay to any address with default button style', onClick: this.onPayButtonClick, params: { 'data-web3-provider': 'https://api.nodesmith.io/v1/aion/mainnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
-        { description: 'Pay to a given address with default button style', onClick: this.onPayButtonClick, params: { 'data-address': '0x0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827', 'data-web3-provider': 'https://api.nodesmith.io/v1/aion/mainnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
-        { description: 'Pay to a given address with custom text and background but with AION icon on the button.', onClick: this.onPayButtonClick, params: { 'data-button-text': 'Aion Pay', 'data-button-background': '#113665', 'data-address': '0x0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827', 'data-web3-provider': 'https://api.nodesmith.io/v1/aion/mainnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
-        { description: 'Pay to a given address with custom style.', onClick: this.onPayButtonClick, params: { 'data-style': JSON.stringify(themeExample), 'data-address': '0x0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827', 'data-web3-provider': 'https://api.nodesmith.io/v1/aion/mainnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
+        { description: 'Pay to any address with default button style', params: { 'data-web3-provider': 'https://api.nodesmith.io/v1/aion/testnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
+        { description: 'Pay to a given address with default button style', params: { 'data-address': '0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827', 'data-web3-provider': 'https://api.nodesmith.io/v1/aion/mainnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
+        { description: 'Pay to a given address with custom text and background but with AION icon on the button.', params: { 'data-button-text': 'Aion Pay', 'data-button-background': '#113665', 'data-button-text-color': '#ff00ff','data-button-icon-type': 'dark',  'data-address': '0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827', 'data-web3-provider': 'https://api.nodesmith.io/v1/aion/mainnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
+        { description: 'Pay to a given address with custom style.', params: { 'data-style': JSON.stringify(themeExample), 'data-address': '0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827', 'data-web3-provider': 'https://api.nodesmith.io/v1/aion/mainnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
     ]
     componentDidMount() {
         inject()
@@ -133,11 +133,6 @@ class DevSection extends Component {
         window.open('https://github.com/alwaysaugust/kokun');
     }
 
-    onPayButtonClick = () => {
-        this.setState({
-            dialogData: { field: 'todo' }
-        })
-    }
     paramsToString = (item) => {
         const paramsJson = Object.keys(item).map((key) => {
             return key + '=\'' + item[key] + '\''
@@ -155,8 +150,7 @@ class DevSection extends Component {
     render() {
         const { classes, width } = this.props;
         const { dialogData } = this.state;
-        console.log(dialogData)
-        console.log(isWidthUp('sm', width))
+
         const contentItems = this.content.map((item, index) => {
             const snippetText = '<aion-pay ' + this.paramsToString(item.params) + '></aion-pay>';
             return <Grid key={index} item>

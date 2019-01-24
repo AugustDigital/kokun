@@ -78,7 +78,7 @@ class SendStep extends Component {
         currencyId: 0,
         labelWidth: 0,
         availableCurrencies: ['Aion'], //in the future add other tockens like 'Plat'
-        recipient: this.props.to ? this.props.to : '',
+        recipient: this.props.to ? this.props.to : (this.props.defaultRecipient ? this.props.defaultRecipient : ''),
         amount: this.props.amount ? this.props.amount : '',
         customNrg: false,
         nrgPrice: TransactionUtil.defaultNrgPrice,
@@ -217,10 +217,10 @@ class SendStep extends Component {
                     fullWidth
                     label="To"
                     className={classes.textField}
-                    value={defaultRecipient?defaultRecipient:recipient}
+                    value={recipient}
                     margin="normal"
                     color="primary"
-                    disabled={defaultRecipient}
+                    disabled={typeof(defaultRecipient)!=='undefined'&&defaultRecipient!==null}
                     onChange={this.onRecipientEntered.bind(this)}
                     onBlur={this.onRecipientEntered.bind(this)}
                     InputLabelProps={{

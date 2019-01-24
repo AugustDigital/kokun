@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { withStyles, Typography, AppBar, Toolbar, Button, Grid } from '@material-ui/core'
+import { withStyles, AppBar, Toolbar, Button, Grid } from '@material-ui/core'
+import KokunLogo from '../assets/kokun_logo.svg'
 const styles = theme => ({
   appBar: {
     paddingLeft: theme.spacing.unit * 15,
@@ -49,9 +50,7 @@ class TopBar extends Component {
             justify="space-between"
             alignItems="center">
             <Grid item xs={12} sm={6} className={classes.title}>
-              <Typography variant="h6" color="inherit">
-                AION CONNECT
-            </Typography>
+              <img alt='Kokun Logo' src={KokunLogo} height='25px'></img>
             </Grid>
             <Grid item xs={12} sm={6} className={classes.helpButtonContainer}>
               <Button color="secondary" className={classes.helpButton}>

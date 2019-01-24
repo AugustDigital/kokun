@@ -3,7 +3,8 @@ import PropTypes from 'prop-types';
 import { withStyles, Grid, Typography, LinearProgress } from '@material-ui/core'
 import classNames from 'classnames';
 import UserTool from './UserTool'
-import Provider from '../../global_config'
+import { defaultProvider, developmentProvider } from '../../global_config'
+import queryString from 'stringquery'
 
 const styles = theme => ({
     root: {
@@ -13,7 +14,7 @@ const styles = theme => ({
     left: {
         paddingRight: theme.spacing.unit * 8,
         [theme.breakpoints.down('xs')]: {
-            paddingRight: theme.spacing.unit, 
+            paddingRight: theme.spacing.unit,
             marginTop: theme.spacing.unit * 3,
         }
     },
@@ -26,16 +27,16 @@ const styles = theme => ({
         marginLeft: 'auto',
         paddingLeft: theme.spacing.unit * 10,
         marginTop: theme.spacing.unit * 6,
-        borderLeft: '1px solid '+theme.palette.divider,
+        borderLeft: '1px solid ' + theme.palette.divider,
         [theme.breakpoints.down('xs')]: {
             borderLeft: '0px',
-            borderTop: '1px solid '+theme.palette.divider,
+            borderTop: '1px solid ' + theme.palette.divider,
             marginLeft: '0px',
             marginTop: '0px',
             paddingTop: theme.spacing.unit * 3,
             paddingLeft: '0px',
         }
-        
+
     },
     progressBar: {
         marginLeft: theme.spacing.unit * 10,
@@ -48,18 +49,26 @@ const styles = theme => ({
     progressBarBar: {
         backgroundColor: theme.palette.common.green
     },
-    stepText:{
-      color:theme.palette.text.primaryLight
+    stepText: {
+        color: theme.palette.text.primaryLight
     }
 })
 class UserSection extends Component {
 
     state = {
         currentStep: 0,
-        totalSteps: 0
+        totalSteps: 0,
+        Provider: defaultProvider
     }
 
-    componentDidMount() { }
+    componentWillMount() {
+        const queryParams = queryString(window.location.search);
+        if (queryParams.testnet === 'true') {
+            this.setState({ Provider: developmentProvider })
+        } else {
+            this.setState({ Provider: defaultProvider })
+        }
+    }
 
     onStepChanged = (current, total) => {
         this.setState({
@@ -70,8 +79,8 @@ class UserSection extends Component {
 
     render() {
         const { classes } = this.props;
-        const { currentStep, totalSteps } = this.state;
-        console.log(currentStep + "/" + totalSteps)
+        const { currentStep, totalSteps, Provider } = this.state;
+        
         return (
             <div className={classNames(this.props.className, classes.root)}>
                 <Grid container
@@ -97,7 +106,7 @@ class UserSection extends Component {
                                 <UserTool
                                     showInfoHeader={true}
                                     onStepChanged={this.onStepChanged}
-                                    web3Provider={Provider}/>
+                                    web3Provider={Provider} />
 
                             </div>
                         </div>

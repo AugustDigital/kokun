@@ -1,5 +1,5 @@
 {
-  "name": "titan-react-pack",
+  "name": "kokun",
   "version": "0.0.1",
   "private": true,
   "dependencies": {
@@ -49,6 +49,7 @@
     "postcss-flexbugs-fixes": "3.2.0",
     "postcss-loader": "2.0.8",
     "promise": "8.0.1",
+    "stringquery": "1.0.8",
     "raf": "3.4.0",
     "react": "^16.4.1",
     "react-dev-utils": "^5.0.1",

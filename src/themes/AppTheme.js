@@ -42,7 +42,8 @@ const WidgetPalette = {
         secondary: '#F2F6FA',
         disabled: '#F2F6FA',
         hint: '#2A2C2E',
-        primaryLight: '#819ABA'
+        primaryLight: '#819ABA',
+        aionPay:'#ffffff'
     },
     common: {
         green: '#5AF0BD',
