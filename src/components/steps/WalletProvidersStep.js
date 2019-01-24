@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { withStyles, Typography, TextField, ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, Grid, Button, LinearProgress, IconButton, Zoom } from '@material-ui/core'
-import { Warning, ArrowForward, CloudUpload, InsertDriveFile, CheckCircleRounded, Close, Dock } from '@material-ui/icons';
+import { withStyles, Typography, TextField, ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, Grid, LinearProgress, IconButton, Zoom } from '@material-ui/core'
+import { Warning, CloudUpload, InsertDriveFile, CheckCircleRounded, Close, Dock } from '@material-ui/icons';
 import classNames from 'classnames'
 import Dropzone from 'react-dropzone';
 import KeystoreWalletProvider from '../../utils/KeystoreWalletProvider';
@@ -9,6 +9,7 @@ import AionLogoLight from '../../assets/aion_logo_light.svg'
 import LockIcon from '../../assets/lock_icon.svg'
 import LedgerProvider from '../../utils/ledger/LedgerProvider'
 import {promiseTimeout} from '../../utils/promiseTimeout';
+import PrimaryButton from '../PrimaryButton'
 
 const Accounts = require('aion-keystore');
 
@@ -85,10 +86,6 @@ const styles = theme => ({
     continueButton: {
         float: 'right',
         marginBottom: theme.spacing.unit * 2,
-        backgroundColor: theme.palette.common.primaryButton,
-        "&:disabled": {
-            backgroundColor: theme.palette.common.primaryButtonDisabled
-        }
     },
     progressBarContainer: {
         position: 'relative',
@@ -155,6 +152,10 @@ const styles = theme => ({
     },
     inputPlaceholder: {
         color: theme.palette.text.hint,
+    },
+    link: {
+        color: '#00d0fe',
+        fontWeight:'bold'
     }
 })
 class WalletProvidersStep extends Component {
@@ -299,7 +300,7 @@ class WalletProvidersStep extends Component {
                     } else {
                         this.setState({ completed: this.state.completed + 25 })
                     }
-                }, 500);
+                }, 400);
 
             }catch(e){
                 this.setState({privateKeyError: true, privateKeyErrorMessage: "Invalid key"})
@@ -404,7 +405,7 @@ class WalletProvidersStep extends Component {
                                     alignItems="center">
                                     <CloudUpload className={isDragActive ? classes.uploadIconHover : classes.uploadIcon} />
                                     <Typography className={classes.panelText} variant='h5'>Drag and drop to upload your file</Typography>
-                                    <Typography className={classes.panelText} variant="subtitle2" style={{ fontWeight: 'light', marginTop: '15px' }}>or <span style={{ color: 'rgb(27,199,254)' }}><a href={null}>browse</a></span> to choose a file</Typography>
+                                    <Typography className={classes.panelText} variant="subtitle2" style={{ fontWeight: 'light', marginTop: '15px' }}>or <span style={{ color: 'rgb(27,199,254)' }}><a href={null} className={classes.link}>browse</a></span> to choose a file</Typography>
                                 </Grid>
 
                             </div>
@@ -483,15 +484,12 @@ class WalletProvidersStep extends Component {
                     </ExpansionPanel>
                     {expanded === item ?
                         <Grid item>
-                            <Button
-                                variant="contained"
-                                color="primary"
+                            <PrimaryButton
+                                showArrow
                                 disabled={!expanded.validate()}
                                 className={classes.continueButton}
-                                onClick={() => this.unlockAccount(expanded)}>
-                                <b>Continue</b>
-                                <ArrowForward className={classes.rightIcon} />
-                            </Button>
+                                onClick={() => this.unlockAccount(expanded)}
+                                text='Continue'/>
                         </Grid>
                         : null}
                 </Grid>);
@@ -505,7 +503,7 @@ class WalletProvidersStep extends Component {
                         <Typography variant="h6" style={{ fontWeight: 'bold' }}>
                     <img alt="Aion Logo" className={classNames(classes.leftIcon, classes.iconSmall, classes.iconHeading)} src={AionLogoLight} />
                     AION PAY</Typography>
-                <Typography variant="subtitle2" style={{ fontWeight: 'light', marginTop: '25px' }}> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi posuere diam quis risus fringilla, quis consectetur nunc imperdiet.</Typography>
+                <Typography variant="subtitle2" style={{ fontWeight: 'light', marginTop: '25px' }}> Seamlessly send Aion to any address</Typography>
                         </div>
                     :null}
                 <Typography variant="h5" style={{ fontWeight: 'bold', marginTop: '25px', marginBottom: '25px' }}> Choose your wallet provider</Typography>

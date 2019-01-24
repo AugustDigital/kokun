@@ -48,7 +48,7 @@ const styles = theme => ({
   planeIcon: {
     position:'absolute',
     marginTop:'240px',
-    marginLeft:'-20px',
+    marginLeft:'-30px',
     width:'150px',
     [theme.breakpoints.down('xs')]: {
       display:'none'

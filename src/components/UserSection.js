@@ -25,8 +25,7 @@ const styles = theme => ({
     toolContainer: {
         marginLeft: 'auto',
         paddingLeft: theme.spacing.unit * 10,
-        marginTop: theme.spacing.unit * 8,
-
+        marginTop: theme.spacing.unit * 6,
         borderLeft: '1px solid '+theme.palette.divider,
         [theme.breakpoints.down('xs')]: {
             borderLeft: '0px',
@@ -83,16 +82,16 @@ class UserSection extends Component {
                         <div className={classes.left}>
                             <div className={classes.infoContainer}>
                                 <Typography variant="h4" style={{ fontWeight: 300 }}> Connect With the Aion network</Typography>
-                                <Typography variant="subtitle2" style={{ fontWeight: 'light', marginTop: '25px' }}> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi posuere diam quis risus fringilla, quis consectetur nunc imperdiet.</Typography>
+                                <Typography variant="subtitle2" style={{ fontWeight: 'light', marginTop: '25px' }}>Aion Connect aims to be your toolkit for the Aion Blockchain. We will continue to add new and valuable tools that make it easy to interact with the protocol.</Typography>
                             </div>
                         </div>
                     </Grid>
                     <Grid item xs={12} sm={6}>
                         <div className={classes.right}>
-                            <LinearProgress className={classes.progressBar} variant="determinate" value={currentStep / (totalSteps - 1) * 100} classes={{ bar: classes.progressBarBar }} />
+                            <LinearProgress className={classes.progressBar} variant="determinate" value={currentStep / (totalSteps) * 100} classes={{ bar: classes.progressBarBar }} />
                             <div className={classes.toolContainer}>
-                                {currentStep > 0 ?
-                                    <Typography variant="subtitle1" className={classes.stepText} style={{ fontWeight: '300', marginBottom: '15px' }}>Step {currentStep}/{totalSteps - 1}</Typography>
+                                {currentStep !== totalSteps && currentStep !== 0 ?
+                                    <Typography variant="subtitle1" className={classes.stepText} style={{ fontWeight: '300', marginBottom: '15px' }}>Step {currentStep}/{totalSteps}</Typography>
                                     : null}
 
                                 <UserTool

@@ -1,13 +1,14 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { withStyles, Typography, Button, Grid, Paper, IconButton, Input, InputAdornment } from '@material-ui/core'
+import { withStyles, Typography, Grid, Paper, IconButton, Input, InputAdornment } from '@material-ui/core'
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 import compose from 'recompose/compose';
 import { FileCopy } from '@material-ui/icons'
 import AionLogoDark from '../assets/aion_logo_dark.svg'
 import AionPayDialog from './AionPayDialog'
 import { inject } from './AionPayButton'
+import SecondaryButton from '../components/SecondaryButton'
 
 const themeExample = {
     primary: { main: '#113665', contrastText: '#fff' },
@@ -129,7 +130,7 @@ class DevSection extends Component {
     }
 
     onGithubButtonPressed = () => {
-        window.open('https://github.com/alwaysaugust');
+        window.open('https://github.com/alwaysaugust/kokun');
     }
 
     onPayButtonClick = () => {
@@ -212,21 +213,18 @@ class DevSection extends Component {
                                 wrap="wrap">
                                 <Grid item xs={12} sm={7}>
                                     <div>
-                                        <Typography variant="h6" style={{ fontWeight: '400' }}>Connect with the Aion network</Typography>
-                                        <Typography variant="subtitle2" style={{ fontWeight: 'light', marginTop: '15px' }}> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi posuere diam quis risus fringilla, quis consectetur nunc imperdiet. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi posuere diam quis risus fringilla, quis consectetur nunc imperdiet.</Typography>
+                                        <Typography variant="h6" style={{ fontWeight: '400' }}>Easily accept Aion payments on your site</Typography>
+                                        <Typography variant="subtitle2" style={{ fontWeight: 'light', marginTop: '15px' }}>By simply pasting a line of code to your site, Aion Pay makes it simple to accept Aion payments anywhere. The button can be styled as required and can be set to accept payment to a predetermined address or to an address chosen by the payee</Typography>
 
                                     </div>
                                 </Grid>
 
                                 <Grid item xs={12} sm={5}
                                     className={classes.githubButtonContainer}>
-                                    <Button
+                                    <SecondaryButton
                                         className={classes.githubButton}
-                                        variant="outlined"
-                                        size='large'
-                                        onClick={this.onGithubButtonPressed}>
-                                        <b>GitHub</b>
-                                    </Button>
+                                        onClick={this.onGithubButtonPressed}
+                                        text='GitHub'/>
                                 </Grid>
 
                             </Grid>

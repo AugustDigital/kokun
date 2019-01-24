@@ -2,20 +2,22 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Web3 from 'aion-web3';
 import { withStyles, Typography, TextField, Grid, Button, FormControl, Select, MenuItem } from '@material-ui/core'
-import { Warning, ArrowForward } from '@material-ui/icons';
+import { Warning } from '@material-ui/icons';
+import PrimaryButton from '../PrimaryButton'
 import * as TransactionUtil from '../../utils/TransactionUtil';
+import SecondaryButton from '../SecondaryButton';
 
 const styles = theme => ({
     dropDownContainer: {
         borderStyle: 'solid',
         borderWidth: '1px',
         borderRadius: '3px',
-        borderColor: theme.palette.common.white,
+        borderColor: theme.palette.secondary.main,
         paddingLeft: theme.spacing.unit,
         paddingRight: theme.spacing.unit
     },
     dropDownLable: {
-        borderRight: '1px solid '+theme.palette.divider,
+        borderRight: '1px solid '+theme.palette.secondary.main,
         fontWeight: 'light',
         float: 'left',
         position: 'reltive',
@@ -28,14 +30,13 @@ const styles = theme => ({
         marginTop: '4px'
     },
     textFieldInput: {
-        color: 'white !important'
+        color: theme.palette.text.primary+' !important'
     },
     textField: {
-        color: 'white !important',
+        color: theme.palette.text.primary+' !important',
     },
     continueButton: {
-        backgroundColor: theme.palette.common.primaryButton,
-        marginLeft: theme.spacing.unit * 4
+        marginLeft: theme.spacing.unit 
     },
     rightIcon: {
         marginLeft: theme.spacing.unit,
@@ -53,15 +54,30 @@ const styles = theme => ({
     warningIcon: {
         marginRight: theme.spacing.unit,
         fontSize: 12,
-        color: "#fff"
+        color: theme.palette.common.white
     },
+    underline: {
+        '&:before': {
+            borderBottom: '2px solid '+theme.palette.common.underlineContrast,
+        },
+        '&:after': {
+            borderBottom: `2px solid ${theme.palette.common.underlineFocusedContrast}`
+        }
+    },
+    menuItem: {
+        color:theme.palette.common.white
+    },
+    editButton:{
+        borderColor: theme.palette.secondary.main,
+        fontSize: 11,
+    }
 })
 class SendStep extends Component {
 
     state = {
         currencyId: 0,
         labelWidth: 0,
-        availableCurrencies: ['Aion', 'Plat'],
+        availableCurrencies: ['Aion'], //in the future add other tockens like 'Plat'
         recipient: this.props.to ? this.props.to : '',
         amount: this.props.amount ? this.props.amount : '',
         customNrg: false,
@@ -147,7 +163,7 @@ class SendStep extends Component {
         const { availableCurrencies, currencyId, amount, recipient, customNrg, nrg, nrgLimit, nrgPrice, error, errorMessage, valid, account } = this.state;
 
         const dropDownItems = availableCurrencies.map((item, index) => {
-            return (<MenuItem key={index} value={index}>{item}</MenuItem>)
+            return (<MenuItem key={index} value={index} className={classes.menuItem}>{item}</MenuItem>)
         })
 
         return (
@@ -181,7 +197,6 @@ class SendStep extends Component {
                 </Grid>
                 <TextField
                     disabled
-                    id="standard-disabled"
                     label="FROM"
                     value={account}
                     className={classes.textField}
@@ -214,6 +229,7 @@ class SendStep extends Component {
                     InputProps={{
                         classes: {
                             input: classes.textFieldInput,
+                            underline: classes.underline
                         },
                     }} />
 
@@ -233,6 +249,7 @@ class SendStep extends Component {
                     InputProps={{
                         classes: {
                             input: classes.textFieldInput,
+                            underline: classes.underline
                         }
                     }
                     } />
@@ -245,11 +262,11 @@ class SendStep extends Component {
                         style={{ paddingTop: '15px' }}>
                         <TextField
                             disabled
-                            id="standard-disabled"
                             label="MAX NRG COST"
                             value={nrg}
                             className={classes.textField}
                             margin="normal"
+                            style={{width:'120px'}}
                             InputLabelProps={{
                                 className: classes.textField,
                             }}
@@ -257,12 +274,13 @@ class SendStep extends Component {
                                 disableUnderline: true,
                                 classes: {
                                     input: classes.textFieldInput,
+                                    underline: classes.underline
                                 }
                             }
                             }
                         />
 
-                        <Button variant="outlined" onClick={this.onEditNrg}>EDIT</Button>
+                        <Button variant="outlined" color="secondary" size="medium" onClick={this.onEditNrg} className={classes.editButton}><b>EDIT</b></Button>
                     </Grid>
                     : <div>
                         <Grid
@@ -288,6 +306,7 @@ class SendStep extends Component {
                                     InputProps={{
                                         classes: {
                                             input: classes.textFieldInput,
+                                            underline: classes.underline
                                         }
                                     }
                                     } />
@@ -308,6 +327,7 @@ class SendStep extends Component {
                                     InputProps={{
                                         classes: {
                                             input: classes.textFieldInput,
+                                            underline: classes.underline
                                         }
                                     }
                                     } />
@@ -354,20 +374,15 @@ class SendStep extends Component {
                     justify="flex-end"
                     alignItems="flex-start"
                     style={{ paddingTop: '25px' }}>
-                    <Button
-                        variant="outlined"
-                        onClick={onSendStepBack}>
-                        <b>Back</b>
-                    </Button>
-                    <Button
-                        variant="contained"
-                        color="primary"
+                    <SecondaryButton
+                        onClick={onSendStepBack}
+                        text='Back'/>
+                    <PrimaryButton
+                        showArrow
                         disabled={!valid}
                         onClick={() => { onSendStepContinue(availableCurrencies[currencyId], account, recipient, parseFloat(amount, 10), nrg, nrgPrice, nrgLimit) }}
-                        className={classes.continueButton}>
-                        <b>Continue</b>
-                        <ArrowForward className={classes.rightIcon} />
-                    </Button>
+                        className={classes.continueButton}
+                        text='Continue'/>
                 </Grid>
             </Grid>
         );

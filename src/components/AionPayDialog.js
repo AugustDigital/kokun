@@ -137,16 +137,15 @@ class AionPayDialog extends React.Component {
         maxWidth={fullScreen ? false : 'sm'}
         aria-labelledby="responsive-dialog-title">
         <BlueDialogTitle onClose={this.handleClose}>
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi posuere diam quis risus fringilla.
+        Seamlessly send Aion to any address
           </BlueDialogTitle>
         <WhiteDialogContent>
-          <LinearProgress className={classes.progressBar} variant="determinate" value={currentStep / (totalSteps - 1) * 100} classes={{ bar: classes.progressBarBar }} />
-          <Typography variant="subtitle1" className={classes.stepText} style={{ fontWeight: '300', marginTop: '25px' }}>Step {currentStep + 1}/{totalSteps}</Typography>
+          <LinearProgress className={classes.progressBar} variant="determinate" value={currentStep / (totalSteps ) * 100} classes={{ bar: classes.progressBarBar }} />
+          <Typography variant="subtitle1" className={classes.stepText} style={{ fontWeight: '300', marginTop: '25px' }}>Step {currentStep+1}/{totalSteps+1}</Typography>
           {dialogContent ? dialogContent : <div>
             Please check the Aion-Pay button parameters.
           </div>}
         </WhiteDialogContent>
-
       </Dialog>
     );
   }

@@ -3,7 +3,8 @@ const AppPalette = {
     primary: { main: '#113665', contrastText: '#fff' },
     secondary: { main: '#F2F6FA', contrastText: '#113665' },
     type: 'dark',
-    background: { default: '#DCE1ED', white: '#fff', warning: '#E89000', error: '#e03051', blueGradient: 'linear-gradient(225deg, #08023C, #229DB7);' },
+    isWidget: false,
+    background: { default: '#DCE1ED', white: '#fff', warning: '#E89000', error: '#e03051', blueGradient: 'linear-gradient(225deg, #08023C, #229DB7 80%);' },
     text: {
         primary: '#F2F6FA',
         secondary: '#113665',
@@ -34,6 +35,7 @@ const WidgetPalette = {
     primary: { main: '#113665', contrastText: '#fff' },
     secondary: { main: '#113665', contrastText: '#fff' },
     type: 'dark',
+    isWidget: true,
     background: { default: '#ECF1F7', white: '#fff', warning: '#E89000', error: '#e03051', blueGradient: 'linear-gradient(225deg, #08023C, #229DB7);',aionPay:'#113665' },//can cause issues when exported as a widget lib
     text: {
         primary: '#113665',
@@ -64,13 +66,19 @@ const AppTypography = {
     useNextVariants: true,
     fontFamily: ['Lato']//can cause issues when exported as a widget lib
 }
+
+const AppShape ={
+    borderRadius: 2
+}
 const AppTheme = createMuiTheme({
     palette: AppPalette,
     typography: AppTypography,
+    shape: AppShape,
 });
 const WidgetTheme = createMuiTheme({
     palette: WidgetPalette,
     typography: AppTypography,
+    shape: AppShape,
 });
 
 export { AppTheme, WidgetTheme };

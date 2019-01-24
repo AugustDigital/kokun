@@ -52,7 +52,7 @@ export const inject = () => {
     console.log('...injecting aion-pay buttons')
     //Register our custom element
     document.createElement('aion-pay');
-
+    window.AionPayWidgetThemes = [];
     // Find all DOM containers, and render buttons into them.
     document.querySelectorAll('aion-pay')
         .forEach(domContainer => {
@@ -73,7 +73,7 @@ export const inject = () => {
                 let themePallete = Object.assign({}, theme.palette, customPalette);
                 theme.palette = themePallete;
             }
-
+            window.AionPayWidgetThemes.push(theme)
             let propData = { address, buttonText, web3Provider, theme }
 
             console.log(propData);

@@ -21,11 +21,15 @@ const styles = theme => ({
       textAlign:'center',
     }
   },
-  helpButton: {
+  helpButtonContainer: {
     textAlign:'right',
     [theme.breakpoints.down('xs')]: {
       textAlign:'center',
     }
+  },
+  helpButton: {
+    textTransform: 'none',
+    fontSize: 15
   }
 })
 class TopBar extends Component {
@@ -49,8 +53,8 @@ class TopBar extends Component {
                 AION CONNECT
             </Typography>
             </Grid>
-            <Grid item xs={12} sm={6} className={classes.helpButton}>
-              <Button color="secondary" >
+            <Grid item xs={12} sm={6} className={classes.helpButtonContainer}>
+              <Button color="secondary" className={classes.helpButton}>
                 Help &amp; Support
                 </Button>
             </Grid>

@@ -1,20 +1,23 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Web3 from 'aion-web3';
-import { withStyles, Button, Grid, Typography } from '@material-ui/core'
+import { withStyles, Grid, Typography } from '@material-ui/core'
+import { withTheme } from '@material-ui/core/styles';
+import compose from 'recompose/compose';
 import WalletProvidersStep from './steps/WalletProvidersStep'
 import SendStep from './steps/SendStep'
 import ConfirmStep from './steps/ConfirmStep'
 import { CheckCircleRounded, HighlightOffRounded } from '@material-ui/icons'
 import LedgerProvider from '../utils/ledger/LedgerProvider';
 import AionLogoLight from '../assets/aion_logo_light.svg'
+import AionLogoDark from '../assets/aion_logo_dark.svg'
+import PrimaryButton from '../components/PrimaryButton'
 const Accounts = require('aion-keystore')
 
 const styles = theme => ({
     continueButton: {
         float: 'right',
         marginTop: theme.spacing.unit * 4,
-        backgroundColor: theme.palette.common.primaryButton,
     },
     checkIcon: {
         fontSize: 84,
@@ -23,6 +26,16 @@ const styles = theme => ({
     errorIcon: {
         fontSize: 84,
         color: theme.palette.common.red
+    },
+    link: {
+        color: '#00CEFF',
+        fontWeight: 'light',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        display:'block',
+    },
+    linkText: {
+        marginTop: '20px'
     }
 
 })
@@ -40,11 +53,11 @@ class UserTool extends Component {
         checkLedger: false,
         transactionMessage: null,
         transactionStatus: 2,
-        completed:0
+        completed: 0
     }
 
     componentDidMount() {
-        this.setState({ web3: new Web3(new Web3.providers.HttpProvider(this.props.web3Provider))});
+        this.setState({ web3: new Web3(new Web3.providers.HttpProvider(this.props.web3Provider)) });
         this.onChangeStep(0)
     }
     handlePanelChange = panel => (event, expanded) => {
@@ -81,7 +94,7 @@ class UserTool extends Component {
         return signedTransaction;
     }
     onSendStepContinue = (currency, from, to, amount, nrg, nrgPrice, nrgLimit) => {
-        if(this.state.privateKey === 'ledger'){
+        if (this.state.privateKey === 'ledger') {
             const nonce = this.state.web3.eth.getTransactionCount(from);
             let totalAions = this.state.web3.toWei(amount, "ether");
 
@@ -89,36 +102,37 @@ class UserTool extends Component {
                 nonce: nonce,
                 from: from,
                 to: to,
-                value: parseInt(totalAions,10),
-                gasPrice:nrgPrice,
+                value: parseInt(totalAions, 10),
+                gasPrice: nrgPrice,
                 gas: nrg,
                 timestamp: Date.now() * 1000,
-                data:'0x'
+                data: '0x'
             };
 
             let ledgerConnection = new LedgerProvider()
             ledgerConnection.unlock(null).then((address) => {
-                this.setState({checkLedger:true});
+                this.setState({ checkLedger: true });
                 ledgerConnection.sign(transaction).then((signedTransaction) => {
                     this.setState({
-                        checkLedger:false,
+                        checkLedger: false,
                         step: 2,
                         transactionData: { currency, from, to, amount, nrg, nrgPrice, nrgLimit },
                         rawTransaction: signedTransaction.rawTransaction
                     })
 
                 }).catch((error) => {
-                    this.setState({checkLedger:false});
+                    this.setState({ checkLedger: false });
                     this.onSendStepBack();
                 })
             })
-        }else{
-            this.signTransaction(nrgPrice, to, amount, nrg).then((signedTransaction)=>{
+        } else {
+            this.signTransaction(nrgPrice, to, amount, nrg).then((signedTransaction) => {
                 this.setState({
                     step: 2,
                     transactionData: { currency, from, to, amount, nrg, nrgPrice, nrgLimit },
                     rawTransaction: signedTransaction.rawTransaction
                 })
+                this.onChangeStep(2)
             })
         }
 
@@ -142,14 +156,16 @@ class UserTool extends Component {
         const timer = setInterval(() => {
             this.state.web3.eth.getTransactionReceipt(hash, (error, receipt) => {
 
-                if(receipt){
+                if (receipt) {
                     clearInterval(timer);
                     let message = receipt.status == 1 ? 'Succesfully Sent!' : 'Transaction error!';
                     this.setState({
-                        completed:1,
+                        step: 4,
+                        completed: 1,
                         transactionStatus: receipt.status,
                         transactionMessage: message
                     })
+                    this.onChangeStep(4)
                 }
             })
         }, 5000);
@@ -170,14 +186,14 @@ class UserTool extends Component {
         this.props.onStepChanged(step, 4)
     }
     render() {
-        const { classes, showInfoHeader, web3Provider, defaultRecipient, currency } = this.props;
+        const { classes, theme, showInfoHeader, web3Provider, defaultRecipient, currency } = this.props;
         const { step, transactionData, txHash, rawTransaction, account, privateKey, checkLedger, transactionStatus, completed } = this.state;
         let content = null;
         let status = null;
 
-        if(transactionStatus == 1){
+        if (transactionStatus == 1) {
             status = <CheckCircleRounded className={classes.checkIcon} />
-        }else if(transactionStatus == 0){
+        } else if (transactionStatus == 0) {
             status = <HighlightOffRounded className={classes.errorIcon} />
         }
 
@@ -224,36 +240,48 @@ class UserTool extends Component {
                 />);
                 break;
             }
-            case 3: { //Done
+            case 3:
+            case 4: { //Done
                 content = (
                     <Grid spacing={0}
                         container
                         direction="column"
                         justify="center"
-                        alignItems="center">
+                        alignItems="center"
+                        wrap='nowrap'>
                         {
                             (completed == 1) ?
-                            status :
-                            <Grid spacing={0}
-                                container
-                                direction="column"
-                                justify="center"
-                                alignItems="center">
-                                <img alt="Aion Logo" className={'rotation'} src={AionLogoLight} width="90px" />
-                                <Typography variant="h4" style={{ fontWeight: 'bold', marginTop: '30px' }}>Sending {currency}</Typography>
-                                <Typography variant="subtitle2" style={{ fontWeight: 'light', marginTop: '20px' }}> Sending transaction and waiting for at least one block confirmation.</Typography>
-                                <Typography variant="subtitle2" style={{ fontWeight: 'light' }}> Please be patient this wont't take too long...</Typography>
-                            </Grid>
+                                status :
+                                <Grid spacing={0}
+                                    container
+                                    direction="column"
+                                    justify="center"
+                                    alignItems="center">
+                                    <img alt="Aion Logo" className={'rotation'} src={theme.palette.isWidget ? AionLogoDark : AionLogoLight} width="90px" />
+                                    <Typography variant="h4" style={{ fontWeight: 'bold', marginTop: '30px' }}>Sending {currency}</Typography>
+                                    <Typography variant="subtitle2" style={{ fontWeight: 'light', marginTop: '20px' }}> Sending transaction and waiting for at least one block confirmation.</Typography>
+                                    <Typography variant="subtitle2" style={{ fontWeight: 'light' }}> Please be patient this wont't take too long...</Typography>
+                                </Grid>
                         }
+
                         <Typography variant="h4" style={{ fontWeight: 'bold', marginTop: '30px' }}>{this.state.transactionMessage}</Typography>
-                        <Typography variant="subtitle2" style={{ fontWeight: 'light', marginTop: '20px' }}> Transaction Hash: <a target='_blank' rel='noopener noreferrer' href={'https://mastery.aion.network/#/transaction/' + txHash}>{txHash}</a></Typography>
-                        <Button
-                            variant="contained"
-                            color="primary"
+
+                        <Grid
+                            container
+                            direction="row"
+                            justify="space-between"
+                            alignItems="center"
+                            className={classes.linkText}
+                            wrap='nowrap'>
+                            <Typography variant="subtitle2">{'Transaction\u00A0Hash:\u00A0'}</Typography>
+                            <a target='_blank' rel='noopener noreferrer' className={classes.link} href={'https://mastery.aion.network/#/transaction/' + txHash}>{txHash}</a>
+
+                        </Grid>
+
+                        <PrimaryButton
                             onClick={(event) => { this.onSentSuccess() }}
-                            className={classes.continueButton}>
-                            <b>Done</b>
-                        </Button>
+                            className={classes.continueButton}
+                            text='Done' />
                     </Grid>)
                 break;
             }
@@ -274,4 +302,7 @@ UserTool.propTypes = {
     web3Provider: PropTypes.string.isRequired,
 };
 
-export default withStyles(styles)(UserTool);
+export default compose(
+    withStyles(styles, { name: 'UserTool' }),
+    withTheme()
+)(UserTool);
