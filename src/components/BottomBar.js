@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { withStyles, Typography, Grid, Button } from '@material-ui/core'
-import AionLogoDark from '../assets/aion_logo_dark.svg'
+import { withStyles, Typography, Grid } from '@material-ui/core'
 import AugustLogoLight from  '../assets/august_logo_light.svg'
+import { defaultProvider, developmentProvider } from '../../global_config'
+import queryString from 'stringquery'
 
 const styles = theme => ({
     root: {
@@ -69,15 +70,22 @@ const styles = theme => ({
 })
 class BottomBar extends Component {
 
-    state = {}
-
-    componentDidMount() { }
-    onDonateClick = () => {
-        console.log('todo')
-        //todo use : 0xa0c14dfdd475dcf305c00299e7d7ca5cacb97633385952d2024a365a1b1ddfa3
+    state = {
+        Provider: defaultProvider
     }
+
+    componentWillMount() {
+        const queryParams = queryString(window.location.search);
+        if (queryParams.testnet === 'true') {
+            this.setState({ Provider: developmentProvider })
+        } else {
+            this.setState({ Provider: defaultProvider })
+        }
+    }
+
     render() {
         const { classes } = this.props;
+        const { Provider } = this.state;
         return (
             <div className={classNames(this.props.className, classes.root)}>
                 <Grid
@@ -98,15 +106,14 @@ class BottomBar extends Component {
                         <Grid item xs={12} sm={6} className={classes.donateSection}>
                             <div >
                                 <Typography variant="h6" style={{ fontWeight: '400' }}>Support us and donate</Typography>
-                                <Button
-                                    variant="contained"
-                                    color="secondary"
-                                    size='large'
-                                    onClick={this.onDonateClick}//.bind(this)
-                                    className={classes.continueButton}>
-                                    <img alt="Aion Logo" className={classNames(classes.leftIcon, classes.iconSmall)} src={AionLogoDark} />
-                                    <b>Donate</b>
-                                </Button>
+                                <aion-pay
+                                    data-button-text= 'Donate'
+                                    data-button-background='#FFFFFF'
+                                    data-button-text-color='#113665'
+                                    data-button-icon-type='dark'
+                                    data-address='0xa0c14dfdd475dcf305c00299e7d7ca5cacb97633385952d2024a365a1b1ddfa3'
+                                    data-web3-provider={Provider}
+                                ></aion-pay>
                             </div>
                         </Grid>
 

@@ -28,14 +28,15 @@ class AionPayButton extends Component {
     }
     render() {
         const { dialogData } = this.state;
-        const { buttonText, theme } = this.props;
+        const { buttonText, theme, buttonIconType } = this.props;
 
         return (<MuiThemeProvider theme={theme}>
             <CssBaseline>
                 <div>
                     <PayButton
                         onClick={this.onPayButtonClick}
-                        buttonText={buttonText} />
+                        buttonText={buttonText}
+                        buttonIconType={buttonIconType} />
                     <AionPayDialog
                         dialogData={dialogData} />
                 </div>
@@ -59,7 +60,7 @@ export const inject = () => {
             let buttonText = domContainer.dataset.buttonText;
             let buttonBackground = domContainer.dataset.buttonBackground;
             let buttonTextColor = domContainer.dataset.buttonTextColor;
-            //let buttonIconType = domContainer.dataset.buttonIconType;
+            let buttonIconType = domContainer.dataset.buttonIconType;
             let style = domContainer.dataset.style;
             let web3Provider = domContainer.dataset.web3Provider
 
@@ -78,7 +79,7 @@ export const inject = () => {
                 theme.palette = themePallete;
             }
             window.AionPayWidgetThemes.push(theme)
-            let propData = { address, buttonText, web3Provider, theme }
+            let propData = { address, buttonText, web3Provider, theme, buttonIconType }
 
             ReactDOM.render(
                 React.createElement(withStyles(styles)(AionPayButton), propData),
