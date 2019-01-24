@@ -53,8 +53,8 @@ const styles = theme => ({
         height: '25px',
     },
     iconMedium: {
-        width: '50px',
-        height: '50px',
+        width: '60px',
+        height: '60px',
         [theme.breakpoints.down('xs')]: {
             width: '70px',
             height: '70px',
@@ -112,8 +112,9 @@ class BottomBar extends Component {
 
                     </Grid>
                     <div className={classes.bottomSection}>
-                        <img alt="August Logo" className={classNames(classes.leftIcon, classes.iconMedium)} src={AugustLogoLight} />
-                        <Typography variant="subtitle2" style={{ fontWeight: 'light', marginTop: '15px' }}>Powered by <a target='_blank' rel='noopener noreferrer' href='https://alwaysaugust.co/'>August</a></Typography>
+                        <a target='_blank' rel='noopener noreferrer' href='https://alwaysaugust.co/'>
+                            <img alt="August Logo" className={classNames(classes.leftIcon, classes.iconMedium)} src={AugustLogoLight} />
+                        </a>
                     </div>
                 </Grid>
             </div>

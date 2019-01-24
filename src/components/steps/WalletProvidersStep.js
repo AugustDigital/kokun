@@ -43,6 +43,13 @@ const styles = theme => ({
     panelText:{
         color:theme.palette.providerPanel.text
     },
+    panelTextLong:{
+        color:theme.palette.providerPanel.text,
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        display:'inline-block',
+        width:'100%',
+    },
     secondaryHeading: {
         fontSize: theme.typography.pxToRem(15),
     },
@@ -351,15 +358,16 @@ class WalletProvidersStep extends Component {
     createKeyStorePanel = (classes) => {
         return (<div className={classes.content}>
             {this.state.keyStoreFile ?
-                <div>
+                
                     <Grid container
                         direction="column"
                         justify="center"
-                        alignItems="center">
+                        alignItems="center"
+                        wrap="nowrap">
                         <InsertDriveFile className={classes.fileIcon} />
-                        <Typography className={classes.panelText} variant='h5' style={{ fontWeight: 'bold', marginTop: '15px' }}>{this.state.keyStoreFile.name}</Typography>
+                        <Typography className={classes.panelTextLong} variant='h5' style={{ fontWeight: 'bold', marginTop: '15px' }}>{this.state.keyStoreFile.name}</Typography>
 
-                    </Grid>
+                    
                     <IconButton onClick={this.onCancelFileUpload} aria-label="Close" className={classes.cancelFileUploadButton}>
                         <Close color='primary' />
                     </IconButton>
@@ -392,7 +400,8 @@ class WalletProvidersStep extends Component {
                             classes:{root:classes.inputPlaceholder},
                         }}
                     />
-                </div> :
+                    </Grid>
+                :
                 <Dropzone onDrop={this.onKeystoreFileUploaded}>
                     {({ getRootProps, getInputProps, isDragActive }) => {
                         return (
