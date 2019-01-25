@@ -283,13 +283,12 @@ class WalletProvidersStep extends Component {
 
                 try {
                   let [address, publicKey, privateKey] = await keystoreProvider.unlock((progress) => {
-                      console.log('unlocked:'+publicKey)
                       me.setState({ completed: Math.round(progress) });
                   })
 
                   resolve({address: address, privateKey: privateKey })
                 } catch (error) {
-                  me.setState({keyStoreError: true, keyStoreErrorMessage: "Unable to unlock file"})
+                  me.setState({completed:0, keyStoreError: true, keyStoreErrorMessage: "Unable to unlock file"})
                   reject(error)
                 }
             }
@@ -332,7 +331,7 @@ class WalletProvidersStep extends Component {
                     <Grid item xs>
                         <Typography className={classes.panelText} variant='h6'>Ledger is ready</Typography>
                     </Grid>
-                    
+
                 </Grid>
             </div> :
                 <Grid
@@ -343,12 +342,12 @@ class WalletProvidersStep extends Component {
                     alignItems="center"
                     wrap='wrap'
                     style={{ marginTop: '15px' }}>
-                    
+
                     <Dock className={classes.fileIcon} />
                     <Grid item xs>
                         <Typography className={classes.panelText} variant='h6' >Please connect your Ledger and open the Aion app</Typography>
                     </Grid>
-                    
+
                 </Grid>
             }
 
@@ -358,7 +357,7 @@ class WalletProvidersStep extends Component {
     createKeyStorePanel = (classes) => {
         return (<div className={classes.content}>
             {this.state.keyStoreFile ?
-                
+
                     <Grid container
                         direction="column"
                         justify="center"
@@ -367,7 +366,7 @@ class WalletProvidersStep extends Component {
                         <InsertDriveFile className={classes.fileIcon} />
                         <Typography className={classes.panelTextLong} variant='h5' style={{ fontWeight: 'bold', marginTop: '15px' }}>{this.state.keyStoreFile.name}</Typography>
 
-                    
+
                     <IconButton onClick={this.onCancelFileUpload} aria-label="Close" className={classes.cancelFileUploadButton}>
                         <Close color='primary' />
                     </IconButton>
@@ -400,6 +399,21 @@ class WalletProvidersStep extends Component {
                             classes:{root:classes.inputPlaceholder},
                         }}
                     />
+                    <br />
+                    {this.state.keyStoreError ?
+                    <Grid className={classes.privateKeyError}
+                        container
+                        direction="row"
+                        justify="flex-start"
+                        alignItems="center">
+                        <Grid item>
+                            <Warning className={classes.warningIcon} />
+                        </Grid>
+                        <Grid item>
+                            <Typography className={classes.warningText} variant="subtitle2">{this.state.keyStoreErrorMessage}</Typography>
+                        </Grid>
+                    </Grid>: null
+                    }
                     </Grid>
                 :
                 <Dropzone onDrop={this.onKeystoreFileUploaded}>

@@ -132,6 +132,8 @@ class UserTool extends Component {
                     rawTransaction: signedTransaction.rawTransaction
                 })
                 this.onChangeStep(2)
+            }).catch((error) => {
+                alert(error)
             })
         }
 
@@ -149,6 +151,7 @@ class UserTool extends Component {
             txHash,
             step: 3
         })
+
         this.onChangeStep(3)
     }
     checkTransactionStatus = (hash) => {
@@ -163,7 +166,8 @@ class UserTool extends Component {
                         step: 4,
                         completed: 1,
                         transactionStatus: status,
-                        transactionMessage: message
+                        transactionMessage: message,
+                        transactionData: {}
                     })
                     this.onChangeStep(4)
                 }
