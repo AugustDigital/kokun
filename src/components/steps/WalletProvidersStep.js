@@ -17,8 +17,8 @@ const styles = theme => ({
     heading: {
         fontSize: theme.typography.pxToRem(15),
         color: theme.palette.primary.main,
-        paddingTop: '14px',
-        paddingBottom: '14px',
+        paddingTop: theme.spacing.unit * 2,
+        paddingBottom: theme.spacing.unit * 2,
         flexShrink: 0,
     },
     headingExpanded: {
@@ -31,14 +31,16 @@ const styles = theme => ({
         width: '100%'
     },
     normalPanelStyle: {
-        backgroundColor: theme.palette.providerPanel.background
+        backgroundColor: theme.palette.providerPanel.background,
+        marginBottom:theme.spacing.unit
     },
     expandedPanelStyle: {
         backgroundColor: theme.palette.providerPanel.background,
         borderStyle: 'solid',
         borderWidth: '3px',
         borderRadius: '5px',
-        borderColor: theme.palette.providerPanel.border
+        borderColor: theme.palette.providerPanel.border,
+        marginBottom:theme.spacing.unit
     },
     panelText:{
         color:theme.palette.providerPanel.text
@@ -330,7 +332,7 @@ class WalletProvidersStep extends Component {
 
                     <CheckCircleRounded className={classes.checkIconBig} />
                     <Grid item xs>
-                        <Typography className={classes.panelText} variant='h6'>Ledger is ready</Typography>
+                        <Typography className={classes.panelText} variant='subtitle1'>Your Ledger is ready</Typography>
                     </Grid>
                     
                 </Grid>
@@ -346,7 +348,7 @@ class WalletProvidersStep extends Component {
                     
                     <Dock className={classes.fileIcon} />
                     <Grid item xs>
-                        <Typography className={classes.panelText} variant='h6' >Please connect your Ledger and open the Aion app</Typography>
+                        <Typography className={classes.panelText} variant='subtitle1' >Please connect your Ledger and open the Aion app</Typography>
                     </Grid>
                     
                 </Grid>

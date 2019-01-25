@@ -8,18 +8,20 @@ import BottomBar from './components/BottomBar'
 import './Animations.css'
 import PaperPlane from './assets/paperplane.svg'
 
+const PAGE_PADDING ='17%'
+const PAGE_PADDING_MOBILE ='5%'
 const styles = theme => ({
   root: {
     flexGrow: 1,
     height: '100%',
   },
   userSection: {
-    paddingRight: '10%',
-    paddingLeft: '10%',
+    paddingRight: PAGE_PADDING,
+    paddingLeft: PAGE_PADDING,
     paddingBottom: theme.spacing.unit * 5,
     [theme.breakpoints.down('xs')]: {
-      paddingRight: '5%',
-      paddingLeft: '5%',
+      paddingRight: PAGE_PADDING_MOBILE,
+      paddingLeft: PAGE_PADDING_MOBILE,
     }
   },
   devSection: {
@@ -28,19 +30,19 @@ const styles = theme => ({
     backgroundImage: 'linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.07));',
     backgroundRepeat: 'no-repeat',
     backgroundOrigin: 'content-box',
-    paddingRight: '16%',
-    paddingLeft: '16%',
+    paddingRight: PAGE_PADDING,
+    paddingLeft: PAGE_PADDING,
     paddingTop: theme.spacing.unit * 6,
     paddingBottom: theme.spacing.unit * 12,
     [theme.breakpoints.down('xs')]: {
-      paddingRight: '5%',
-      paddingLeft: '5%',
+      paddingRight: PAGE_PADDING_MOBILE,
+      paddingLeft: PAGE_PADDING_MOBILE,
       paddingBottom: theme.spacing.unit * 6,
     }
   },
   bottomBar: {
-    paddingRight: '16%',
-    paddingLeft: '16%',
+    paddingRight: PAGE_PADDING,
+    paddingLeft: PAGE_PADDING,
   },
   grow: {
     flexGrow: 1,

@@ -12,7 +12,7 @@ const styles = theme => ({
         backgroundImage: theme.palette.background.blueGradient,
     },
     left: {
-        paddingRight: theme.spacing.unit * 8,
+        paddingRight: theme.spacing.unit * 7,
         [theme.breakpoints.down('xs')]: {
             paddingRight: theme.spacing.unit,
             marginTop: theme.spacing.unit * 3,
@@ -25,7 +25,7 @@ const styles = theme => ({
     },
     toolContainer: {
         marginLeft: 'auto',
-        paddingLeft: theme.spacing.unit * 10,
+        paddingLeft: theme.spacing.unit * 8,
         marginTop: theme.spacing.unit * 6,
         borderLeft: '1px solid ' + theme.palette.divider,
         [theme.breakpoints.down('xs')]: {
@@ -95,7 +95,7 @@ class UserSection extends Component {
                             </div>
                         </div>
                     </Grid>
-                    <Grid item xs={12} sm={6}>
+                    <Grid item xs={12} sm={8}>
                         <div className={classes.right}>
                             <LinearProgress className={classes.progressBar} variant="determinate" value={currentStep / (totalSteps) * 100} classes={{ bar: classes.progressBarBar }} />
                             <div className={classes.toolContainer}>

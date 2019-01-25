@@ -15,12 +15,12 @@ const styles = theme => ({
         fontWeight: 'bold',
         marginRight: theme.spacing.unit * 2,
         color:theme.palette.primary.main,
+        minWidth:'45px'
     },
     thinLable: {
         fontWeight: 300,
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
         color:theme.palette.primary.main,
+        wordBreak: 'break-all' 
     },
     rawTitle: {
         fontWeight: 'bold',
@@ -30,6 +30,7 @@ const styles = theme => ({
     rawDetail: {
         fontWeight: 300,
         color:theme.palette.text.primary,
+        wordBreak: 'break-all' 
     },
     transactionRow: {
         marginTop: theme.spacing.unit * 1
@@ -76,7 +77,11 @@ class ConfirmStep extends Component {
                         justify="flex-start">
                         <Typography variant="h4" style={{ fontWeight: 'bold', marginTop: '25px' }}>Confirm Transaction</Typography>
                         <Paper className={classes.paper}>
-                            <Grid
+                        <Grid spacing={0}
+                        container
+                        direction="column"
+                        justify="flex-start">
+<Grid
                                 container
                                 direction="row"
                                 justify="space-between"
@@ -132,9 +137,11 @@ class ConfirmStep extends Component {
                                 alignItems="center"
                                 className={classes.transactionRow}
                                 wrap='nowrap'>
-                                <Typography color="textSecondary" variant="subtitle2" className={classes.fatLable}>Maximum NRG</Typography>
+                                <Typography color="textSecondary" variant="subtitle2" className={classes.fatLable}>Max. NRG</Typography>
                                 <Typography color="textSecondary" variant="subtitle2" className={classes.thinLable}>{nrgLimit}</Typography>
                             </Grid>
+                        </Grid>
+                            
                         </Paper>
                         <Grid
                             container
@@ -148,7 +155,7 @@ class ConfirmStep extends Component {
                                 <Typography variant="subtitle2" className={classes.rawTitle}>Raw Transaction</Typography>
                             </Grid>
                             <Grid item xs>
-                                <Typography variant="subtitle2" className={classes.rawDetail} style={{ wordBreak: 'break-all' }}>{rawTransaction}</Typography>
+                                <Typography variant="subtitle2" className={classes.rawDetail} >{rawTransaction}</Typography>
                             </Grid>
                         </Grid>
                         <Grid spacing={8}
