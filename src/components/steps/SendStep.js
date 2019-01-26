@@ -36,7 +36,7 @@ const styles = theme => ({
         color: theme.palette.text.primary+' !important',
     },
     continueButton: {
-        marginLeft: theme.spacing.unit 
+        marginLeft: theme.spacing.unit
     },
     rightIcon: {
         marginLeft: theme.spacing.unit,
@@ -86,7 +86,8 @@ class SendStep extends Component {
         nrg: this.props.nrg ? this.props.nrg : TransactionUtil.defaultNrgLimit,
         error: false,
         errorMessage: '',
-        account: this.props.account
+        account: this.props.account,
+        web3: null
     }
 
     componentDidMount() {

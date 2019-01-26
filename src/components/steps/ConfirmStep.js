@@ -62,7 +62,7 @@ class ConfirmStep extends Component {
             const transactionHash = await this.state.web3.eth.sendRawTransaction(this.props.rawTransaction)
             this.props.onTransactionStepContinue(transactionHash)
         }catch(error){
-            console.log(error)
+            alert("Error sending transaction. You're propbably on the wrong network.")
         }
     }
 
