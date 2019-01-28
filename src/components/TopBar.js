@@ -50,7 +50,9 @@ class TopBar extends Component {
             justify="space-between"
             alignItems="center">
             <Grid item xs={12} sm={6} className={classes.title}>
+            <a href=".">
               <img alt='Kokun Logo' src={KokunLogo} height='25px'></img>
+            </a>
             </Grid>
             <Grid item xs={12} sm={6} className={classes.helpButtonContainer}>
               <Button color="secondary" className={classes.helpButton}>
