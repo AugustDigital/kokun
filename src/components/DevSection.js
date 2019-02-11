@@ -5,7 +5,7 @@ import { withStyles, Typography, Grid, Paper, IconButton, Input, InputAdornment 
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 import compose from 'recompose/compose';
 import { FileCopy } from '@material-ui/icons'
-import AionLogoDark from '../assets/aion_logo_dark.svg'
+import AionPayLogoDark from '../assets/aion_pay_logo_dark.svg'
 import AionPayDialog from './AionPayDialog'
 import { inject } from './AionPayButton'
 import SecondaryButton from '../components/SecondaryButton'
@@ -96,15 +96,8 @@ const styles = theme => ({
     cardContent: {
         padding: theme.spacing.unit * 4,
     },
-    leftIcon: {
-        marginRight: theme.spacing.unit,
-    },
-    iconSmall: {
-        width: '25px',
-        height: '25px',
-    },
-    iconHeading: {
-        float: 'left'
+    aionPayIcon:{
+        height:'28px'
     },
     copyButton: {
         marginLeft: theme.spacing.unit * 2,
@@ -192,10 +185,7 @@ class DevSection extends Component {
         })
         return (
             <div className={this.props.className}>
-                <Typography color='textSecondary' variant="h6" style={{ fontWeight: 'bold' }}>
-                    <img alt="Aion Logo" className={classNames(classes.leftIcon, classes.iconSmall, classes.iconHeading)} src={AionLogoDark} />
-                    AION PAY
-                </Typography>
+                <img alt="Aion Pay Logo" className={classNames(classes.aionPayIcon)} src={AionPayLogoDark} />
                 <Paper className={classes.card}>
                     <div>
                         <div className={classes.cardHeading}>

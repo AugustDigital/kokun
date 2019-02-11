@@ -5,7 +5,7 @@ import { Warning, CloudUpload, InsertDriveFile, CheckCircleRounded, Close, Dock 
 import classNames from 'classnames'
 import Dropzone from 'react-dropzone';
 import KeystoreWalletProvider from '../../utils/KeystoreWalletProvider';
-import AionLogoLight from '../../assets/aion_logo_light.svg'
+import AionPayLogoLight from '../../assets/aion_pay_logo_light.svg'
 import LockIcon from '../../assets/lock_icon.svg'
 import LedgerProvider from '../../utils/ledger/LedgerProvider'
 import {promiseTimeout} from '../../utils/promiseTimeout';
@@ -147,6 +147,9 @@ const styles = theme => ({
     iconHeading: {
         float: 'left'
     },
+    aionPayIcon:{
+        height:'28px'
+    },
     unlockingState: {
         paddingTop: theme.spacing.unit * 15,
         paddingBottom: theme.spacing.unit * 15
@@ -163,7 +166,7 @@ const styles = theme => ({
         color: theme.palette.text.hint,
     },
     link: {
-        color: '#00d0fe',
+        color: theme.palette.common.link,
         fontWeight:'bold'
     }
 })
@@ -526,9 +529,7 @@ class WalletProvidersStep extends Component {
                 justify="flex-start">
                 {showInfoHeader?
                     <div>
-                        <Typography variant="h6" style={{ fontWeight: 'bold' }}>
-                    <img alt="Aion Logo" className={classNames(classes.leftIcon, classes.iconSmall, classes.iconHeading)} src={AionLogoLight} />
-                    AION PAY</Typography>
+                        <img alt="Aion Pay Logo" className={classNames(classes.aionPayIcon)} src={AionPayLogoLight} />
                 <Typography variant="subtitle2" style={{ fontWeight: 'light', marginTop: '25px' }}> Seamlessly send Aion to any address</Typography>
                         </div>
                     :null}

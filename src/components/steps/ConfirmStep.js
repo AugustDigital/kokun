@@ -8,7 +8,7 @@ import SecondaryButton from '../SecondaryButton'
 const styles = theme => ({
     paper: {
         backgroundColor: theme.palette.background.default,
-        marginTop: theme.spacing.unit * 5,
+        marginTop: theme.spacing.unit * 2,
         padding: theme.spacing.unit * 3
     },
     fatLable: {
@@ -42,6 +42,10 @@ const styles = theme => ({
         marginLeft: theme.spacing.unit,
         fontSize: 14,
     },
+    error: {
+        color: theme.palette.common.link,
+        fontWeight:'bold'
+    }
 })
 class ConfirmStep extends Component {
 
@@ -49,7 +53,8 @@ class ConfirmStep extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            web3: null
+            web3: null,
+            errorMessage:null
         }
     }
 
@@ -62,20 +67,24 @@ class ConfirmStep extends Component {
             const transactionHash = await this.state.web3.eth.sendRawTransaction(this.props.rawTransaction)
             this.props.onTransactionStepContinue(transactionHash)
         }catch(error){
-            alert("Error sending transaction. You're propbably on the wrong network.")
+            this.setState({errorMessage:"Error sending transaction. Check your balance."})
         }
     }
 
     render() {
-        const { classes, to, from, amount, nrg, nrgPrice, nrgLimit, rawTransaction, onTransactonStepBack } = this.props;
-
+        const { classes, to, from, amount, nrg, nrgPrice, nrgLimit, rawTransaction, onTransactonStepBack} = this.props;
+        const {errorMessage} = this.state;
         return (
             <div>
                     <Grid spacing={0}
                         container
                         direction="column"
                         justify="flex-start">
-                        <Typography variant="h4" style={{ fontWeight: 'bold', marginTop: '25px' }}>Confirm Transaction</Typography>
+                        <Typography variant="h4" style={{ fontWeight: 'bold', marginTop: '25px', marginBottom:'15px'}}>Confirm Transaction</Typography>
+                        {errorMessage!==null?
+                            <Typography variant="subtitle2" className={classes.error}>{errorMessage}</Typography>
+                            :null}
+                        
                         <Paper className={classes.paper}>
                         <Grid spacing={0}
                         container

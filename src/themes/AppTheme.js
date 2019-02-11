@@ -24,6 +24,7 @@ const AppPalette = {
         underlineFocused:'#113665',
         underlineContrast:'#D8D8D8',
         underlineFocusedContrast:'#D8D8D8',
+        link: '#00d0fe',
     },
     providerPanel: {
         background: '#fff',
@@ -56,6 +57,7 @@ const WidgetPalette = {
         underlineFocused:'#113665',
         underlineContrast:'#113665',
         underlineFocusedContrast:'#113665',
+        link: '#00d0fe',
     },
     providerPanel: {
         background: '#ECF1F7',
