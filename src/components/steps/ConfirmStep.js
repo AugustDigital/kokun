@@ -195,7 +195,6 @@ ConfirmStep.propTypes = {
     classes: PropTypes.object.isRequired,
     onTransactionStepContinue: PropTypes.func.isRequired,
     onTransactonStepBack: PropTypes.func.isRequired,
-    currency: PropTypes.object.isRequired,
     from: PropTypes.string.isRequired,
     to: PropTypes.string.isRequired,
     amount: PropTypes.number.isRequired,

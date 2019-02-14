@@ -29,16 +29,24 @@ const themeExample = {
         icon: '#d2dbe6',
         primaryButton: '#00ff00',
         primaryButtonDisabled: 'rgba(33,151,179,0.4)',
-        underline:'#D8D8D8',
-        underlineFocused:'#113665',
-        underlineContrast:'#D8D8D8',
-        underlineFocusedContrast:'#D8D8D8',
+        underline: '#D8D8D8',
+        underlineFocused: '#113665',
+        underlineContrast: '#D8D8D8',
+        underlineFocusedContrast: '#D8D8D8',
     },
     providerPanel: {
         background: '#00ff00',
         border: '#5AF0BD',
         text: '#113665'
     }
+}
+
+const transactionExample = {
+    data: '0xf0a147ada0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb982700000000000000000de0b6b3a76400000000000000000000000000000000004000000000000000000000000000000000',
+    gas: 2000000,
+    gasPrice: 10000000000,
+    to: '0xa051aeecf95f7921c9f8ba3851445d7f221f9c7988a0d2d9ed0080eff583b313',
+    value: 0
 }
 const styles = theme => ({
     card: {
@@ -63,7 +71,7 @@ const styles = theme => ({
             marginTop: theme.spacing.unit * 2
         }
     },
-    sampleInfo:{
+    sampleInfo: {
         marginTop: theme.spacing.unit * 3,
         [theme.breakpoints.down('xs')]: {
             marginTop: theme.spacing.unit * 4
@@ -74,10 +82,10 @@ const styles = theme => ({
             marginTop: theme.spacing.unit * 2
         }
     },
-    buttonContainer:{
-        textAlign:'left',
+    buttonContainer: {
+        textAlign: 'left',
         [theme.breakpoints.down('xs')]: {
-            textAlign:'center',
+            textAlign: 'center',
             width: '100%'
         }
     },
@@ -90,19 +98,19 @@ const styles = theme => ({
         border: 'none',
         width: '100%',
         [theme.breakpoints.down('xs')]: {
-            marginLeft:'0px'
+            marginLeft: '0px'
         }
     },
     cardContent: {
         padding: theme.spacing.unit * 4,
     },
-    aionPayIcon:{
-        height:'28px'
+    aionPayIcon: {
+        height: '28px'
     },
     copyButton: {
         marginLeft: theme.spacing.unit * 2,
         [theme.breakpoints.down('xs')]: {
-            marginLeft:'0px'
+            marginLeft: '0px'
         }
     }
 })
@@ -111,15 +119,20 @@ class DevSection extends Component {
     state = {
         dialogData: null
     }
-    
+
     content = [
         { description: 'Pay to any address with default button style', params: { 'data-web3-provider': 'https://api.nodesmith.io/v1/aion/testnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
         { description: 'Pay to a given address with default button style', params: { 'data-address': '0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827', 'data-web3-provider': 'https://api.nodesmith.io/v1/aion/mainnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
-        { description: 'Pay to a given address with custom text and background but with AION icon on the button.', params: { 'data-button-text': 'Aion Pay', 'data-button-background': '#113665', 'data-button-text-color': '#ffffff','data-button-icon-type': 'light',  'data-address': '0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827', 'data-web3-provider': 'https://api.nodesmith.io/v1/aion/mainnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
+        { description: 'Pay to a given address with custom text and background but with AION icon on the button.', params: { 'data-button-text': 'Aion Pay', 'data-button-background': '#113665', 'data-button-text-color': '#ffffff', 'data-button-icon-type': 'light', 'data-address': '0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827', 'data-web3-provider': 'https://api.nodesmith.io/v1/aion/mainnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
         { description: 'Pay to a given address with custom style.', params: { 'data-style': JSON.stringify(themeExample), 'data-address': '0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827', 'data-web3-provider': 'https://api.nodesmith.io/v1/aion/mainnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
+        { description: 'Sign smart contract transactions', params: { 'data-web3-provider': 'https://api.nodesmith.io/v1/aion/testnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8', 'data-transaction': JSON.stringify(transactionExample) } },
     ]
     componentDidMount() {
         inject()
+        //or
+        //window.renderAionPayButton()
+        //can listen for completion like so:
+        window.AionPayButtonInterface.aionPayButtonCompletionListener = (tx) => { alert(tx) }
     }
 
     onGithubButtonPressed = () => {
@@ -158,7 +171,7 @@ class DevSection extends Component {
                         <div className={classes.buttonContainer}>
                             <aion-pay  {...item.params} />
                         </div>
-                        
+
 
                         <Grid item xs={12} sm className={classes.snippetContainer}>
                             <Input
@@ -208,7 +221,7 @@ class DevSection extends Component {
                                     <SecondaryButton
                                         className={classes.githubButton}
                                         onClick={this.onGithubButtonPressed}
-                                        text='GitHub'/>
+                                        text='GitHub' />
                                 </Grid>
 
                             </Grid>
@@ -239,4 +252,4 @@ DevSection.propTypes = {
 export default compose(
     withStyles(styles, { name: 'DevSection' }),
     withWidth()
-  )(DevSection);
+)(DevSection);

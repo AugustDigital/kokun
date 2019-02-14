@@ -9,6 +9,7 @@ import CssBaseline from '@material-ui/core/CssBaseline';
 import { WidgetTheme } from '../themes/AppTheme';
 import 'typeface-lato';
 import cloneDeep from 'lodash.clonedeep';
+import { version } from '../../package.json'
 
 const styles = theme => ({
 
@@ -22,7 +23,8 @@ class AionPayButton extends Component {
         this.setState({
             dialogData: {
                 web3Provider: this.props.web3Provider,
-                defaultRecipient: this.props.address
+                defaultRecipient: this.props.address,
+                transaction: this.props.transaction,
             }
         })
     }
@@ -49,10 +51,15 @@ AionPayButton.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
+
 export const inject = () => {
+    window.AionPayButtonInterface = {
+        renderAionPayButton: inject,
+        aionPayButtonCompletionListener: null,
+        aionPayWidgetThemes: []
+    }
     //Register our custom element
     document.createElement('aion-pay');
-    window.AionPayWidgetThemes = [];
     // Find all DOM containers, and render buttons into them.
     document.querySelectorAll('aion-pay')
         .forEach(domContainer => {
@@ -62,14 +69,19 @@ export const inject = () => {
             let buttonTextColor = domContainer.dataset.buttonTextColor;
             let buttonIconType = domContainer.dataset.buttonIconType;
             let style = domContainer.dataset.style;
-            let web3Provider = domContainer.dataset.web3Provider
+            let web3Provider = domContainer.dataset.web3Provider;
+            let transactionString = domContainer.dataset.transaction;
+            let transaction;
+            if (transactionString) {
+                transaction = JSON.parse(transactionString)
+            }
 
 
             let theme = cloneDeep(WidgetTheme);
             if (buttonBackground) {
                 theme.palette.background.aionPay = buttonBackground;
             }
-            if(buttonTextColor) {
+            if (buttonTextColor) {
                 theme.palette.text.aionPay = buttonTextColor;
             }
 
@@ -78,8 +90,8 @@ export const inject = () => {
                 let themePallete = Object.assign({}, theme.palette, customPalette);
                 theme.palette = themePallete;
             }
-            window.AionPayWidgetThemes.push(theme)
-            let propData = { address, buttonText, web3Provider, theme, buttonIconType }
+            window.AionPayButtonInterface.aionPayWidgetThemes.push(theme)
+            let propData = { address, buttonText, web3Provider, theme, buttonIconType, transaction }
 
             ReactDOM.render(
                 React.createElement(withStyles(styles)(AionPayButton), propData),
@@ -87,6 +99,10 @@ export const inject = () => {
             );
         });
 }
+
+console.log('*************************************')
+console.log(`*   AionPayButton VERSION :${version}    *`)
+console.log('*************************************')
 
 inject();
 

@@ -54,7 +54,7 @@ class UserTool extends Component {
         checkLedger: false,
         transactionMessage: null,
         transactionStatus: 2,
-        completed: 0
+        completed: 0,
     }
     componentDidMount() {
         this.onChangeStep(0)
@@ -62,20 +62,28 @@ class UserTool extends Component {
     handlePanelChange = panel => (event, expanded) => {
         this.setState({
             expanded: expanded ? panel : false,
-            transactionData: null
+            transactionData: {}
         });
     };
     onAccountImported = (account) => {
-        this.setState({
-            step: 1,
-            account: account.address,
-            privateKey: account.privateKey,
-        })
-        this.onChangeStep(1)
+        const { externalTransaction } = this.props;
+        if (externalTransaction) {
+            console.log('Got external transaction:')
+            console.log(externalTransaction)
+            this.onExternalTransactionContinue(externalTransaction, account.address, account.privateKey)
+        } else {
+            this.setState({
+                step: 1,
+                account: account.address,
+                privateKey: account.privateKey,
+            })
+            this.onChangeStep(1)
+        }
+
     }
-    async signTransaction(transaction) {
+    async signTransaction(transaction, addr, pk) {
         const aion = new Accounts();
-        const account = aion.privateKeyToAccount(this.state.privateKey);
+        const account = aion.privateKeyToAccount(pk);
         const signedTransaction = await account.signTransaction(transaction);
 
         return signedTransaction;
@@ -101,16 +109,59 @@ class UserTool extends Component {
             gas: nrg,
             timestamp: Date.now() * 1000,
             data: methodData,
-            type: null,
         };
     }
     onRequestGasEstimate = (currency, from, to, amount, nrg, nrgPrice) => {
         const transaction = this.toTransaction(currency, from, to, amount, nrg, nrgPrice)
         return this.state.web3.eth.estimateGas({ data: transaction })
     }
+    onExternalTransactionContinue = (transaction, addr, pk) => {
+        transaction.timestamp = Date.now() * 1000;
+        transaction.nonce = this.state.web3.eth.getTransactionCount(addr);
+        const transactionData = {
+            currency: null,
+            from: addr,
+            to: transaction.to,
+            amount: parseInt(transaction.value, 10),
+            nrg: parseInt(transaction.gas, 10),
+            nrgPrice: parseInt(transaction.gasPrice, 10)
+        }
+        if (this.state.privateKey === 'ledger') {
+
+            let ledgerConnection = new LedgerProvider()
+            ledgerConnection.unlock(null).then((address) => {
+                this.setState({ checkLedger: true });
+                ledgerConnection.sign(transaction).then((signedTransaction) => {
+                    this.setState({
+                        checkLedger: false,
+                        step: 2,
+                        transactionData,
+                        rawTransaction: signedTransaction.rawTransaction
+                    })
+
+                }).catch((error) => {
+                    this.setState({ checkLedger: false });
+                    this.onSendStepBack();
+                })
+            })
+        } else {
+            this.signTransaction(transaction, addr, pk).then((signedTransaction) => {
+                this.setState({
+                    step: 2,
+                    transactionData,
+                    rawTransaction: signedTransaction.rawTransaction
+                })
+                this.onChangeStep(2)
+            }).catch((error) => {
+                console.trace(error)
+                alert(error)
+            })
+        }
+    }
     onSendStepContinue = (currency, from, to, amount, nrg, nrgPrice) => {
         const transaction = this.toTransaction(currency, from, to, amount, nrg, nrgPrice)
-
+        const transactionData = { currency, from, to, amount, nrg, nrgPrice }
+        console.log('Got transaction:')
         console.log(transaction)
         if (this.state.privateKey === 'ledger') {
 
@@ -121,7 +172,7 @@ class UserTool extends Component {
                     this.setState({
                         checkLedger: false,
                         step: 2,
-                        transactionData: { currency, from, to, amount, nrg, nrgPrice },
+                        transactionData,
                         rawTransaction: signedTransaction.rawTransaction
                     })
 
@@ -131,11 +182,10 @@ class UserTool extends Component {
                 })
             })
         } else {
-            this.signTransaction(transaction).then((signedTransaction) => {
-                console.log(signedTransaction.rawTransaction)
+            this.signTransaction(transaction, this.state.account, this.state.privateKey).then((signedTransaction) => {
                 this.setState({
                     step: 2,
-                    transactionData: { currency, from, to, amount, nrg, nrgPrice },
+                    transactionData,
                     rawTransaction: signedTransaction.rawTransaction
                 })
                 this.onChangeStep(2)
@@ -161,6 +211,9 @@ class UserTool extends Component {
         })
 
         this.onChangeStep(3)
+        if (window.AionPayButtonInterface.aionPayButtonCompletionListener) {
+            window.AionPayButtonInterface.aionPayButtonCompletionListener(txHash, null)
+        }
     }
     checkTransactionStatus = (hash) => {
         const timer = setInterval(() => {
@@ -178,14 +231,24 @@ class UserTool extends Component {
                         transactionData: {}
                     })
                     this.onChangeStep(4)
+                    if (window.AionPayButtonInterface.aionPayButtonCompletionListener) {
+                        window.AionPayButtonInterface.aionPayButtonCompletionListener(hash, status === 1)
+                    }
                 }
             })
         }, 5000);
     }
     onTransactionStepBack = () => {
-        this.setState({
-            step: 1
-        })
+        if (this.props.externalTransaction) {
+            this.setState({
+                step: 0
+            })
+        } else {
+            this.setState({
+                step: 1
+            })
+        }
+
         this.onChangeStep(1)
     }
     onSentSuccess = () => {
