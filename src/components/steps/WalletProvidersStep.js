@@ -291,7 +291,7 @@ class WalletProvidersStep extends Component {
                       me.setState({ completed: Math.round(progress) });
                   })
 
-                  resolve({address: address, privateKey: privateKey })
+                  resolve({address: address, privateKey: privateKey, publicKey: publicKey })
                 } catch (error) {
                   me.setState({completed:0, keyStoreError: true, keyStoreErrorMessage: "Unable to unlock file"})
                   reject(error)

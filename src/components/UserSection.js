@@ -80,7 +80,7 @@ class UserSection extends Component {
     render() {
         const { classes } = this.props;
         const { currentStep, totalSteps, Provider } = this.state;
-        
+
         return (
             <div className={classNames(this.props.className, classes.root)}>
                 <Grid container

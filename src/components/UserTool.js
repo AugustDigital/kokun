@@ -73,40 +73,46 @@ class UserTool extends Component {
         })
         this.onChangeStep(1)
     }
-    async signTransaction(nrgPrice, to, amount, nrg) {
+    async signTransaction(transaction) {
         const aion = new Accounts();
         const account = aion.privateKeyToAccount(this.state.privateKey);
-        const nonce = this.state.web3.eth.getTransactionCount(account.address);
-        let totalAions = this.state.web3.toWei(amount, "ether");
-
-        let transaction = {
-            nonce: nonce,
-            gasPrice: nrgPrice,
-            to: to,
-            value: totalAions,
-            gas: nrg,
-            timestamp: Date.now() * 1000
-        };
-
         const signedTransaction = await account.signTransaction(transaction);
 
         return signedTransaction;
     }
-    onSendStepContinue = (currency, from, to, amount, nrg, nrgPrice, nrgLimit) => {
-        if (this.state.privateKey === 'ledger') {
-            const nonce = this.state.web3.eth.getTransactionCount(from);
-            let totalAions = this.state.web3.toWei(amount, "ether");
+    toTransaction = (currency, from, to, amount, nrg, nrgPrice) => {
+        let methodData = null;
+        let aionAmount = this.state.web3.toWei(amount, "ether");
+        let actualReciepient = to;
+        const nonce = this.state.web3.eth.getTransactionCount(from);
+        if (currency.contract) {
+            methodData = currency.contract.send.getData(
+                to,
+                amount * Math.pow(10, 18),
+                '0x')
+            aionAmount = 0;
+            actualReciepient = currency.contract.address
+        }
+        return {
+            nonce: nonce,
+            gasPrice: nrgPrice,
+            to: actualReciepient,
+            value: aionAmount,
+            gas: nrg,
+            timestamp: Date.now() * 1000,
+            data: methodData,
+            type: null,
+        };
+    }
+    onRequestGasEstimate = (currency, from, to, amount, nrg, nrgPrice) => {
+        const transaction = this.toTransaction(currency, from, to, amount, nrg, nrgPrice)
+        return this.state.web3.eth.estimateGas({ data: transaction })
+    }
+    onSendStepContinue = (currency, from, to, amount, nrg, nrgPrice) => {
+        const transaction = this.toTransaction(currency, from, to, amount, nrg, nrgPrice)
 
-            let transaction = {
-                nonce: nonce,
-                from: from,
-                to: to,
-                value: parseInt(totalAions, 10),
-                gasPrice: nrgPrice,
-                gas: nrg,
-                timestamp: Date.now() * 1000,
-                data: '0x'
-            };
+        console.log(transaction)
+        if (this.state.privateKey === 'ledger') {
 
             let ledgerConnection = new LedgerProvider()
             ledgerConnection.unlock(null).then((address) => {
@@ -115,7 +121,7 @@ class UserTool extends Component {
                     this.setState({
                         checkLedger: false,
                         step: 2,
-                        transactionData: { currency, from, to, amount, nrg, nrgPrice, nrgLimit },
+                        transactionData: { currency, from, to, amount, nrg, nrgPrice },
                         rawTransaction: signedTransaction.rawTransaction
                     })
 
@@ -125,14 +131,16 @@ class UserTool extends Component {
                 })
             })
         } else {
-            this.signTransaction(nrgPrice, to, amount, nrg).then((signedTransaction) => {
+            this.signTransaction(transaction).then((signedTransaction) => {
+                console.log(signedTransaction.rawTransaction)
                 this.setState({
                     step: 2,
-                    transactionData: { currency, from, to, amount, nrg, nrgPrice, nrgLimit },
+                    transactionData: { currency, from, to, amount, nrg, nrgPrice },
                     rawTransaction: signedTransaction.rawTransaction
                 })
                 this.onChangeStep(2)
             }).catch((error) => {
+                console.trace(error)
                 alert(error)
             })
         }
@@ -160,7 +168,7 @@ class UserTool extends Component {
 
                 if (receipt) {
                     clearInterval(timer);
-                    let status = parseInt(receipt.status,16)
+                    let status = parseInt(receipt.status, 16)
                     let message = status === 1 ? 'Succesfully Sent!' : 'Transaction error!';
                     this.setState({
                         step: 4,
@@ -182,7 +190,7 @@ class UserTool extends Component {
     }
     onSentSuccess = () => {
         this.setState({
-            step: 0
+            step: 0,
         })
         this.onChangeStep(0)
     }
@@ -195,7 +203,7 @@ class UserTool extends Component {
         let content = null;
         let status = null;
 
-        const isTestnet =  web3Provider === developmentProvider;
+        const isTestnet = web3Provider === developmentProvider;
 
         if (transactionStatus === 1) {
             status = <CheckCircleRounded className={classes.checkIcon} />
@@ -216,16 +224,17 @@ class UserTool extends Component {
                     account={account}
                     onSendStepContinue={this.onSendStepContinue}
                     onSendStepBack={this.onSendStepBack}
+                    onRequestGasEstimate={this.onRequestGasEstimate}
                     currency={transactionData.currency}//following data is in the case of 'back' navigation
                     from={transactionData.from}
                     to={transactionData.to}
                     amount={transactionData.amount}
                     nrg={transactionData.nrg}
                     nrgPrice={transactionData.nrgPrice}
-                    nrgLimit={transactionData.nrgLimit}
                     rawTransaction={rawTransaction}
                     checkLedger={checkLedger}
                     defaultRecipient={defaultRecipient}
+                    web3Provider={web3Provider}
                 />);
                 break;
             }
@@ -239,7 +248,6 @@ class UserTool extends Component {
                     amount={transactionData.amount}
                     nrg={transactionData.nrg}
                     nrgPrice={transactionData.nrgPrice}
-                    nrgLimit={transactionData.nrgLimit}
                     rawTransaction={rawTransaction}
                     privateKey={privateKey}
                     web3Provider={web3Provider}

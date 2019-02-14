@@ -4,7 +4,7 @@ const AppPalette = {
     secondary: { main: '#F2F6FA', contrastText: '#113665' },
     type: 'dark',
     isWidget: false,
-    background: { default: '#DCE1ED', white: '#fff', warning: '#E89000', error: '#e03051', blueGradient: 'linear-gradient(225deg, #08023C, #229DB7 80%);' },
+    background: { default: '#DCE1ED', white: '#fff', warning: '#E89000', error: '#e03051', blueGradient: 'linear-gradient(225deg, #08023C, #229DB7 80%);', dropDown: '#113665'},
     text: {
         primary: '#F2F6FA',
         secondary: '#113665',
@@ -30,14 +30,14 @@ const AppPalette = {
         background: '#fff',
         border: '#5AF0BD',
         text: '#113665'
-    }
+    },
 }
 const WidgetPalette = {
     primary: { main: '#113665', contrastText: '#fff' },
     secondary: { main: '#113665', contrastText: '#fff' },
     type: 'dark',
     isWidget: true,
-    background: { default: '#ECF1F7', white: '#fff', warning: '#E89000', error: '#e03051', blueGradient: 'linear-gradient(225deg, #08023C, #229DB7);',aionPay:'#113665' },//can cause issues when exported as a widget lib
+    background: { default: '#ECF1F7', white: '#fff', warning: '#E89000', error: '#e03051', blueGradient: 'linear-gradient(225deg, #08023C, #229DB7);',aionPay:'#113665', dropDown: '#fff' },//can cause issues when exported as a widget lib
     text: {
         primary: '#113665',
         secondary: '#F2F6FA',

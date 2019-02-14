@@ -1,11 +1,15 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Web3 from 'aion-web3';
-import { withStyles, Typography, TextField, Grid, Button, FormControl, Select, MenuItem } from '@material-ui/core'
+import { withStyles, Typography, TextField, Grid, Button } from '@material-ui/core'
 import { Warning } from '@material-ui/icons';
 import PrimaryButton from '../PrimaryButton'
 import * as TransactionUtil from '../../utils/TransactionUtil';
 import SecondaryButton from '../SecondaryButton';
+import CoinDropdown from '../CoinDropdown';
+import ATSInterface from '../../common/ATSInterface';
+import globalTokenContractRegistry from '../../common/ContractRegistry'
+
 
 const styles = theme => ({
     dropDownContainer: {
@@ -13,27 +17,38 @@ const styles = theme => ({
         borderWidth: '1px',
         borderRadius: '3px',
         borderColor: theme.palette.secondary.main,
-        paddingLeft: theme.spacing.unit,
-        paddingRight: theme.spacing.unit
+        width: 'auto'
     },
     dropDownLable: {
-        borderRight: '1px solid '+theme.palette.secondary.main,
+        borderRight: '1px solid ' + theme.palette.secondary.main,
         fontWeight: 'light',
         float: 'left',
         position: 'reltive',
         paddingTop: theme.spacing.unit,
         paddingBottom: theme.spacing.unit,
-        paddingRight: theme.spacing.unit
+        paddingRight: theme.spacing.unit * 3,
+        paddingLeft: theme.spacing.unit * 3,
     },
     dropDown: {
-        paddingLeft: theme.spacing.unit * 2,
-        marginTop: '4px'
+        paddingLeft: theme.spacing.unit * 4,
+        paddingRight: theme.spacing.unit * 4,
+        paddingTop: theme.spacing.unit,
+        paddingBottom: theme.spacing.unit,
+    },
+    dropDownItem: {
+        paddingTop: theme.spacing.unit,
+        paddingBottom: theme.spacing.unit,
+        borderRadius: 0,
+        borderStyle: 'solid',
+        borderWidth: '1px',
+        borderColor: theme.palette.secondary.main,
+        color: theme.palette.text.primary + ' !important'
     },
     textFieldInput: {
-        color: theme.palette.text.primary+' !important'
+        color: theme.palette.text.primary + ' !important'
     },
     textField: {
-        color: theme.palette.text.primary+' !important',
+        color: theme.palette.text.primary + ' !important',
     },
     continueButton: {
         marginLeft: theme.spacing.unit
@@ -58,57 +73,119 @@ const styles = theme => ({
     },
     underline: {
         '&:before': {
-            borderBottom: '2px solid '+theme.palette.common.underlineContrast,
+            borderBottom: '2px solid ' + theme.palette.common.underlineContrast,
         },
         '&:after': {
             borderBottom: `2px solid ${theme.palette.common.underlineFocusedContrast}`
         }
     },
     menuItem: {
-        color:theme.palette.common.white
+        color: theme.palette.common.white,
+        backgroundColor: theme.palette.primary.main + ' !important'
     },
-    editButton:{
+    editButton: {
         borderColor: theme.palette.secondary.main,
         fontSize: 11,
+    },
+    menu: {
+        backgroundColor: 'transparent !important',
+        boxShadow: 'none',
+        position: 'absolute',
+        borderStyle: 'solid',
+        borderWidth: '1px',
+        borderRadius: '3px',
+        borderColor: theme.palette.secondary.main,
+    },
+    menuItemBottomBorder: {
+        borderBottomWidth: '1px',
+        borderBottomStyle: 'solid',
+        borderBottomColor: theme.palette.secondary.main,
+    },
+    balanceText: {
+        color: theme.palette.common.green,
+        marginTop: '5px'
+    },
+    fromText: {
+        wordBreak: 'break-all'
     }
 })
+
 class SendStep extends Component {
 
-    state = {
-        currencyId: 0,
-        labelWidth: 0,
-        availableCurrencies: ['Aion'], //in the future add other tockens like 'Plat'
-        recipient: this.props.to ? this.props.to : (this.props.defaultRecipient ? this.props.defaultRecipient : ''),
-        amount: this.props.amount ? this.props.amount : '',
-        customNrg: false,
-        nrgPrice: TransactionUtil.defaultNrgPrice,
-        nrgLimit: TransactionUtil.defaultNrgLimit,
-        nrg: this.props.nrg ? this.props.nrg : TransactionUtil.defaultNrgLimit,
-        error: false,
-        errorMessage: '',
-        account: this.props.account,
-        web3: null
+    constructor(props) {
+        super(props);
+        this.defaultCurrencies = [{ name: 'Aion', contract: null, getBalance: this.getBalance }];
+        this.state = {
+            currencyId: globalTokenContractRegistry.contracts.indexOf(this.props.currency) === -1 ? 0 : globalTokenContractRegistry.contracts.indexOf(this.props.currency) + this.defaultCurrencies.length,
+            labelWidth: 0,
+            availableCurrencies: this.defaultCurrencies.concat(globalTokenContractRegistry.contracts),
+            recipient: this.props.to ? this.props.to : (this.props.defaultRecipient ? this.props.defaultRecipient : ''),
+            amount: this.props.amount ? this.props.amount : '',
+            customNrg: false,
+            nrgPrice: TransactionUtil.defaultNrgPrice,
+            nrg: this.props.nrg ? this.props.nrg : TransactionUtil.defaultNrgLimit,
+            errorMessage: null,
+            account: this.props.account,
+            web3: new Web3(new Web3.providers.HttpProvider(this.props.web3Provider))
+        }
     }
 
     componentDidMount() {
-        this.setState({ web3: new Web3(new Web3.providers.HttpProvider(this.props.web3Provider))});
+        this.setState({ web3: new Web3(new Web3.providers.HttpProvider(this.props.web3Provider)) });
     }
 
-    async updateNrg(from, to, amount) {
-
-        try{
-            let totalAions = this.state.web3.toWei(amount, "ether");
-            let transaction = { from: from, to: to, value: totalAions };
-            let estimatedNrg = this.state.web3.eth.estimateGas(transaction);
-            this.setState({ nrg: estimatedNrg });
-        }catch(e){
+    async updateNrg() {
+        const { availableCurrencies, currencyId, amount, recipient, nrg, nrgPrice, account } = this.state;
+        try {
+            this.setState({ nrg: this.props.onRequestGasEstimate(availableCurrencies[currencyId], account, recipient, parseFloat(amount, 10), nrg, nrgPrice) });
+        } catch (e) {
             console.log(e)
         }
 
     }
+    getBalance = () => {
+        const balance = this.state.web3.eth.getBalance(this.state.account).toNumber()
+        return parseFloat(this.state.web3.fromWei(balance, 'ether')).toFixed(2)
+    }
 
-    handleCurrencyChange = event => {
-        this.setState({ [event.target.name]: event.target.value });
+    updateCurrenciesWithAddress = address => {
+        console.log(address)
+        try {
+            const tokenContract = this.state.web3.eth.contract(ATSInterface).at(address)
+            const symbol = tokenContract.symbol.call();
+            if (0 < symbol.length) {
+                const contractData = {
+                    name: symbol,
+                    contract: tokenContract,
+                    getBalance: () => {
+                        var balance = tokenContract.balanceOf.call(this.props.account).toNumber()
+                        return parseFloat(this.state.web3.fromWei(balance, 'ether')).toFixed(2)
+                    }
+                }
+                globalTokenContractRegistry.addContract(contractData)
+                this.state.availableCurrencies.push(contractData)
+                this.setState({
+                    availableCurrencies: this.state.availableCurrencies,
+                    errorMessage: null
+                })
+            } else {
+                this.setState({
+                    errorMessage: 'Invalid token address'
+                })
+            }
+        } catch (ex) {
+            console.log(ex)
+            this.setState({
+                errorMessage: 'Invalid token address'
+            })
+        }
+
+
+    }
+
+    handleCurrencyChange = data => {
+        this.updateNrg()
+        this.setState({ currencyId: data });
     };
 
     onRecipientEntered = (event) => {
@@ -134,15 +211,13 @@ class SendStep extends Component {
         this.setState({
             nrgPrice: event.target.value
         })
-        this.updateNrg(this.state.account, this.state.recipient, this.state.amount);
     }
 
     onNrgLimitEntered = (event) => {
 
         this.setState({
-            nrgLimit: event.target.value
+            nrg: event.target.value
         })
-        this.updateNrg(this.state.account, this.state.recipient, this.state.amount);
     }
 
     isFormValid = () => {
@@ -151,21 +226,16 @@ class SendStep extends Component {
         if (typeof (recipient) === 'undefined' || recipient.length < 0 || isNaN(parseInt(amount, 10))) {
             this.setState({
                 valid: false,
-                error: true,
                 errorMessage: 'Fields missing'
             })
         } else {
-            this.setState({ error: false, valid: true, errorMessage: '' })
+            this.setState({ valid: true, errorMessage: null })
         }
     }
 
     render() {
         const { classes, onSendStepBack, onSendStepContinue, checkLedger, defaultRecipient } = this.props;
-        const { availableCurrencies, currencyId, amount, recipient, customNrg, nrg, nrgLimit, nrgPrice, error, errorMessage, valid, account } = this.state;
-
-        const dropDownItems = availableCurrencies.map((item, index) => {
-            return (<MenuItem key={index} value={index} className={classes.menuItem}>{item}</MenuItem>)
-        })
+        const { availableCurrencies, currencyId, amount, recipient, customNrg, nrg, nrgPrice, errorMessage, valid, account } = this.state;
 
         return (
             <Grid
@@ -177,43 +247,25 @@ class SendStep extends Component {
                     direction="row"
                     justify="space-between"
                     alignItems="center">
-                    <Typography variant="h4" style={{ fontWeight: 'bold' }}> Send {availableCurrencies[currencyId]}</Typography>
-                    <div className={classes.dropDownContainer}>
-
+                    <Typography variant="h4" style={{ fontWeight: 'bold' }}> Send {availableCurrencies[currencyId].name}</Typography>
+                    <Grid
+                        container
+                        direction="row"
+                        justify="flex-end"
+                        alignItems="center"
+                        className={classes.dropDownContainer}>
                         <Typography variant="subtitle2" className={classes.dropDownLable}>Currency:</Typography>
-                        <span >
-                            <FormControl className={classes.dropDown}>
-                                <Select
-                                    disableUnderline={true}
-                                    value={this.state.currencyId}
-                                    onChange={this.handleCurrencyChange}
-                                    name="currencyId">
-                                    {dropDownItems}
-                                </Select>
-                            </FormControl>
-                        </span>
-
-                    </div>
-
+                        <CoinDropdown
+                            className={classes.dropDown}
+                            itemClassName={classes.dropDownItem}
+                            onChange={this.handleCurrencyChange}
+                            items={availableCurrencies.map(item => item.name)}
+                            onTockenAddressEntered={this.updateCurrenciesWithAddress} />
+                    </Grid>
                 </Grid>
-                <TextField
-                    disabled
-                    label="FROM"
-                    value={account}
-                    className={classes.textField}
-                    style={{ marginTop: '45px' }}
-                    margin="normal"
-                    InputLabelProps={{
-                        className: classes.textField
-                    }}
-                    InputProps={{
-                        disableUnderline: true,
-                        classes: {
-                            input: classes.textFieldInput,
-                        }
-                    }
-                    }
-                />
+                <Typography variant="caption" style={{ marginTop: '25px', marginBottom: '5px' }}>FROM</Typography>
+                <Typography variant="subtitle2" className={classes.balanceText}>Wallet Ballance: {availableCurrencies[currencyId].getBalance()}</Typography>
+                <Typography variant="body1" className={classes.fromText}>{account}</Typography>
                 <TextField
                     fullWidth
                     label="To"
@@ -221,7 +273,7 @@ class SendStep extends Component {
                     value={recipient}
                     margin="normal"
                     color="primary"
-                    disabled={typeof(defaultRecipient)!=='undefined'&&defaultRecipient!==null}
+                    disabled={typeof (defaultRecipient) !== 'undefined' && defaultRecipient !== null}
                     onChange={this.onRecipientEntered.bind(this)}
                     onBlur={this.onRecipientEntered.bind(this)}
                     InputLabelProps={{
@@ -267,7 +319,7 @@ class SendStep extends Component {
                             value={nrg}
                             className={classes.textField}
                             margin="normal"
-                            style={{width:'120px'}}
+                            style={{ width: '120px' }}
                             InputLabelProps={{
                                 className: classes.textField,
                             }}
@@ -317,7 +369,7 @@ class SendStep extends Component {
                                     fullWidth
                                     label="NRG Limit"
                                     className={classes.textField}
-                                    value={nrgLimit}
+                                    value={nrg}
                                     margin="normal"
                                     color="primary"
                                     type="number"
@@ -338,7 +390,7 @@ class SendStep extends Component {
                     </div>}
 
                 {
-                    (error) ?
+                    (errorMessage) ?
                         <Grid className={classes.error}
                             container
                             direction="row"
@@ -355,18 +407,18 @@ class SendStep extends Component {
 
                 {
                     (checkLedger) ?
-                    <Grid className={classes.error}
-                        container
-                        direction="row"
-                        justify="flex-start"
-                        alignItems="center">
-                        <Grid item>
-                            <Warning className={classes.warningIcon} />
-                        </Grid>
-                        <Grid item>
-                            <Typography variant="subtitle2">Please confirm transaction on Ledger</Typography>
-                        </Grid>
-                    </Grid> :null
+                        <Grid className={classes.error}
+                            container
+                            direction="row"
+                            justify="flex-start"
+                            alignItems="center">
+                            <Grid item>
+                                <Warning className={classes.warningIcon} />
+                            </Grid>
+                            <Grid item>
+                                <Typography variant="subtitle2">Please confirm transaction on Ledger</Typography>
+                            </Grid>
+                        </Grid> : null
                 }
 
                 <Grid spacing={8}
@@ -377,13 +429,13 @@ class SendStep extends Component {
                     style={{ paddingTop: '25px' }}>
                     <SecondaryButton
                         onClick={onSendStepBack}
-                        text='Back'/>
+                        text='Back' />
                     <PrimaryButton
                         showArrow
                         disabled={!valid}
-                        onClick={() => { onSendStepContinue(availableCurrencies[currencyId], account, recipient, parseFloat(amount, 10), nrg, nrgPrice, nrgLimit) }}
+                        onClick={() => { onSendStepContinue(availableCurrencies[currencyId], account, recipient, parseFloat(amount, 10), nrg, nrgPrice) }}
                         className={classes.continueButton}
-                        text='Continue'/>
+                        text='Continue' />
                 </Grid>
             </Grid>
         );
@@ -393,7 +445,8 @@ class SendStep extends Component {
 SendStep.propTypes = {
     classes: PropTypes.object.isRequired,
     onSendStepContinue: PropTypes.func.isRequired,
-    onSendStepBack: PropTypes.func.isRequired
+    onSendStepBack: PropTypes.func.isRequired,
+    onRequestGasEstimate: PropTypes.func.isRequired,
 };
 
 export default withStyles(styles)(SendStep);

@@ -14,23 +14,23 @@ const styles = theme => ({
     fatLable: {
         fontWeight: 'bold',
         marginRight: theme.spacing.unit * 2,
-        color:theme.palette.primary.main,
-        minWidth:'45px'
+        color: theme.palette.primary.main,
+        minWidth: '45px'
     },
     thinLable: {
         fontWeight: 300,
-        color:theme.palette.primary.main,
-        wordBreak: 'break-all' 
+        color: theme.palette.primary.main,
+        wordBreak: 'break-all'
     },
     rawTitle: {
         fontWeight: 'bold',
         marginRight: theme.spacing.unit * 2,
-        color:theme.palette.text.primary,
+        color: theme.palette.text.primary,
     },
     rawDetail: {
         fontWeight: 300,
-        color:theme.palette.text.primary,
-        wordBreak: 'break-all' 
+        color: theme.palette.text.primary,
+        wordBreak: 'break-all'
     },
     transactionRow: {
         marginTop: theme.spacing.unit * 1
@@ -44,7 +44,7 @@ const styles = theme => ({
     },
     error: {
         color: theme.palette.common.link,
-        fontWeight:'bold'
+        fontWeight: 'bold'
     }
 })
 class ConfirmStep extends Component {
@@ -54,43 +54,44 @@ class ConfirmStep extends Component {
         super(props);
         this.state = {
             web3: null,
-            errorMessage:null
+            errorMessage: null
         }
     }
 
     componentDidMount() {
-        this.setState({ web3: new Web3(new Web3.providers.HttpProvider(this.props.web3Provider))});
+        this.setState({ web3: new Web3(new Web3.providers.HttpProvider(this.props.web3Provider)) });
     }
 
-    async sendTransaction(){
-        try{
+    async sendTransaction() {
+        try {
             const transactionHash = await this.state.web3.eth.sendRawTransaction(this.props.rawTransaction)
             this.props.onTransactionStepContinue(transactionHash)
-        }catch(error){
-            this.setState({errorMessage:"Error sending transaction. Check your balance."})
+        } catch (error) {
+            console.log(error)
+            this.setState({ errorMessage: "Error sending transaction. Check your balance." })
         }
     }
 
     render() {
-        const { classes, to, from, amount, nrg, nrgPrice, nrgLimit, rawTransaction, onTransactonStepBack} = this.props;
-        const {errorMessage} = this.state;
+        const { classes, to, from, amount, nrg, nrgPrice, nrgLimit, rawTransaction, onTransactonStepBack } = this.props;
+        const { errorMessage } = this.state;
         return (
             <div>
-                    <Grid spacing={0}
-                        container
-                        direction="column"
-                        justify="flex-start">
-                        <Typography variant="h4" style={{ fontWeight: 'bold', marginTop: '25px', marginBottom:'15px'}}>Confirm Transaction</Typography>
-                        {errorMessage!==null?
-                            <Typography variant="subtitle2" className={classes.error}>{errorMessage}</Typography>
-                            :null}
-                        
-                        <Paper className={classes.paper}>
+                <Grid spacing={0}
+                    container
+                    direction="column"
+                    justify="flex-start">
+                    <Typography variant="h4" style={{ fontWeight: 'bold', marginTop: '25px', marginBottom: '15px' }}>Confirm Transaction</Typography>
+                    {errorMessage !== null ?
+                        <Typography variant="subtitle2" className={classes.error}>{errorMessage}</Typography>
+                        : null}
+
+                    <Paper className={classes.paper}>
                         <Grid spacing={0}
-                        container
-                        direction="column"
-                        justify="flex-start">
-<Grid
+                            container
+                            direction="column"
+                            justify="flex-start">
+                            <Grid
                                 container
                                 direction="row"
                                 justify="space-between"
@@ -117,7 +118,7 @@ class ConfirmStep extends Component {
                                 className={classes.transactionRow}
                                 wrap='nowrap'>
                                 <Typography color="textSecondary" variant="subtitle2" className={classes.fatLable}>AMOUNT</Typography>
-                                <Typography color="textSecondary" variant="subtitle2" style={{ fontWeight: 'bold', color:'#113665' }}>{amount}</Typography>
+                                <Typography color="textSecondary" variant="subtitle2" style={{ fontWeight: 'bold', color: '#113665' }}>{amount}</Typography>
                             </Grid>
                             <Grid
                                 container
@@ -150,39 +151,39 @@ class ConfirmStep extends Component {
                                 <Typography color="textSecondary" variant="subtitle2" className={classes.thinLable}>{nrgLimit}</Typography>
                             </Grid>
                         </Grid>
-                            
-                        </Paper>
-                        <Grid
-                            container
-                            spacing={0}
-                            wrap="wrap"
-                            direction="row"
-                            justify="space-between"
-                            alignItems="flex-start"
-                            style={{ marginTop: '25px' }}>
-                            <Grid item>
-                                <Typography variant="subtitle2" className={classes.rawTitle}>Raw Transaction</Typography>
-                            </Grid>
-                            <Grid item xs>
-                                <Typography variant="subtitle2" className={classes.rawDetail} >{rawTransaction}</Typography>
-                            </Grid>
+
+                    </Paper>
+                    <Grid
+                        container
+                        spacing={0}
+                        wrap="wrap"
+                        direction="row"
+                        justify="space-between"
+                        alignItems="flex-start"
+                        style={{ marginTop: '25px' }}>
+                        <Grid item>
+                            <Typography variant="subtitle2" className={classes.rawTitle}>Raw Transaction</Typography>
                         </Grid>
-                        <Grid spacing={8}
-                            container
-                            direction="row"
-                            justify="flex-end"
-                            alignItems="flex-start"
-                            style={{ paddingTop: '45px' }}>
-                            <SecondaryButton
-                                onClick={onTransactonStepBack}
-                                text='Back'/>
-                            <PrimaryButton
-                                showArrow
-                                onClick={this.sendTransaction.bind(this)}
-                                className={classes.continueButton}
-                                text='Continue'/>
+                        <Grid item xs>
+                            <Typography variant="subtitle2" className={classes.rawDetail} >{rawTransaction}</Typography>
                         </Grid>
                     </Grid>
+                    <Grid spacing={8}
+                        container
+                        direction="row"
+                        justify="flex-end"
+                        alignItems="flex-start"
+                        style={{ paddingTop: '45px' }}>
+                        <SecondaryButton
+                            onClick={onTransactonStepBack}
+                            text='Back' />
+                        <PrimaryButton
+                            showArrow
+                            onClick={this.sendTransaction.bind(this)}
+                            className={classes.continueButton}
+                            text='Continue' />
+                    </Grid>
+                </Grid>
 
             </div>
 
@@ -194,15 +195,13 @@ ConfirmStep.propTypes = {
     classes: PropTypes.object.isRequired,
     onTransactionStepContinue: PropTypes.func.isRequired,
     onTransactonStepBack: PropTypes.func.isRequired,
-    currency: PropTypes.string.isRequired,
+    currency: PropTypes.object.isRequired,
     from: PropTypes.string.isRequired,
     to: PropTypes.string.isRequired,
     amount: PropTypes.number.isRequired,
     nrg: PropTypes.number.isRequired,
-    //nrgPrice: PropTypes.number.isRequired, uncomment if needed
-    //nrgLimit: PropTypes.number.isRequired,
     rawTransaction: PropTypes.string.isRequired,
-    web3Provider:PropTypes.string.isRequired,
+    web3Provider: PropTypes.string.isRequired,
 };
 
 export default withStyles(styles)(ConfirmStep);
