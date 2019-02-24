@@ -205,7 +205,13 @@ class WalletProvidersStep extends Component {
                 create: this.createPrivateKeyPanel,
                 unlock: this.unlockPrivateKey,
                 validate: this.validatePrivateKey
-            }
+            },
+            {
+                title: 'Keyterpillar',
+                create: this.createKTPKeyPanel,
+                unlock: this.unlockKTPKey,
+                validate: this.validateKTPCredentials
+            },
         ];
     }
     componentDidMount() {
@@ -316,6 +322,16 @@ class WalletProvidersStep extends Component {
 
             }catch(e){
                 this.setState({privateKeyError: true, privateKeyErrorMessage: "Invalid key"})
+                reject(false)
+            }
+        })
+    }
+
+    unlockKTPKey = () =>{
+        return new Promise((resolve, reject) => {
+            try{
+                resolve({todo:'todo'})
+            }catch(e){
                 reject(false)
             }
         })
@@ -481,6 +497,10 @@ class WalletProvidersStep extends Component {
         </div>);
     }
 
+    createKTPKeyPanel =() =>{
+        return(<div>Keyterpillar</div>)
+    }
+
     validateLedger = () => {
 
         const {ledgerConnected} = this.state;
@@ -493,6 +513,9 @@ class WalletProvidersStep extends Component {
     validatePrivateKey = () => {
         const { privateKey } = this.state;
         return privateKey !== null && privateKey.length > 0;
+    }
+    validateKTPCredentials=()=>{
+        return true;
     }
     render() {
         const { classes, showInfoHeader } = this.props;
