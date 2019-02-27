@@ -10,6 +10,7 @@ import LockIcon from '../../assets/lock_icon.svg'
 import LedgerProvider from '../../utils/ledger/LedgerProvider'
 import {promiseTimeout} from '../../utils/promiseTimeout';
 import PrimaryButton from '../PrimaryButton'
+import Keyterpillar from '../keyterpillar/Keyterpillar'
 
 const Accounts = require('aion-keystore');
 
@@ -330,8 +331,19 @@ class WalletProvidersStep extends Component {
     unlockKTPKey = () =>{
         return new Promise((resolve, reject) => {
             try{
-                resolve({todo:'todo'})
+                const aion = new Accounts();
+                let account = aion.privateKeyToAccount(this.state.privateKey);
+                const timer = setInterval(() => {
+                    if (this.state.completed === 100) {
+                        clearInterval(timer);
+                        resolve(account)
+                    } else {
+                        this.setState({ completed: this.state.completed + 25 })
+                    }
+                }, 400);
+
             }catch(e){
+                this.setState({privateKeyError: true, privateKeyErrorMessage: "Invalid key"})
                 reject(false)
             }
         })
@@ -498,7 +510,9 @@ class WalletProvidersStep extends Component {
     }
 
     createKTPKeyPanel =() =>{
-        return(<div>Keyterpillar</div>)
+        return(<Keyterpillar
+            onGotPkFromKeyterpillar={this.onPrivateKeyEntered.bind(this)}
+            web3Provider={this.props.web3Provider}/>)
     }
 
     validateLedger = () => {
@@ -515,7 +529,8 @@ class WalletProvidersStep extends Component {
         return privateKey !== null && privateKey.length > 0;
     }
     validateKTPCredentials=()=>{
-        return true;
+        const { privateKey } = this.state;
+        return privateKey !== null && privateKey.length > 0;
     }
     render() {
         const { classes, showInfoHeader } = this.props;
@@ -587,7 +602,8 @@ class WalletProvidersStep extends Component {
 
 WalletProvidersStep.propTypes = {
     classes: PropTypes.object.isRequired,
-    onAccountImported: PropTypes.func.isRequired
+    onAccountImported: PropTypes.func.isRequired,
+    web3Provider: PropTypes.string.isRequired
 };
 
 export default withStyles(styles)(WalletProvidersStep);

@@ -279,6 +279,7 @@ class UserTool extends Component {
                 content = (<WalletProvidersStep
                     onAccountImported={this.onAccountImported}
                     showInfoHeader={showInfoHeader}
+                    web3Provider={web3Provider}
                 />);
                 break;
             }
