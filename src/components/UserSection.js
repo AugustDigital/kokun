@@ -91,7 +91,7 @@ class UserSection extends Component {
                         <div className={classes.left}>
                             <div className={classes.infoContainer}>
                                 <Typography variant="h4" style={{ fontWeight: 300 }}> Connect With the Aion network</Typography>
-                                <Typography variant="subtitle2" style={{ fontWeight: 'light', marginTop: '25px' }}>Aion Connect aims to be your toolkit for the Aion Blockchain. We will continue to add new and valuable tools that make it easy to interact with the protocol.</Typography>
+                                <Typography variant="subtitle2" style={{ fontWeight: 'light', marginTop: '25px' }}>Aion Pay aims to be your toolkit for the Aion Blockchain. We will continue to add new and valuable tools that make it easy to interact with the protocol.</Typography>
                             </div>
                         </div>
                     </Grid>
