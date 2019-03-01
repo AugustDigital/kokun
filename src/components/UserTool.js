@@ -90,9 +90,9 @@ class UserTool extends Component {
     }
     toTransaction = (currency, from, to, amount, nrg, nrgPrice) => {
         let methodData = null;
-        let aionAmount = this.state.web3.toWei(amount, "ether");
+        let aionAmount = parseInt(this.state.web3.toWei(amount, "ether"), 10);
         let actualReciepient = to;
-        const nonce = this.state.web3.eth.getTransactionCount(from);
+        let nonce = parseInt(this.state.web3.eth.getTransactionCount(from), 10);
         if (currency.contract) {
             methodData = currency.contract.send.getData(
                 to,
@@ -177,6 +177,7 @@ class UserTool extends Component {
                     })
 
                 }).catch((error) => {
+                    console.log(error)
                     this.setState({ checkLedger: false });
                     this.onSendStepBack();
                 })
