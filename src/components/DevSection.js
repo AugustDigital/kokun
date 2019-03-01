@@ -132,7 +132,7 @@ class DevSection extends Component {
         //or
         //window.renderAionPayButton()
         //can listen for completion like so:
-        window.AionPayButtonInterface.aionPayButtonCompletionListener = (tx) => { alert(tx) }
+        //window.AionPayButtonInterface.aionPayButtonCompletionListener = (tx) => { alert(tx) }
     }
 
     onGithubButtonPressed = () => {
