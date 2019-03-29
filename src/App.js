@@ -8,7 +8,7 @@ import BottomBar from './components/BottomBar'
 import './Animations.css'
 import PaperPlane from './assets/paperplane.svg'
 
-const PAGE_PADDING ='17%'
+const PAGE_PADDING ='15%'
 const PAGE_PADDING_MOBILE ='5%'
 const styles = theme => ({
   root: {
