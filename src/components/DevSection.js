@@ -21,7 +21,6 @@ const themeExample = {
         disabled: '#113665',
         hint: '#2A2C2E',
         primaryLight: '#819ABA',
-        aionPay:'#cca300'
     },
     common: {
         green: '#5AF0BD',
@@ -39,6 +38,16 @@ const themeExample = {
         background: '#00ff00',
         border: '#5AF0BD',
         text: '#113665'
+    },
+    aionPay:{
+        textColor:'#cca300',
+        backgroundColor:'#000000',
+        fontWeight:'500',
+        fontSize:'11px',
+        paddingTop:'6p',
+        paddingBottom:'6p',
+        paddingLeft:'16p',
+        paddingRight:'16p',
     }
 }
 

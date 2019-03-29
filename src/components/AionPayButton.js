@@ -68,6 +68,12 @@ export const inject = () => {
             let buttonBackground = domContainer.dataset.buttonBackground;
             let buttonTextColor = domContainer.dataset.buttonTextColor;
             let buttonIconType = domContainer.dataset.buttonIconType;
+            let buttonFontWeight = domContainer.dataset.buttonFontWeight;
+            let buttonFontSize = domContainer.dataset.buttonFontSize;
+            let buttonPaddingLeft = domContainer.dataset.buttonPaddingLeft;
+            let buttonPaddingRight = domContainer.dataset.buttonPaddingRight;
+            let buttonPaddingTop = domContainer.dataset.buttonPaddingTop;
+            let buttonPaddingBottom = domContainer.dataset.buttonPaddingBottom;
             let style = domContainer.dataset.style;
             let web3Provider = domContainer.dataset.web3Provider;
             let transactionString = domContainer.dataset.transaction;
@@ -79,10 +85,28 @@ export const inject = () => {
 
             let theme = cloneDeep(WidgetTheme);
             if (buttonBackground) {
-                theme.palette.background.aionPay = buttonBackground;
+                theme.palette.aionPay.backgroundColor = buttonBackground;
             }
             if (buttonTextColor) {
-                theme.palette.text.aionPay = buttonTextColor;
+                theme.palette.aionPay.textColor = buttonTextColor;
+            }
+            if (buttonFontWeight) {
+                theme.palette.aionPay.fontWeight = buttonFontWeight;
+            }
+            if (buttonFontSize) {
+                theme.palette.aionPay.fontSize = buttonFontSize;
+            }
+            if (buttonPaddingTop) {
+                theme.palette.aionPay.paddingTop = buttonPaddingTop;
+            }
+            if (buttonPaddingBottom) {
+                theme.palette.aionPay.paddingBottom = buttonPaddingBottom;
+            }
+            if (buttonPaddingLeft) {
+                theme.palette.aionPay.paddingLeft = buttonPaddingLeft;
+            }
+            if (buttonPaddingRight) {
+                theme.palette.aionPay.paddingRight = buttonPaddingRight;
             }
 
             if (style) {

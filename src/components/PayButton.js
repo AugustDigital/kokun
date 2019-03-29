@@ -14,11 +14,16 @@ const styles = theme => ({
         height: '25px',
     },
     button:{
-        backgroundColor: theme.palette.background.aionPay+' !important',
-        fontSize: theme.typography.aionPayFontSize
+        backgroundColor: theme.palette.aionPay.backgroundColor+' !important',
+        fontSize: theme.palette.aionPay.fontSize+' !important',
+        fontWeight: theme.palette.aionPay.fontWeight+' !important',
+        paddingTop:theme.palette.aionPay.paddingTop,
+        paddingBottom:theme.palette.aionPay.paddingBottom,
+        paddingLeft:theme.palette.aionPay.paddingLeft,
+        paddingRight:theme.palette.aionPay.paddingRight,
     },
     lable:{
-        color:theme.palette.text.aionPay+' !important'
+        color:theme.palette.aionPay.textColor+' !important'
     }
 })
 class PayButton extends Component {

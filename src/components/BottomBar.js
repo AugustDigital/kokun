@@ -6,13 +6,9 @@ import AugustLogoLight from  '../assets/august_logo_light.svg'
 import { defaultProvider, developmentProvider } from '../../global_config'
 import queryString from 'stringquery'
 
+const PAGE_PADDING ='15%'
 const styles = theme => ({
     root: {
-        backgroundImage: 'linear-gradient(rgb(12,30,60) 50%, rgb(15,39,82) 50%)',
-    },
-    appBar: {
-        paddingLeft: theme.spacing.unit * 15,
-        paddingRight: theme.spacing.unit * 15,
     },
     grow: {
         flexGrow: 1,
@@ -20,12 +16,17 @@ const styles = theme => ({
     topSection: {
         paddingTop: theme.spacing.unit * 4,
         paddingBottom: theme.spacing.unit * 3,
+        paddingLeft: PAGE_PADDING,
+        paddingRight: PAGE_PADDING,
     },
     bottomSection: {
         width: '100%',
         textAlign: 'center',
+        paddingLeft: PAGE_PADDING,
+        paddingRight: PAGE_PADDING,
         paddingTop: theme.spacing.unit * 4,
         paddingBottom: theme.spacing.unit * 3,
+        backgroundColor:'rgb(15,39,82)',
         [theme.breakpoints.down('xs')]: {
             paddingBottom: theme.spacing.unit * 5,
         }
@@ -62,10 +63,17 @@ const styles = theme => ({
         }
     },
     infoText:{
-        fontSize:'1.25em',
+        fontSize:'1.0em',
+        color:theme.palette.text.secondary,
+        fontWeight:'400',
+        textAlign: 'center',
+        marginBottom: theme.spacing.unit*4,
         [theme.breakpoints.down('xs')]: {
             fontSize:'0.75em'
         }
+    },
+    donateButton:{
+        marginBottom: theme.spacing.unit*6,
     }
 })
 class BottomBar extends Component {
@@ -87,37 +95,31 @@ class BottomBar extends Component {
         const { classes } = this.props;
         const { Provider } = this.state;
         return (
-            <div className={classNames(this.props.className, classes.root)}>
+            <div className={classNames(this.props.className)}>
                 <Grid
                     container
                     direction="column"
                     justify="center"
                     alignItems="center">
-                    <Grid
-                        className={classes.topSection}
-                        container
-                        wrap="wrap"
-                        direction="row"
-                        justify="space-between"
-                        alignItems="center">
-                        <Grid item xs={12} sm={6} className={classes.infoSection}>
-                            <Typography variant="h6" className={classes.infoText} style={{ fontWeight: 'bold' }}>August is committed to developing more tools and dApps to support and grow the Aion ecosystem</Typography>
+                    <Grid item xs={12} sm={6} className={classes.infoSection}>
+                            <Typography variant="h6" className={classes.infoText} >We are commited to developing more tools and dApps to support and grow the Aion ecosystem. Support us and donate</Typography>
                         </Grid>
-                        <Grid item xs={12} sm={6} className={classes.donateSection}>
-                            <div >
-                                <Typography variant="h6" style={{ fontWeight: '400' }}>Support us and donate</Typography>
-                                <aion-pay
-                                    data-button-text= 'Donate'
-                                    data-button-background='#FFFFFF'
-                                    data-button-text-color='#113665'
-                                    data-button-icon-type='dark'
-                                    data-address='0xa0c14dfdd475dcf305c00299e7d7ca5cacb97633385952d2024a365a1b1ddfa3'
-                                    data-web3-provider={Provider}
-                                ></aion-pay>
-                            </div>
-                        </Grid>
-
-                    </Grid>
+                        <div className={classes.donateButton}>
+                            <aion-pay
+                                data-button-text= 'Donate'
+                                data-button-background='#FFFFFF'
+                                data-button-text-color='#113665'
+                                data-button-font-weight='550'
+                                data-button-font-size='14px'
+                                data-button-icon-type='dark'
+                                data-button-padding-top='10px'
+                                data-button-padding-bottom='10px'
+                                data-button-padding-left='24px'
+                                data-button-padding-right='24px'
+                                data-address='0xa0c14dfdd475dcf305c00299e7d7ca5cacb97633385952d2024a365a1b1ddfa3'
+                                data-web3-provider={Provider}/>
+                        </div>
+                        
                     <div className={classes.bottomSection}>
                         <a target='_blank' rel='noopener noreferrer' href='https://alwaysaugust.co/'>
                             <img alt="August Logo" className={classNames(classes.leftIcon, classes.iconMedium)} src={AugustLogoLight} />
