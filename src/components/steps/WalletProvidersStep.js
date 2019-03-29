@@ -359,6 +359,12 @@ class WalletProvidersStep extends Component {
 
         </div>)
     }
+
+    focusKeystorePasswordField = input => {
+        if (input) {
+            console.log(input)
+        }
+    };
     createKeyStorePanel = (classes) => {
         return (<div className={classes.content}>
             {this.state.keyStoreFile ?
@@ -393,6 +399,7 @@ class WalletProvidersStep extends Component {
                         margin="normal"
                         color="secondary"
                         type="password"
+                        autoFocus
                         onChange={(event) => this.onKeystorePasswordEntered(event.target.value)}
                         InputProps={{
                             classes: {
@@ -454,6 +461,7 @@ class WalletProvidersStep extends Component {
                 margin="normal"
                 color="secondary"
                 type="password"
+                autoFocus
                 onChange={(event) => this.onPrivateKeyEntered(event.target.value)}
                 InputProps={{
                     classes: {
