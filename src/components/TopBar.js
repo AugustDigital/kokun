@@ -30,7 +30,7 @@ const styles = theme => ({
   },
   helpButton: {
     textTransform: 'none',
-    fontSize: 15
+    fontSize: 14
   }
 })
 class TopBar extends Component {

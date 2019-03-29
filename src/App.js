@@ -8,7 +8,7 @@ import BottomBar from './components/BottomBar'
 import './Animations.css'
 import PaperPlane from './assets/paperplane.svg'
 
-const PAGE_PADDING ='17%'
+const PAGE_PADDING ='15%'
 const PAGE_PADDING_MOBILE ='5%'
 const styles = theme => ({
   root: {
@@ -33,11 +33,10 @@ const styles = theme => ({
     paddingRight: PAGE_PADDING,
     paddingLeft: PAGE_PADDING,
     paddingTop: theme.spacing.unit * 6,
-    paddingBottom: theme.spacing.unit * 12,
+    paddingBottom: theme.spacing.unit * 6,
     [theme.breakpoints.down('xs')]: {
       paddingRight: PAGE_PADDING_MOBILE,
       paddingLeft: PAGE_PADDING_MOBILE,
-      paddingBottom: theme.spacing.unit * 6,
     }
   },
   bottomBar: {
@@ -74,7 +73,7 @@ class App extends Component {
         <div className={classes.devSectionContainer}>
           <DevSection className={classes.devSection} />
         </div>
-        <BottomBar className={classes.bottomBar} />
+        <BottomBar/>
       </div>
     );
   }

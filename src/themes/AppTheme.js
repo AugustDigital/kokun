@@ -37,14 +37,13 @@ const WidgetPalette = {
     secondary: { main: '#113665', contrastText: '#fff' },
     type: 'dark',
     isWidget: true,
-    background: { default: '#ECF1F7', white: '#fff', warning: '#E89000', error: '#e03051', blueGradient: 'linear-gradient(225deg, #08023C, #229DB7);',aionPay:'#113665', dropDown: '#fff' },//can cause issues when exported as a widget lib
+    background: { default: '#ECF1F7', white: '#fff', warning: '#E89000', error: '#e03051', blueGradient: 'linear-gradient(225deg, #08023C, #229DB7);', dropDown: '#fff' },//can cause issues when exported as a widget lib
     text: {
         primary: '#113665',
         secondary: '#F2F6FA',
         disabled: '#F2F6FA',
         hint: '#2A2C2E',
         primaryLight: '#819ABA',
-        aionPay:'#ffffff'
     },
     common: {
         green: '#5AF0BD',
@@ -63,11 +62,21 @@ const WidgetPalette = {
         background: '#ECF1F7',
         border: '#0D1F53',
         text: '#113665'
+    },
+    aionPay:{
+        textColor:'#ffffff',
+        backgroundColor:'#113665',
+        fontWeight:'500',
+        fontSize:'11px',
+        paddingTop:'6p',
+        paddingBottom:'6p',
+        paddingLeft:'16p',
+        paddingRight:'16p',
     }
 }
 const AppTypography = {
     useNextVariants: true,
-    fontFamily: ['Lato']//can cause issues when exported as a widget lib
+    fontFamily: ['Lato'],//can cause issues when exported as a widget lib
 }
 
 const AppShape ={

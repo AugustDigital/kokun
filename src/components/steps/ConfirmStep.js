@@ -73,7 +73,7 @@ class ConfirmStep extends Component {
     }
 
     render() {
-        const { classes, to, from, amount, nrg, nrgPrice, nrgLimit, rawTransaction, onTransactonStepBack } = this.props;
+        const { classes, to, from, amount, nrg, nrgPrice, rawTransaction, onTransactonStepBack } = this.props;
         const { errorMessage } = this.state;
         return (
             <div>
@@ -139,16 +139,6 @@ class ConfirmStep extends Component {
                                 wrap='nowrap'>
                                 <Typography color="textSecondary" variant="subtitle2" className={classes.fatLable}>NRG PRICE</Typography>
                                 <Typography color="textSecondary" variant="subtitle2" className={classes.thinLable}>{nrgPrice}</Typography>
-                            </Grid>
-                            <Grid
-                                container
-                                direction="row"
-                                justify="space-between"
-                                alignItems="center"
-                                className={classes.transactionRow}
-                                wrap='nowrap'>
-                                <Typography color="textSecondary" variant="subtitle2" className={classes.fatLable}>Max. NRG</Typography>
-                                <Typography color="textSecondary" variant="subtitle2" className={classes.thinLable}>{nrgLimit}</Typography>
                             </Grid>
                         </Grid>
 

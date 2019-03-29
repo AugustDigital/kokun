@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { withStyles, Typography, Grid, Paper, IconButton, Input, InputAdornment } from '@material-ui/core'
+import { withStyles, Typography, Grid, Paper, IconButton, Input, InputAdornment, Tooltip, ClickAwayListener } from '@material-ui/core'
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 import compose from 'recompose/compose';
 import { FileCopy } from '@material-ui/icons'
@@ -14,13 +14,13 @@ const themeExample = {
     primary: { main: '#113665', contrastText: '#fff' },
     secondary: { main: '#F2F6FA', contrastText: '#113665' },
     type: 'dark',
-    background: { default: '#DCE1ED', white: '#fff', warning: '#E89000', error: '#e03051', blueGradient: 'linear-gradient(225deg, #08023C, #229DB7);' },
+    background: { default: '#DCE1ED', white: '#fff', warning: '#E89000', error: '#e03051', blueGradient: 'linear-gradient(225deg, #08023C, #229DB7);',aionPay:'#000000',  },
     text: {
         primary: '#F2F6FA',
         secondary: '#00ff00',
         disabled: '#113665',
         hint: '#2A2C2E',
-        primaryLight: '#819ABA'
+        primaryLight: '#819ABA',
     },
     common: {
         green: '#5AF0BD',
@@ -38,6 +38,16 @@ const themeExample = {
         background: '#00ff00',
         border: '#5AF0BD',
         text: '#113665'
+    },
+    aionPay:{
+        textColor:'#cca300',
+        backgroundColor:'#000000',
+        fontWeight:'500',
+        fontSize:'11px',
+        paddingTop:'6p',
+        paddingBottom:'6p',
+        paddingLeft:'16p',
+        paddingRight:'16p',
     }
 }
 
@@ -72,7 +82,7 @@ const styles = theme => ({
         }
     },
     sampleInfo: {
-        marginTop: theme.spacing.unit * 3,
+        marginTop: theme.spacing.unit * 2,
         [theme.breakpoints.down('xs')]: {
             marginTop: theme.spacing.unit * 4
         }
@@ -84,16 +94,17 @@ const styles = theme => ({
     },
     buttonContainer: {
         textAlign: 'left',
+        paddingRight: theme.spacing.unit *4,
         [theme.breakpoints.down('xs')]: {
             textAlign: 'center',
             width: '100%'
         }
     },
     snippet: {
-        padding: theme.spacing.unit * 2,
+        padding: theme.spacing.unit * 1.5,
         backgroundColor: 'rgb(239,244,249)',
-        color: 'black',
-        marginLeft: theme.spacing.unit * 2,
+        color: '#2A2C2E !important',
+        fontWeight:'300',
         borderRadius: '4px',
         border: 'none',
         width: '100%',
@@ -102,7 +113,12 @@ const styles = theme => ({
         }
     },
     cardContent: {
-        padding: theme.spacing.unit * 4,
+        padding: theme.spacing.unit * 5,
+    },
+    cardContentBody: {
+        paddingLeft: theme.spacing.unit * 5,
+        paddingRight: theme.spacing.unit * 5,
+        paddingBottom: theme.spacing.unit * 5,
     },
     aionPayIcon: {
         height: '28px'
@@ -112,19 +128,24 @@ const styles = theme => ({
         [theme.breakpoints.down('xs')]: {
             marginLeft: '0px'
         }
+    },
+    title: {
+        fontWeight: '400',
+        marginTop: theme.spacing.unit * 6,
     }
 })
 class DevSection extends Component {
 
     state = {
-        dialogData: null
+        dialogData: null,
+        tooltipStates: new Map(),
     }
 
     content = [
         { description: 'Pay to any address with default button style', params: { 'data-web3-provider': 'https://api.nodesmith.io/v1/aion/testnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
-        { description: 'Pay to a given address with default button style', params: { 'data-address': '0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827', 'data-web3-provider': 'https://api.nodesmith.io/v1/aion/mainnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
-        { description: 'Pay to a given address with custom text and background but with AION icon on the button.', params: { 'data-button-text': 'Aion Pay', 'data-button-background': '#113665', 'data-button-text-color': '#ffffff', 'data-button-icon-type': 'light', 'data-address': '0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827', 'data-web3-provider': 'https://api.nodesmith.io/v1/aion/mainnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
-        { description: 'Pay to a given address with custom style.', params: { 'data-style': JSON.stringify(themeExample), 'data-address': '0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827', 'data-web3-provider': 'https://api.nodesmith.io/v1/aion/mainnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
+        { description: 'Pay to a given address with default button style', params: { 'data-address': '0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827', 'data-web3-provider': 'https://api.nodesmith.io/v1/aion/testnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
+        { description: 'Pay to a given address with custom text and background but with AION icon on the button.', params: { 'data-button-text': 'Donate', 'data-button-background': '#AED581', 'data-button-text-color': '#E91E63', 'data-button-icon-type': 'dark', 'data-address': '0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827', 'data-web3-provider': 'https://api.nodesmith.io/v1/aion/testnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
+        { description: 'Pay to a given address with custom style.', params: { 'data-style': JSON.stringify(themeExample), 'data-address': '0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827', 'data-web3-provider': 'https://api.nodesmith.io/v1/aion/testnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
         { description: 'Sign smart contract transactions', params: { 'data-web3-provider': 'https://api.nodesmith.io/v1/aion/testnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8', 'data-transaction': JSON.stringify(transactionExample) } },
     ]
     componentDidMount() {
@@ -132,7 +153,7 @@ class DevSection extends Component {
         //or
         //window.renderAionPayButton()
         //can listen for completion like so:
-        window.AionPayButtonInterface.aionPayButtonCompletionListener = (tx) => { alert(tx) }
+        //window.AionPayButtonInterface.aionPayButtonCompletionListener = (tx) => { alert(tx) }
     }
 
     onGithubButtonPressed = () => {
@@ -145,51 +166,75 @@ class DevSection extends Component {
         }).join(' ');
         return paramsJson.length > 0 ? ' ' + paramsJson : '';
     }
-    copyToClipboard = str => {
+    copyToClipboard = (str,index) => {
         const el = document.createElement('textarea');
         el.value = str;
         document.body.appendChild(el);
         el.select();
         document.execCommand('copy');
         document.body.removeChild(el);
+        this.handleTooltipOpen(index);
     };
+    handleTooltipClose = (index) => {
+        this.state.tooltipStates.set(index,false);
+        this.setState({ });
+    };
+    handleTooltipOpen = (index) => {
+        this.state.tooltipStates.set(index,true);
+        this.setState({ });
+    }
     render() {
         const { classes, width } = this.props;
-        const { dialogData } = this.state;
+        const { dialogData, tooltipStates } = this.state;
 
         const contentItems = this.content.map((item, index) => {
             const snippetText = '<aion-pay ' + this.paramsToString(item.params) + '></aion-pay>';
+            if(!tooltipStates.get(index))
+                tooltipStates.set(index,false);
             return <Grid key={index} item>
                 <div className={classes.sampleInfo}>
-                    <Typography color='textSecondary' variant="h6" style={{ fontWeight: '400' }}>{index + 1}. {item.description}</Typography>
+                    <Typography color='textSecondary' variant="h6" className={classes.title} >{index + 1}. {item.description}</Typography>
                     <Grid
                         container
-                        style={{ marginTop: '15px' }}
+                        style={{ marginTop: '25px' }}
                         direction="row"
                         justify="space-between"
                         alignItems="center">
                         <div className={classes.buttonContainer}>
                             <aion-pay  {...item.params} />
                         </div>
-
-
-                        <Grid item xs={12} sm className={classes.snippetContainer}>
-                            <Input
-                                className={classes.snippet}
-                                type={'text'}
-                                value={snippetText}
-                                readOnly
-                                multiline={!isWidthUp('sm', width)}
-                                rowsMax={5}
-                                endAdornment={
-                                    <InputAdornment position="end">
-                                        <IconButton title='Copy to clipboard' className={classes.copyButton} color="primary" aria-label="Copy" onClick={() => { this.copyToClipboard(snippetText) }}>
-                                            <FileCopy />
-                                        </IconButton>
-                                    </InputAdornment>
-                                }
-                            />
-                        </Grid>
+                        <ClickAwayListener onClickAway={()=>{this.handleTooltipClose(index)}}>
+                        <Tooltip
+                            PopperProps={{
+                                disablePortal: true,
+                            }}
+                            placement="right"
+                            onClose={()=>{this.handleTooltipClose(index)}}
+                            open={tooltipStates.get(index)}
+                            disableFocusListener
+                            disableHoverListener
+                            disableTouchListener
+                            title="Copied"
+                        >
+                            <Grid item xs={12} sm className={classes.snippetContainer}>
+                                <Input
+                                    className={classes.snippet}
+                                    type={'text'}
+                                    value={snippetText}
+                                    readOnly
+                                    multiline={!isWidthUp('sm', width)}
+                                    rowsMax={5}
+                                    endAdornment={
+                                        <InputAdornment position="end">
+                                            <IconButton title='Copy to clipboard' className={classes.copyButton} color="primary" aria-label="Copy" onClick={() => { this.copyToClipboard(snippetText, index) }}>
+                                                <FileCopy />
+                                            </IconButton>
+                                        </InputAdornment>
+                                    }
+                                />
+                            </Grid>
+                        </Tooltip>
+                        </ClickAwayListener>
                     </Grid>
 
                 </div>
@@ -227,7 +272,7 @@ class DevSection extends Component {
                             </Grid>
 
                         </div>
-                        <div className={classes.cardContent}>
+                        <div className={classes.cardContentBody}>
                             <Grid
                                 container
                                 direction="column"
