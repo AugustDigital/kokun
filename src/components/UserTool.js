@@ -351,7 +351,7 @@ class UserTool extends Component {
                             alignItems="center"
                             className={classes.linkText}
                             wrap='nowrap'>
-                            <Typography variant="subtitle2">{'Transaction\u00A0Hash:\u00A0'}</Typography>
+                            <Typography style={{whiteSpace: 'nowrap'}} variant="subtitle2">{'Transaction Hash: '}</Typography>
                             <a target='_blank' rel='noopener noreferrer' className={classes.link} href={`https://${isTestnet ? 'mastery' : 'mainnet'}.aion.network/#/transaction/${txHash}`}>{txHash}</a>
 
                         </Grid>
