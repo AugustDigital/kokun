@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { withStyles, Typography, Grid, Paper, IconButton, Input, InputAdornment } from '@material-ui/core'
+import { withStyles, Typography, Grid, Paper, IconButton, Input, InputAdornment, Tooltip, ClickAwayListener } from '@material-ui/core'
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 import compose from 'recompose/compose';
 import { FileCopy } from '@material-ui/icons'
@@ -117,7 +117,8 @@ const styles = theme => ({
 class DevSection extends Component {
 
     state = {
-        dialogData: null
+        dialogData: null,
+        tooltipStates: new Map(),
     }
 
     content = [
@@ -145,20 +146,31 @@ class DevSection extends Component {
         }).join(' ');
         return paramsJson.length > 0 ? ' ' + paramsJson : '';
     }
-    copyToClipboard = str => {
+    copyToClipboard = (str,index) => {
         const el = document.createElement('textarea');
         el.value = str;
         document.body.appendChild(el);
         el.select();
         document.execCommand('copy');
         document.body.removeChild(el);
+        this.handleTooltipOpen(index);
     };
+    handleTooltipClose = (index) => {
+        this.state.tooltipStates.set(index,false);
+        this.setState({ });
+    };
+    handleTooltipOpen = (index) => {
+        this.state.tooltipStates.set(index,true);
+        this.setState({ });
+    }
     render() {
         const { classes, width } = this.props;
-        const { dialogData } = this.state;
+        const { dialogData, tooltipStates } = this.state;
 
         const contentItems = this.content.map((item, index) => {
             const snippetText = '<aion-pay ' + this.paramsToString(item.params) + '></aion-pay>';
+            if(!tooltipStates.get(index))
+                tooltipStates.set(index,false);
             return <Grid key={index} item>
                 <div className={classes.sampleInfo}>
                     <Typography color='textSecondary' variant="h6" style={{ fontWeight: '400' }}>{index + 1}. {item.description}</Typography>
@@ -171,25 +183,38 @@ class DevSection extends Component {
                         <div className={classes.buttonContainer}>
                             <aion-pay  {...item.params} />
                         </div>
-
-
-                        <Grid item xs={12} sm className={classes.snippetContainer}>
-                            <Input
-                                className={classes.snippet}
-                                type={'text'}
-                                value={snippetText}
-                                readOnly
-                                multiline={!isWidthUp('sm', width)}
-                                rowsMax={5}
-                                endAdornment={
-                                    <InputAdornment position="end">
-                                        <IconButton title='Copy to clipboard' className={classes.copyButton} color="primary" aria-label="Copy" onClick={() => { this.copyToClipboard(snippetText) }}>
-                                            <FileCopy />
-                                        </IconButton>
-                                    </InputAdornment>
-                                }
-                            />
-                        </Grid>
+                        <ClickAwayListener onClickAway={()=>{this.handleTooltipClose(index)}}>
+                        <Tooltip
+                            PopperProps={{
+                                disablePortal: true,
+                            }}
+                            placement="right"
+                            onClose={()=>{this.handleTooltipClose(index)}}
+                            open={tooltipStates.get(index)}
+                            disableFocusListener
+                            disableHoverListener
+                            disableTouchListener
+                            title="Copied"
+                        >
+                            <Grid item xs={12} sm className={classes.snippetContainer}>
+                                <Input
+                                    className={classes.snippet}
+                                    type={'text'}
+                                    value={snippetText}
+                                    readOnly
+                                    multiline={!isWidthUp('sm', width)}
+                                    rowsMax={5}
+                                    endAdornment={
+                                        <InputAdornment position="end">
+                                            <IconButton title='Copy to clipboard' className={classes.copyButton} color="primary" aria-label="Copy" onClick={() => { this.copyToClipboard(snippetText, index) }}>
+                                                <FileCopy />
+                                            </IconButton>
+                                        </InputAdornment>
+                                    }
+                                />
+                            </Grid>
+                        </Tooltip>
+                        </ClickAwayListener>
                     </Grid>
 
                 </div>
