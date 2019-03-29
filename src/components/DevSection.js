@@ -72,7 +72,7 @@ const styles = theme => ({
         }
     },
     sampleInfo: {
-        marginTop: theme.spacing.unit * 3,
+        marginTop: theme.spacing.unit * 2,
         [theme.breakpoints.down('xs')]: {
             marginTop: theme.spacing.unit * 4
         }
@@ -84,16 +84,17 @@ const styles = theme => ({
     },
     buttonContainer: {
         textAlign: 'left',
+        paddingRight: theme.spacing.unit *4,
         [theme.breakpoints.down('xs')]: {
             textAlign: 'center',
             width: '100%'
         }
     },
     snippet: {
-        padding: theme.spacing.unit * 2,
+        padding: theme.spacing.unit * 1.5,
         backgroundColor: 'rgb(239,244,249)',
-        color: 'black',
-        marginLeft: theme.spacing.unit * 2,
+        color: '#2A2C2E !important',
+        fontWeight:'300',
         borderRadius: '4px',
         border: 'none',
         width: '100%',
@@ -102,7 +103,12 @@ const styles = theme => ({
         }
     },
     cardContent: {
-        padding: theme.spacing.unit * 4,
+        padding: theme.spacing.unit * 5,
+    },
+    cardContentBody: {
+        paddingLeft: theme.spacing.unit * 5,
+        paddingRight: theme.spacing.unit * 5,
+        paddingBottom: theme.spacing.unit * 5,
     },
     aionPayIcon: {
         height: '28px'
@@ -112,6 +118,10 @@ const styles = theme => ({
         [theme.breakpoints.down('xs')]: {
             marginLeft: '0px'
         }
+    },
+    title: {
+        fontWeight: '400',
+        marginTop: theme.spacing.unit * 6,
     }
 })
 class DevSection extends Component {
@@ -173,10 +183,10 @@ class DevSection extends Component {
                 tooltipStates.set(index,false);
             return <Grid key={index} item>
                 <div className={classes.sampleInfo}>
-                    <Typography color='textSecondary' variant="h6" style={{ fontWeight: '400' }}>{index + 1}. {item.description}</Typography>
+                    <Typography color='textSecondary' variant="h6" className={classes.title} >{index + 1}. {item.description}</Typography>
                     <Grid
                         container
-                        style={{ marginTop: '15px' }}
+                        style={{ marginTop: '25px' }}
                         direction="row"
                         justify="space-between"
                         alignItems="center">
@@ -252,7 +262,7 @@ class DevSection extends Component {
                             </Grid>
 
                         </div>
-                        <div className={classes.cardContent}>
+                        <div className={classes.cardContentBody}>
                             <Grid
                                 container
                                 direction="column"

@@ -14,7 +14,8 @@ const styles = theme => ({
         height: '25px',
     },
     button:{
-        backgroundColor: theme.palette.background.aionPay+' !important'
+        backgroundColor: theme.palette.background.aionPay+' !important',
+        fontSize: '11px'
     },
     lable:{
         color:theme.palette.text.aionPay+' !important'
@@ -27,7 +28,7 @@ class PayButton extends Component {
         return (<Button
             className={classes.button}
             variant="contained"
-            size='large'
+            size='medium'
             color='primary'
             onClick={onClick}>
             <img alt="Aion Logo" src={buttonIconType==='dark'?AionLogoDark:AionLogoLight} className={classNames(classes.leftIcon, classes.iconSmall)} />
