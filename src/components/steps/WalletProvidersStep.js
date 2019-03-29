@@ -10,6 +10,7 @@ import LockIcon from '../../assets/lock_icon.svg'
 import LedgerProvider from '../../utils/ledger/LedgerProvider'
 import {promiseTimeout} from '../../utils/promiseTimeout';
 import PrimaryButton from '../PrimaryButton'
+import Keyterpillar from '../keyterpillar/Keyterpillar'
 
 const Accounts = require('aion-keystore');
 
@@ -205,7 +206,13 @@ class WalletProvidersStep extends Component {
                 create: this.createPrivateKeyPanel,
                 unlock: this.unlockPrivateKey,
                 validate: this.validatePrivateKey
-            }
+            },
+            {
+                title: 'Keyterpillar',
+                create: this.createKTPKeyPanel,
+                unlock: this.unlockKTPKey,
+                validate: this.validateKTPCredentials
+            },
         ];
     }
     componentDidMount() {
@@ -301,6 +308,27 @@ class WalletProvidersStep extends Component {
     }
 
     unlockPrivateKey=()=>{
+        return new Promise((resolve, reject) => {
+            try{
+                const aion = new Accounts();
+                let account = aion.privateKeyToAccount(this.state.privateKey);
+                const timer = setInterval(() => {
+                    if (this.state.completed === 100) {
+                        clearInterval(timer);
+                        resolve(account)
+                    } else {
+                        this.setState({ completed: this.state.completed + 25 })
+                    }
+                }, 400);
+
+            }catch(e){
+                this.setState({privateKeyError: true, privateKeyErrorMessage: "Invalid key"})
+                reject(false)
+            }
+        })
+    }
+
+    unlockKTPKey = () =>{
         return new Promise((resolve, reject) => {
             try{
                 const aion = new Accounts();
@@ -489,6 +517,12 @@ class WalletProvidersStep extends Component {
         </div>);
     }
 
+    createKTPKeyPanel =() =>{
+        return(<Keyterpillar
+            onGotPkFromKeyterpillar={this.onPrivateKeyEntered.bind(this)}
+            web3Provider={this.props.web3Provider}/>)
+    }
+
     validateLedger = () => {
 
         const {ledgerConnected} = this.state;
@@ -499,6 +533,10 @@ class WalletProvidersStep extends Component {
         return keyStoreFile != null && keyStoreFilePass !== null && keyStoreFilePass.length > 0;
     }
     validatePrivateKey = () => {
+        const { privateKey } = this.state;
+        return privateKey !== null && privateKey.length > 0;
+    }
+    validateKTPCredentials=()=>{
         const { privateKey } = this.state;
         return privateKey !== null && privateKey.length > 0;
     }
@@ -572,7 +610,8 @@ class WalletProvidersStep extends Component {
 
 WalletProvidersStep.propTypes = {
     classes: PropTypes.object.isRequired,
-    onAccountImported: PropTypes.func.isRequired
+    onAccountImported: PropTypes.func.isRequired,
+    web3Provider: PropTypes.string.isRequired
 };
 
 export default withStyles(styles)(WalletProvidersStep);
