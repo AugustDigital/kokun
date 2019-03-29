@@ -15,7 +15,7 @@ const styles = theme => ({
     },
     button:{
         backgroundColor: theme.palette.background.aionPay+' !important',
-        fontSize: '11px'
+        fontSize: theme.typography.aionPayFontSize
     },
     lable:{
         color:theme.palette.text.aionPay+' !important'

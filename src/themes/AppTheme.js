@@ -67,7 +67,8 @@ const WidgetPalette = {
 }
 const AppTypography = {
     useNextVariants: true,
-    fontFamily: ['Lato']//can cause issues when exported as a widget lib
+    fontFamily: ['Lato'],//can cause issues when exported as a widget lib
+    aionPayFontSize:'11px'
 }
 
 const AppShape ={
