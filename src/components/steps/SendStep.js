@@ -316,7 +316,7 @@ class SendStep extends Component {
                         <TextField
                             disabled
                             label="MAX NRG COST"
-                            value={nrg}
+                            value={Math.floor(nrg/1000)+'k NRG'}
                             className={classes.textField}
                             margin="normal"
                             style={{ width: '120px' }}
