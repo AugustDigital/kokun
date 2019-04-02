@@ -9,6 +9,8 @@ import SecondaryButton from '../SecondaryButton';
 import CoinDropdown from '../CoinDropdown';
 import ATSInterface from '../../common/ATSInterface';
 import globalTokenContractRegistry from '../../common/ContractRegistry'
+import AddTokenDialog from '../AddTokenDialog'
+import { asPromise } from '../../utils/common'
 
 
 const styles = theme => ({
@@ -24,16 +26,17 @@ const styles = theme => ({
         fontWeight: 'light',
         float: 'left',
         position: 'reltive',
-        paddingTop: theme.spacing.unit,
-        paddingBottom: theme.spacing.unit,
+        paddingTop: '11px',
+        paddingBottom: '11px',
         paddingRight: theme.spacing.unit * 3,
         paddingLeft: theme.spacing.unit * 3,
     },
     dropDown: {
-        paddingLeft: theme.spacing.unit * 4,
-        paddingRight: theme.spacing.unit * 4,
-        paddingTop: theme.spacing.unit,
-        paddingBottom: theme.spacing.unit,
+        width: '100px',
+        paddingTop: '11px',
+        paddingBottom: '11px',
+        paddingLeft: theme.spacing.unit * 2,
+        paddingRight: theme.spacing.unit * 2,
     },
     dropDownItem: {
         paddingTop: theme.spacing.unit,
@@ -42,7 +45,11 @@ const styles = theme => ({
         borderStyle: 'solid',
         borderWidth: '1px',
         borderColor: theme.palette.secondary.main,
-        color: theme.palette.text.primary + ' !important'
+        color: theme.palette.text.primary + ' !important',
+        textAlign: 'left',
+        cursor: 'pointer',
+        paddingLeft: theme.spacing.unit * 2,
+        paddingRight: theme.spacing.unit * 2,
     },
     textFieldInput: {
         color: theme.palette.text.primary + ' !important'
@@ -126,7 +133,8 @@ class SendStep extends Component {
             nrg: this.props.nrg ? this.props.nrg : TransactionUtil.defaultNrgLimit,
             errorMessage: null,
             account: this.props.account,
-            web3: new Web3(new Web3.providers.HttpProvider(this.props.web3Provider))
+            web3: new Web3(new Web3.providers.HttpProvider(this.props.web3Provider)),
+            addTokenDialogOpened: false
         }
     }
 
@@ -148,11 +156,10 @@ class SendStep extends Component {
         return parseFloat(this.state.web3.fromWei(balance, 'ether')).toFixed(2)
     }
 
-    updateCurrenciesWithAddress = address => {
-        console.log(address)
+    updateCurrenciesWithAddress = async address => {
         try {
             const tokenContract = this.state.web3.eth.contract(ATSInterface).at(address)
-            const symbol = tokenContract.symbol.call();
+            const symbol = await asPromise(tokenContract.symbol.call)
             if (0 < symbol.length) {
                 const contractData = {
                     name: symbol,
@@ -162,30 +169,50 @@ class SendStep extends Component {
                         return parseFloat(this.state.web3.fromWei(balance, 'ether')).toFixed(2)
                     }
                 }
+                if (this.state.availableCurrencies.find(item => item.contract && item.contract.address === contractData.contract.address)) {
+                    this.setState({
+                        tokenAddError: 'The Token Address already added'
+                    })
+                    return false;
+                }
                 globalTokenContractRegistry.addContract(contractData)
                 this.state.availableCurrencies.push(contractData)
                 this.setState({
                     availableCurrencies: this.state.availableCurrencies,
-                    errorMessage: null
+                    tokenAddError: null,
+                    addTokenSuccesfull: true
                 })
+                setTimeout(() => {
+                    this.setState({
+                        addTokenDialogOpened: false,
+                        addTokenSuccesfull: true
+                    })
+                    setTimeout(() => {
+                        this.setState({
+                            addTokenSuccesfull: false
+                        })
+                    }, 1000)
+                }, 2000)
+                this.handleCurrencyChange(this.state.availableCurrencies.length - 1)
+                return true;
             } else {
                 this.setState({
-                    errorMessage: 'Invalid token address'
+                    tokenAddError: 'The Token Address you have entered is incorrect'
                 })
+                return false;
             }
         } catch (ex) {
             console.log(ex)
             this.setState({
-                errorMessage: 'Invalid token address'
+                tokenAddError: 'The Token Address you have entered is incorrect'
             })
+            return false;
         }
-
-
     }
 
-    handleCurrencyChange = data => {
+    handleCurrencyChange = index => {
         this.updateNrg()
-        this.setState({ currencyId: data });
+        this.setState({ currencyId: index });
     };
 
     onRecipientEntered = (event) => {
@@ -233,12 +260,26 @@ class SendStep extends Component {
         }
     }
 
+    onTokenAddClicked = () => {
+        this.setState({
+            addTokenDialogOpened: true,
+            tokenAddError: null
+        })
+    }
+
+    onTokenAddClosed = () => {
+        this.setState({
+            addTokenDialogOpened: false,
+            tokenAddError: null
+        })
+    }
+
     render() {
         const { classes, onSendStepBack, onSendStepContinue, checkLedger, defaultRecipient } = this.props;
-        const { availableCurrencies, currencyId, amount, recipient, customNrg, nrg, nrgPrice, errorMessage, valid, account } = this.state;
+        const { availableCurrencies, currencyId, amount, recipient, customNrg, nrg, nrgPrice, errorMessage, valid, account, addTokenDialogOpened, tokenAddError, addTokenSuccesfull } = this.state;
 
         return (
-            <Grid
+            <div><Grid
                 container
                 direction="column"
                 justify="flex-start">
@@ -256,11 +297,12 @@ class SendStep extends Component {
                         className={classes.dropDownContainer}>
                         <Typography variant="subtitle2" className={classes.dropDownLable}>Currency:</Typography>
                         <CoinDropdown
+                            selectedIndex={currencyId}
                             className={classes.dropDown}
                             itemClassName={classes.dropDownItem}
                             onChange={this.handleCurrencyChange}
-                            items={availableCurrencies.map(item => item.name)}
-                            onTockenAddressEntered={this.updateCurrenciesWithAddress} />
+                            items={availableCurrencies.map(item => item.name.toUpperCase())}
+                            onTokenAddClicked={this.onTokenAddClicked} />
                     </Grid>
                 </Grid>
                 <Typography variant="caption" style={{ marginTop: '25px', marginBottom: '5px' }}>FROM</Typography>
@@ -316,7 +358,7 @@ class SendStep extends Component {
                         <TextField
                             disabled
                             label="MAX NRG COST"
-                            value={Math.floor(nrg/1000)+'k NRG'}
+                            value={Math.floor(nrg / 1000) + 'k NRG'}
                             className={classes.textField}
                             margin="normal"
                             style={{ width: '120px' }}
@@ -438,6 +480,14 @@ class SendStep extends Component {
                         text='Continue' />
                 </Grid>
             </Grid>
+                <AddTokenDialog
+                    open={addTokenDialogOpened}
+                    onClose={this.onTokenAddClosed}
+                    onTockenAddressEntered={this.updateCurrenciesWithAddress}
+                    error={tokenAddError}
+                    addTokenSuccesfull={addTokenSuccesfull}
+                />
+            </div>
         );
     }
 }
