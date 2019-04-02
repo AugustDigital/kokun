@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { withStyles, TextField, InputAdornment, IconButton, Fade, Typography } from '@material-ui/core'
+import { withStyles, Grid, Typography } from '@material-ui/core'
 import Add from '@material-ui/icons/Add';
 import PropTypes from 'prop-types';
 
@@ -12,7 +12,7 @@ const styles = theme => ({
             display: 'block'
         },
         '&:hover $btn': {
-            backgroundColor: 'rgba(255,255,255, 0.1)'
+            backgroundColor: 'rgba(255,255,255, 0.1)',
         }
     },
     btn: {
@@ -20,6 +20,7 @@ const styles = theme => ({
         color: theme.palette.text.primary,
         border: 'none',
         cursor: 'pointer',
+        fontSize: '13px'
     },
     dropdownContent: {
         display: 'none',
@@ -67,82 +68,69 @@ const styles = theme => ({
         position: 'absolute',
         left: '-108px',
         backgroundColor: theme.palette.background.dropDown
+    },
+    addButton: {
+        fontSize: '13px',
+        color: theme.palette.text.primary + ' !important'
+    },
+    lock: {
+        pointerEvents:'none'
     }
 })
 class CoinDropdown extends Component {
     state = {
-        selectedItem: this.props.items[0],
         address: '',
         addTokenExanded: false
     }
-    onTockenAddressEntered = (event) => {
-        this.setState(
-            { address: event.target.value }
-        )
-    }
+
     onItemClick = (itemIndex) => {
-        this.setState({ selectedItem: this.props.items[itemIndex] })
         this.props.onChange(itemIndex)
     }
-    onAddClick = () => {
-        this.setState({ addTokenExanded: false })
-        if (this.state.address.length > 0) {
-            this.props.onTockenAddressEntered(this.state.address)
-            this.setState(
-                { address: '' }
-            )
-        }
 
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.selectedIndex) {
+            this.setState({
+                selectedItem: this.props.items[nextProps.selectedIndex]
+            });
+        }
     }
+
     render() {
-        const { classes, items, className, itemClassName } = this.props;
-        const { selectedItem, address, addTokenExanded } = this.state;
+        const { classes, items, className, itemClassName, selectedIndex, lock } = this.props;
+        const selectedItem= items[selectedIndex];
         const dropDownItems = items.map((item, index) => {
-            return (<button key={index} className={itemClassName} onClick={() => { this.onItemClick(index) }}> {item} </button>)
+            return (<button key={index} className={itemClassName} onClick={() => { this.onItemClick(index) }}> <Typography variant="subtitle2">{item}</Typography> </button>)
         })
         return (
-            <div className={classes.dropdown}>
-                <button
-                    className={classes.btn + ' ' + className}>
-                    {selectedItem}
+            <div className={classes.dropdown + (lock? ' '+classes.lock:'')}>
+                <button className={classes.btn + ' ' + className + (lock? ' '+classes.lock:'')} key={dropDownItems.length} onClick={() => { this.props.onTokenAddClicked() }}>
+                    <Grid
+                        container
+                        direction="row"
+                        justify="space-between"
+                        alignItems="center"
+                    >
+                        <Typography variant="subtitle2" >{selectedItem}</Typography>
+                        <Typography variant="subtitle2" >{lock?null:'▾'}</Typography>
+                    </Grid>
                 </button>
+
                 <div className={classes.dropdownContent}>
                     {dropDownItems}
-                    {addTokenExanded ?
-                        <Fade in={addTokenExanded} >
-                            <TextField
-                                label="Token Address"
-                                margin="normal"
-                                color="primary"
-                                value={address}
-                                onChange={this.onTockenAddressEntered}
-                                className={classes.addToken}
-                                InputLabelProps={{
-                                    className: classes.textField,
-                                }}
-                                InputProps={{
-                                    classes: {
-                                        input: classes.textFieldInput,
-                                        underline: classes.underline
-                                    },
-                                    endAdornment: <InputAdornment position="end">
-                                        <IconButton
-                                            onClick={this.onAddClick}>
-                                            <Add />
-                                        </IconButton>
-                                    </InputAdornment>,
-                                }} />
-                        </Fade>
-                        :
-                        <IconButton
-                            className={itemClassName+' '+classes.addTokenButton}
-                            onClick={() => { this.setState({ addTokenExanded: true }) }}>
-                            <Typography variant="subtitle2" >Add</Typography>
-                            <Add />
-                        </IconButton>}
-
+                    <button className={itemClassName} key={dropDownItems.length} onClick={() => { this.props.onTokenAddClicked() }}>
+                        <Grid
+                            container
+                            direction="row"
+                            justify="space-between"
+                            alignItems="center"
+                        >
+                            <Typography variant="subtitle2" >ADD</Typography>
+                            <Add className={classes.addButton} />
+                        </Grid>
+                    </button>
 
                 </div>
+
             </div>
         )
     }
@@ -151,7 +139,7 @@ class CoinDropdown extends Component {
 CoinDropdown.propTypes = {
     classes: PropTypes.object.isRequired,
     items: PropTypes.array.isRequired,
-    onTockenAddressEntered: PropTypes.func.isRequired
+    onTokenAddClicked: PropTypes.func.isRequired
 };
 
 

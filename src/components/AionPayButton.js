@@ -24,6 +24,8 @@ class AionPayButton extends Component {
             dialogData: {
                 web3Provider: this.props.web3Provider,
                 defaultRecipient: this.props.address,
+                defaultAmount: this.props.amount,
+                defaultTokenAddress: this.props.tokenAddress,
                 transaction: this.props.transaction,
             }
         })
@@ -55,7 +57,7 @@ AionPayButton.propTypes = {
 export const inject = () => {
     window.AionPayButtonInterface = {
         renderAionPayButton: inject,
-        aionPayButtonCompletionListener: null,
+        aionPayButtonCompletionListener: null, //todo change this logic
         aionPayWidgetThemes: []
     }
     //Register our custom element
@@ -64,6 +66,8 @@ export const inject = () => {
     document.querySelectorAll('aion-pay')
         .forEach(domContainer => {
             let address = domContainer.dataset.address;
+            let amount = domContainer.dataset.amount;
+            let tokenAddress = domContainer.dataset.tokenAddress;
             let buttonText = domContainer.dataset.buttonText;
             let buttonBackground = domContainer.dataset.buttonBackground;
             let buttonTextColor = domContainer.dataset.buttonTextColor;
@@ -115,7 +119,7 @@ export const inject = () => {
                 theme.palette = themePallete;
             }
             window.AionPayButtonInterface.aionPayWidgetThemes.push(theme)
-            let propData = { address, buttonText, web3Provider, theme, buttonIconType, transaction }
+            let propData = { address, amount, tokenAddress, buttonText, web3Provider, theme, buttonIconType, transaction }
 
             ReactDOM.render(
                 React.createElement(withStyles(styles)(AionPayButton), propData),

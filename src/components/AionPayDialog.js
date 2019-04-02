@@ -128,6 +128,8 @@ class AionPayDialog extends React.Component {
         onStepChanged={this.onStepChanged}
         web3Provider={dialogData.web3Provider}
         defaultRecipient={dialogData.defaultRecipient}
+        defaultAmount={dialogData.defaultAmount}
+        defaultTokenAddress={dialogData.defaultTokenAddress}
         externalTransaction={dialogData.transaction} />;
     }
     return (

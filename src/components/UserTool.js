@@ -262,7 +262,7 @@ class UserTool extends Component {
         this.props.onStepChanged(step, 4)
     }
     render() {
-        const { classes, theme, showInfoHeader, web3Provider, defaultRecipient, currency } = this.props;
+        const { classes, theme, showInfoHeader, web3Provider, defaultRecipient, currency, defaultAmount, defaultTokenAddress } = this.props;
         const { step, transactionData, txHash, rawTransaction, account, privateKey, checkLedger, transactionStatus, completed } = this.state;
         let content = null;
         let status = null;
@@ -299,6 +299,8 @@ class UserTool extends Component {
                     rawTransaction={rawTransaction}
                     checkLedger={checkLedger}
                     defaultRecipient={defaultRecipient}
+                    defaultAmount={defaultAmount}
+                    defaultTokenAddress={defaultTokenAddress}
                     web3Provider={web3Provider}
                 />);
                 break;

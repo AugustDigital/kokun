@@ -73,7 +73,7 @@ class ConfirmStep extends Component {
     }
 
     render() {
-        const { classes, to, from, amount, nrg, nrgPrice, rawTransaction, onTransactonStepBack } = this.props;
+        const { classes, to, from, amount, nrg, nrgPrice, rawTransaction, onTransactonStepBack, currency } = this.props;
         const { errorMessage } = this.state;
         return (
             <div>
@@ -118,7 +118,7 @@ class ConfirmStep extends Component {
                                 className={classes.transactionRow}
                                 wrap='nowrap'>
                                 <Typography color="textSecondary" variant="subtitle2" className={classes.fatLable}>AMOUNT</Typography>
-                                <Typography color="textSecondary" variant="subtitle2" style={{ fontWeight: 'bold', color: '#113665' }}>{amount}</Typography>
+                                <Typography color="textSecondary" variant="subtitle2" style={{ fontWeight: 'bold', color: '#113665' }}>{`${amount} ${currency.name.toUpperCase()}`}</Typography>
                             </Grid>
                             <Grid
                                 container
@@ -128,7 +128,7 @@ class ConfirmStep extends Component {
                                 className={classes.transactionRow}
                                 wrap='nowrap'>
                                 <Typography color="textSecondary" variant="subtitle2" className={classes.fatLable}>NRG</Typography>
-                                <Typography color="textSecondary" variant="subtitle2" className={classes.thinLable}>{nrg}</Typography>
+                                <Typography color="textSecondary" variant="subtitle2" className={classes.thinLable}>{Math.floor(nrg/1000)}k</Typography>
                             </Grid>
                             <Grid
                                 container
@@ -138,7 +138,7 @@ class ConfirmStep extends Component {
                                 className={classes.transactionRow}
                                 wrap='nowrap'>
                                 <Typography color="textSecondary" variant="subtitle2" className={classes.fatLable}>NRG PRICE</Typography>
-                                <Typography color="textSecondary" variant="subtitle2" className={classes.thinLable}>{nrgPrice}</Typography>
+                                <Typography color="textSecondary" variant="subtitle2" className={classes.thinLable}>{`${Math.floor(nrgPrice/Math.pow(10,9))} Amp`}</Typography>
                             </Grid>
                         </Grid>
 
