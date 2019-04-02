@@ -127,7 +127,7 @@ class SendStep extends Component {
             labelWidth: 0,
             availableCurrencies: this.defaultCurrencies.concat(globalTokenContractRegistry.contracts),
             recipient: this.props.to ? this.props.to : (this.props.defaultRecipient ? this.props.defaultRecipient : ''),
-            amount: this.props.amount ? this.props.amount : '',
+            amount: this.props.amount ? this.props.amount : (this.props.defaultAmount ? this.props.defaultAmount : ''),
             customNrg: false,
             nrgPrice: TransactionUtil.defaultNrgPrice,
             nrg: this.props.nrg ? this.props.nrg : TransactionUtil.defaultNrgLimit,
@@ -140,6 +140,10 @@ class SendStep extends Component {
 
     componentDidMount() {
         this.setState({ web3: new Web3(new Web3.providers.HttpProvider(this.props.web3Provider)) });
+        if(this.props.defaultTokenAddress)
+            this.updateCurrenciesWithAddress(this.props.defaultTokenAddress, true)
+        if(this.props.defaultAmount && this.props.defaultRecipient)
+            this.isFormValid()
     }
 
     async updateNrg() {
@@ -156,7 +160,7 @@ class SendStep extends Component {
         return parseFloat(this.state.web3.fromWei(balance, 'ether')).toFixed(2)
     }
 
-    updateCurrenciesWithAddress = async address => {
+    updateCurrenciesWithAddress = async (address, skipRegistry=false) => {
         try {
             const tokenContract = this.state.web3.eth.contract(ATSInterface).at(address)
             const symbol = await asPromise(tokenContract.symbol.call)
@@ -169,13 +173,14 @@ class SendStep extends Component {
                         return parseFloat(this.state.web3.fromWei(balance, 'ether')).toFixed(2)
                     }
                 }
-                if (this.state.availableCurrencies.find(item => item.contract && item.contract.address === contractData.contract.address)) {
+                if (!skipRegistry && this.state.availableCurrencies.find(item => item.contract && item.contract.address === contractData.contract.address)) {
                     this.setState({
                         tokenAddError: 'The Token Address already added'
                     })
                     return false;
                 }
-                globalTokenContractRegistry.addContract(contractData)
+                if(!skipRegistry)
+                    globalTokenContractRegistry.addContract(contractData)
                 this.state.availableCurrencies.push(contractData)
                 this.setState({
                     availableCurrencies: this.state.availableCurrencies,
@@ -275,7 +280,7 @@ class SendStep extends Component {
     }
 
     render() {
-        const { classes, onSendStepBack, onSendStepContinue, checkLedger, defaultRecipient } = this.props;
+        const { classes, onSendStepBack, onSendStepContinue, checkLedger, defaultRecipient, defaultAmount } = this.props;
         const { availableCurrencies, currencyId, amount, recipient, customNrg, nrg, nrgPrice, errorMessage, valid, account, addTokenDialogOpened, tokenAddError, addTokenSuccesfull } = this.state;
 
         return (
@@ -302,7 +307,8 @@ class SendStep extends Component {
                             itemClassName={classes.dropDownItem}
                             onChange={this.handleCurrencyChange}
                             items={availableCurrencies.map(item => item.name.toUpperCase())}
-                            onTokenAddClicked={this.onTokenAddClicked} />
+                            onTokenAddClicked={this.onTokenAddClicked}
+                            lock={defaultAmount} />
                     </Grid>
                 </Grid>
                 <Typography variant="caption" style={{ marginTop: '25px', marginBottom: '5px' }}>FROM</Typography>
@@ -335,6 +341,7 @@ class SendStep extends Component {
                     value={amount}
                     margin="normal"
                     color="primary"
+                    disabled={typeof (defaultAmount) !== 'undefined' && defaultAmount !== null}
                     type="number"
                     onChange={this.onAmountEntered.bind(this)}
                     onBlur={this.onAmountEntered.bind(this)}

@@ -72,6 +72,9 @@ const styles = theme => ({
     addButton: {
         fontSize: '13px',
         color: theme.palette.text.primary + ' !important'
+    },
+    lock: {
+        pointerEvents:'none'
     }
 })
 class CoinDropdown extends Component {
@@ -93,14 +96,14 @@ class CoinDropdown extends Component {
     }
 
     render() {
-        const { classes, items, className, itemClassName, selectedIndex } = this.props;
+        const { classes, items, className, itemClassName, selectedIndex, lock } = this.props;
         const selectedItem= items[selectedIndex];
         const dropDownItems = items.map((item, index) => {
             return (<button key={index} className={itemClassName} onClick={() => { this.onItemClick(index) }}> <Typography variant="subtitle2">{item}</Typography> </button>)
         })
         return (
-            <div className={classes.dropdown}>
-                <button className={classes.btn + ' ' + className} key={dropDownItems.length} onClick={() => { this.props.onTokenAddClicked() }}>
+            <div className={classes.dropdown + (lock? ' '+classes.lock:'')}>
+                <button className={classes.btn + ' ' + className + (lock? ' '+classes.lock:'')} key={dropDownItems.length} onClick={() => { this.props.onTokenAddClicked() }}>
                     <Grid
                         container
                         direction="row"
@@ -108,7 +111,7 @@ class CoinDropdown extends Component {
                         alignItems="center"
                     >
                         <Typography variant="subtitle2" >{selectedItem}</Typography>
-                        <Typography variant="subtitle2" >▾</Typography>
+                        <Typography variant="subtitle2" >{lock?null:'▾'}</Typography>
                     </Grid>
                 </button>
 
