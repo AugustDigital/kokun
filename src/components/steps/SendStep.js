@@ -260,6 +260,11 @@ class SendStep extends Component {
                 valid: false,
                 errorMessage: 'Fields missing'
             })
+        }else if(!this.state.web3.isAddress(recipient)){
+            this.setState({
+                valid: false,
+                errorMessage: 'Provided address is invalid'
+            })
         } else {
             this.setState({ valid: true, errorMessage: null })
         }

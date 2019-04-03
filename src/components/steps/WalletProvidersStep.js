@@ -199,13 +199,15 @@ class WalletProvidersStep extends Component {
                 title: 'Key Store File',
                 create: this.createKeyStorePanel,
                 unlock: this.unlockKeyStore,
-                validate: this.validateKeystoreFile
+                validate: this.validateKeystoreFile,
+                focusElement: null
             },
             {
                 title: 'Private Key',
                 create: this.createPrivateKeyPanel,
                 unlock: this.unlockPrivateKey,
-                validate: this.validatePrivateKey
+                validate: this.validatePrivateKey,
+                focusElement: null
             },
             // {
             //     title: 'Keyterpillar',
@@ -244,9 +246,12 @@ class WalletProvidersStep extends Component {
             }).catch((error) => reject(error))
         })
     }
-    handlePanelChange = panel => (event, expanded) => {
+    handlePanelChange = (item) => (event, expanded) => {
+        if(expanded && item.focusElement){
+            item.focusElement.focus()
+        }
         this.setState({
-            expanded: expanded ? panel : false,
+            expanded: expanded ? item : false,
         });
     };
     onPrivateKeyEntered = (text) => {
@@ -480,7 +485,8 @@ class WalletProvidersStep extends Component {
 
         </div>)
     }
-    createPrivateKeyPanel = (classes) => {
+    createPrivateKeyPanel = (classes, item) => {
+
         return (<div className={classes.content}>
             <TextField
                 fullWidth
@@ -489,6 +495,7 @@ class WalletProvidersStep extends Component {
                 margin="normal"
                 color="secondary"
                 type="password"
+                inputRef={(input)=>{item.focusElement=input}}
                 autoFocus
                 onChange={(event) => this.onPrivateKeyEntered(event.target.value)}
                 InputProps={{
@@ -554,7 +561,7 @@ class WalletProvidersStep extends Component {
                             <Typography className={expanded === item ? classes.headingExpanded : classes.heading}>{item.title.toUpperCase()}</Typography>
                         </ExpansionPanelSummary>
                         <ExpansionPanelDetails style={{ marginTop: '-20px' }}>
-                            {item.create(classes)}
+                            {item.create(classes,item)}
                         </ExpansionPanelDetails>
                     </ExpansionPanel>
                     {expanded === item ?
