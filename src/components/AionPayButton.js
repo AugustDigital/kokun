@@ -27,6 +27,7 @@ class AionPayButton extends Component {
                 defaultAmount: this.props.amount,
                 defaultTokenAddress: this.props.tokenAddress,
                 transaction: this.props.transaction,
+                callback: this.props.callback
             }
         })
     }
@@ -57,7 +58,6 @@ AionPayButton.propTypes = {
 export const inject = () => {
     window.AionPayButtonInterface = {
         renderAionPayButton: inject,
-        aionPayButtonCompletionListener: null, //todo change this logic
         aionPayWidgetThemes: []
     }
     //Register our custom element
@@ -86,6 +86,15 @@ export const inject = () => {
                 transaction = JSON.parse(transactionString)
             }
 
+            let callback = (txHash, status) => {
+                console.log('got callback data...')
+                domContainer.dispatchEvent(new CustomEvent('transactionSent', {
+                    detail: {
+                        txHash: txHash,
+                        status: status
+                    }
+                }));
+            }
 
             let theme = cloneDeep(WidgetTheme);
             if (buttonBackground) {
@@ -119,7 +128,7 @@ export const inject = () => {
                 theme.palette = themePallete;
             }
             window.AionPayButtonInterface.aionPayWidgetThemes.push(theme)
-            let propData = { address, amount, tokenAddress, buttonText, web3Provider, theme, buttonIconType, transaction }
+            let propData = { address, amount, tokenAddress, buttonText, web3Provider, theme, buttonIconType, transaction, callback }
 
             ReactDOM.render(
                 React.createElement(withStyles(styles)(AionPayButton), propData),

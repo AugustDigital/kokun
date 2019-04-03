@@ -212,8 +212,8 @@ class UserTool extends Component {
         })
 
         this.onChangeStep(3)
-        if (window.AionPayButtonInterface.aionPayButtonCompletionListener) {
-            window.AionPayButtonInterface.aionPayButtonCompletionListener(txHash, null)
+        if (this.props.callback) {
+            this.props.callback(txHash, null)
         }
     }
     checkTransactionStatus = (hash) => {
@@ -232,8 +232,8 @@ class UserTool extends Component {
                         transactionData: {}
                     })
                     this.onChangeStep(4)
-                    if (window.AionPayButtonInterface.aionPayButtonCompletionListener) {
-                        window.AionPayButtonInterface.aionPayButtonCompletionListener(hash, status === 1)
+                    if (this.props.callback) {
+                        this.props.callback(hash, status === 1)
                     }
                 }
             })

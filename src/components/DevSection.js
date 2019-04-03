@@ -154,8 +154,10 @@ class DevSection extends Component {
         inject()
         //or
         //window.renderAionPayButton()
-        //can listen for completion like so:
-        //window.AionPayButtonInterface.aionPayButtonCompletionListener = (tx) => { alert(tx) }
+        //also you can add callback for events:
+        // document.getElementById('aion-pay-0').addEventListener('transactionSent',(e)=>{
+        //     alert('Got Event:'+e.detail.txHash+' with status '+e.detail.status)
+        // })
     }
 
     onGithubButtonPressed = () => {
@@ -203,7 +205,7 @@ class DevSection extends Component {
                         justify="space-between"
                         alignItems="center">
                         <div className={classes.buttonContainer}>
-                            <aion-pay  {...item.params} />
+                            <aion-pay id={"aion-pay-"+index} {...item.params} />
                         </div>
                         <ClickAwayListener onClickAway={()=>{this.handleTooltipClose(index)}}>
                         <Tooltip
