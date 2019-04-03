@@ -354,15 +354,19 @@ class UserTool extends Component {
                             alignItems="center"
                             className={classes.linkText}
                             wrap='nowrap'>
-                            <Typography style={{whiteSpace: 'nowrap'}} variant="subtitle2">{'Transaction Hash: '}</Typography>
+                            <Typography style={{ whiteSpace: 'nowrap' }} variant="subtitle2">{'Transaction Hash: '}</Typography>
                             <a target='_blank' rel='noopener noreferrer' className={classes.link} href={`https://${isTestnet ? 'mastery' : 'mainnet'}.aion.network/#/transaction/${txHash}`}>{txHash}</a>
 
                         </Grid>
-
-                        <PrimaryButton
-                            onClick={(event) => { this.onSentSuccess() }}
-                            className={classes.continueButton}
-                            text='Done' />
+                        {
+                            (completed === 1) ?
+                                <PrimaryButton
+                                    onClick={(event) => { this.onSentSuccess() }}
+                                    className={classes.continueButton}
+                                    text='Done' />
+                                :
+                                null
+                        }
                     </Grid>)
                 break;
             }
