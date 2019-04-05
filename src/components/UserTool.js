@@ -92,11 +92,9 @@ class UserTool extends Component {
 
     }
     async signTransaction(transaction, addr, pk) {
-        console.log({transaction, addr, pk})
         transaction.from=null;
         const aion = new Accounts();
         const account = aion.privateKeyToAccount(pk);
-        console.log(account)
         const signedTransaction = await account.signTransaction(transaction);
 
         return signedTransaction;
@@ -140,11 +138,8 @@ class UserTool extends Component {
         return this.state.web3.eth.estimateGas({ data: transaction })
     }
     onSendStepContinue = (currency, from, to, amount, nrg, nrgPrice, data=null) => {
-        console.log('...onSendStepContinue')
         const transaction = this.toTransaction(currency, from, to, amount, nrg, nrgPrice, data)
         const transactionData = { currency, from, to, amount, nrg, nrgPrice }
-        console.log('Got transaction:')
-        console.log(transaction)
         if (this.state.privateKey === 'ledger') {
 
             let ledgerConnection = new LedgerProvider()
@@ -161,7 +156,7 @@ class UserTool extends Component {
                         })
 
                     }).catch((error) => {
-                        console.log(error)
+                        console.trace(error)
                         this.setState({ checkLedger: false });
                         this.onSendStepBack();
                     })
@@ -184,7 +179,8 @@ class UserTool extends Component {
     }
     onSendStepBack = () => {
         this.setState({
-            step: 0
+            step: 0,
+            transactionData:{},             
         })
         this.onChangeStep(0)
     }
@@ -225,21 +221,18 @@ class UserTool extends Component {
         }, 5000);
     }
     onTransactionStepBack = () => {
-        if (this.props.externalTransaction) {
-            this.setState({
-                step: 0
-            })
-        } else {
-            this.setState({
-                step: 1
-            })
-        }
+        this.setState({
+            step: this.props.externalTransaction?0:1,
+            rawTransaction: null
+        })
 
         this.onChangeStep(1)
     }
     onSentSuccess = () => {
         this.setState({
             step: 0,
+            transactionData:{},  
+            rawTransaction: null
         })
         this.onChangeStep(0)
     }
