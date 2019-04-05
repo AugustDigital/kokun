@@ -90,8 +90,8 @@ class UserSection extends Component {
                     <Grid item xs={12} sm={4}>
                         <div className={classes.left}>
                             <div className={classes.infoContainer}>
-                                <Typography variant="h4" style={{ fontWeight: 300 }}> Connect With the Aion network</Typography>
-                                <Typography variant="subtitle2" style={{ fontWeight: 'light', marginTop: '25px' }}>Aion Pay aims to be your toolkit for the Aion Blockchain. We will continue to add new and valuable tools that make it easy to interact with the protocol.</Typography>
+                                <Typography variant="h4" style={{ fontWeight: 300 }}> A Collection of Tools for Developers</Typography>
+                                <Typography variant="subtitle2" style={{ fontWeight: 'light', marginTop: '25px' }}>Kokun aims to be your toolkit for the Aion network. We will continue to add new and valuable tools that make it easy to interact with the protocol and build awesome products.</Typography>
                             </div>
                         </div>
                     </Grid>
