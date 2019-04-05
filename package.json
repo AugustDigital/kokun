@@ -40,6 +40,7 @@
     "file-loader": "1.1.5",
     "fs": "0.0.1-security",
     "fs-extra": "3.0.1",
+    "react-ga": "2.2.0",
     "html-webpack-plugin": "2.29.0",
     "jest": "20.0.4",
     "less": "^2.7.2",

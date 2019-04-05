@@ -8,6 +8,11 @@ import { MuiThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import {AppTheme} from './themes/AppTheme';
 import 'typeface-lato';
+import ReactGA from 'react-ga';
+
+
+ReactGA.initialize('UA-129745896-2',{
+    debug: true,});
 
 window.AionPayTheme = AppTheme
 ReactDOM.render(

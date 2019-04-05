@@ -130,7 +130,8 @@ class AionPayDialog extends React.Component {
         defaultRecipient={dialogData.defaultRecipient}
         defaultAmount={dialogData.defaultAmount}
         defaultTokenAddress={dialogData.defaultTokenAddress}
-        externalTransaction={dialogData.transaction} />;
+        externalTransaction={dialogData.transaction}
+        callback={dialogData.callback} />;
     }
     return (
       <Dialog
