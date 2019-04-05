@@ -118,7 +118,7 @@ class ConfirmStep extends Component {
                                 className={classes.transactionRow}
                                 wrap='nowrap'>
                                 <Typography color="textSecondary" variant="subtitle2" className={classes.fatLable}>AMOUNT</Typography>
-                                <Typography color="textSecondary" variant="subtitle2" style={{ fontWeight: 'bold', color: '#113665' }}>{`${amount} ${currency.name.toUpperCase()}`}</Typography>
+                                <Typography color="textSecondary" variant="subtitle2" style={{ fontWeight: 'bold', color: '#113665' }}>{`${amount} ${currency?currency.name.toUpperCase():"AION"}`}</Typography>
                             </Grid>
                             <Grid
                                 container
