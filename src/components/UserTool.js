@@ -89,10 +89,12 @@ class UserTool extends Component {
         return signedTransaction;
     }
     toTransaction = (currency, from, to, amount, nrg, nrgPrice) => {
+        console.log(currency)
         let methodData = null;
         let aionAmount = parseInt(this.state.web3.toWei(amount, "ether"), 10);
         let actualReciepient = to;
         let nonce = parseInt(this.state.web3.eth.getTransactionCount(from), 10);
+        
         if (currency.contract) {
             methodData = currency.contract.send.getData(
                 to,
@@ -108,7 +110,7 @@ class UserTool extends Component {
             value: aionAmount,
             gas: nrg,
             timestamp: Date.now() * 1000,
-            data: methodData,
+            data: methodData
         };
     }
     onRequestGasEstimate = (currency, from, to, amount, nrg, nrgPrice) => {

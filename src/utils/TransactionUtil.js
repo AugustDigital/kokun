@@ -125,7 +125,7 @@ export function rlpEncode(transaction) { //return Uint8Array
     txArray.push(new BN(transaction.nonce))
     txArray.push(transaction.to)
     txArray.push(transaction.value)
-    txArray.push(transaction.data)
+    txArray.push(transaction.data.toLowerCase())
 
 
     if (transaction.timestamp !== 0)

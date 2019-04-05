@@ -143,6 +143,7 @@ class LedgerProvider extends Component{
       // const r = response.slice(1, 1 + 32);
       // const s = response.slice(1 + 32, 1 + 32 + 32);
       //return { v, r, s };
+
       let signature = response.slice(0, 64) //get first 64 bytes for signature
 
       return TransactionUtil.verifyAndEncodedSignTransaction(transaction, rawTransaction, signature, CryptoUtil.hex2ua(this.publicKey))
