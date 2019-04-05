@@ -8,8 +8,9 @@ import KeystoreWalletProvider from '../../utils/KeystoreWalletProvider';
 import AionPayLogoLight from '../../assets/aion_pay_logo_light.svg'
 import LockIcon from '../../assets/lock_icon.svg'
 import LedgerProvider from '../../utils/ledger/LedgerProvider'
-import {promiseTimeout} from '../../utils/promiseTimeout';
+import { promiseTimeout } from '../../utils/promiseTimeout';
 import PrimaryButton from '../PrimaryButton'
+import Keyterpillar from '../keyterpillar/Keyterpillar'
 
 const Accounts = require('aion-keystore');
 
@@ -32,7 +33,7 @@ const styles = theme => ({
     },
     normalPanelStyle: {
         backgroundColor: theme.palette.providerPanel.background,
-        marginBottom:theme.spacing.unit
+        marginBottom: theme.spacing.unit
     },
     expandedPanelStyle: {
         backgroundColor: theme.palette.providerPanel.background,
@@ -40,17 +41,17 @@ const styles = theme => ({
         borderWidth: '3px',
         borderRadius: '5px',
         borderColor: theme.palette.providerPanel.border,
-        marginBottom:theme.spacing.unit
+        marginBottom: theme.spacing.unit
     },
-    panelText:{
-        color:theme.palette.providerPanel.text
+    panelText: {
+        color: theme.palette.providerPanel.text
     },
-    panelTextLong:{
-        color:theme.palette.providerPanel.text,
+    panelTextLong: {
+        color: theme.palette.providerPanel.text,
         overflow: 'hidden',
         textOverflow: 'ellipsis',
-        display:'inline-block',
-        width:'100%',
+        display: 'inline-block',
+        width: '100%',
     },
     secondaryHeading: {
         fontSize: theme.typography.pxToRem(15),
@@ -71,8 +72,8 @@ const styles = theme => ({
         paddingTop: '2px',
         paddingBottom: '2px'
     },
-    warningText:{
-        color:theme.palette.common.white
+    warningText: {
+        color: theme.palette.common.white
     },
     privateKeyError: {
         width: 'fit-content',
@@ -116,7 +117,7 @@ const styles = theme => ({
         right: 0,
     },
     fileIcon: {
-        padding:theme.spacing.unit,
+        padding: theme.spacing.unit,
         color: theme.palette.common.icon,
         fontSize: 75,
     },
@@ -133,7 +134,7 @@ const styles = theme => ({
         fontSize: 85,
     },
     checkIconBig: {
-        padding:theme.spacing.unit,
+        padding: theme.spacing.unit,
         fontSize: 75,
         color: theme.palette.common.green
     },
@@ -147,8 +148,8 @@ const styles = theme => ({
     iconHeading: {
         float: 'left'
     },
-    aionPayIcon:{
-        height:'28px'
+    aionPayIcon: {
+        height: '28px'
     },
     unlockingState: {
         paddingTop: theme.spacing.unit * 15,
@@ -156,7 +157,7 @@ const styles = theme => ({
     },
     underline: {
         '&:before': {
-            borderBottom: '2px solid '+theme.palette.common.underline,
+            borderBottom: '2px solid ' + theme.palette.common.underline,
         },
         '&:after': {
             borderBottom: `2px solid ${theme.palette.common.underlineFocused}`
@@ -167,7 +168,7 @@ const styles = theme => ({
     },
     link: {
         color: theme.palette.common.link,
-        fontWeight:'bold'
+        fontWeight: 'bold'
     }
 })
 class WalletProvidersStep extends Component {
@@ -198,48 +199,59 @@ class WalletProvidersStep extends Component {
                 title: 'Key Store File',
                 create: this.createKeyStorePanel,
                 unlock: this.unlockKeyStore,
-                validate: this.validateKeystoreFile
+                validate: this.validateKeystoreFile,
+                focusElement: null
             },
             {
                 title: 'Private Key',
                 create: this.createPrivateKeyPanel,
                 unlock: this.unlockPrivateKey,
-                validate: this.validatePrivateKey
-            }
+                validate: this.validatePrivateKey,
+                focusElement: null
+            },
+            // {
+            //     title: 'Keyterpillar',
+            //     create: this.createKTPKeyPanel,
+            //     unlock: this.unlockKTPKey,
+            //     validate: this.validateKTPCredentials
+            // },
         ];
     }
     componentDidMount() {
         setInterval(() => {
-            if(this.state.expanded != null){
-                let expanded={title:''};
+            if (this.state.expanded != null) {
+                let expanded = { title: '' };
                 expanded = this.state.expanded;
-                if(expanded.title === "Ledger"){
+                if (expanded.title === "Ledger") {
                     let doIt = promiseTimeout(3000, this.connectToLedger());
                     doIt.then(result => {
-                        if(result){
-                            this.setState({ledgerConnected: true , ledgerAddress: result})
-                        }else{
-                            this.setState({ledgerConnected: false, ledgerAddress: ''});
+                        if (result) {
+                            this.setState({ ledgerConnected: true, ledgerAddress: result })
+                        } else {
+                            this.setState({ ledgerConnected: false, ledgerAddress: '' });
                         }
                     }).catch(error => {
-                        this.setState({ledgerConnected: false, ledgerAddress: ''});
+                        this.setState({ ledgerConnected: false, ledgerAddress: '' });
                     });
                 }
             }
         }, 5000);
     }
-     connectToLedger(){
-         return new Promise((resolve, reject) => {
+    connectToLedger() {
+        return new Promise((resolve, reject) => {
 
             let ledgerConnection = new LedgerProvider();
             ledgerConnection.unlock(null).then((address) => {
                 resolve(address[0]);
             }).catch((error) => reject(error))
         })
-     }
-    handlePanelChange = panel => (event, expanded) => {
+    }
+    handlePanelChange = (item) => (event, expanded) => {
+        if(expanded && item.focusElement){
+            item.focusElement.focus()
+        }
         this.setState({
-            expanded: expanded ? panel : false,
+            expanded: expanded ? item : false,
         });
     };
     onPrivateKeyEntered = (text) => {
@@ -259,15 +271,15 @@ class WalletProvidersStep extends Component {
         })
     }
     unlockAccount = (item) => {
-        item.unlock().then((result)=>{
+        item.unlock().then((result) => {
             this.props.onAccountImported(result)
-        }).catch((error)=>{
+        }).catch((error) => {
             return error;
         })
     }
     unlockLedger = () => {
         return new Promise((resolve, reject) => {
-            resolve({address: this.state.ledgerAddress, privateKey: 'ledger' })
+            resolve({ address: this.state.ledgerAddress, privateKey: 'ledger' })
         })
     }
     unlockKeyStore = () => {
@@ -276,33 +288,33 @@ class WalletProvidersStep extends Component {
             let reader = new FileReader()
 
             try {
-              reader.readAsArrayBuffer(this.state.keyStoreFile)
+                reader.readAsArrayBuffer(this.state.keyStoreFile)
             } catch (error) {
-              reject(error)
+                reject(error)
             }
 
             let me = this;
-            reader.onload =  async function () {
+            reader.onload = async function () {
                 let content = reader.result;
                 let keystoreProvider = new KeystoreWalletProvider(content, me.state.keyStoreFilePass);
 
                 try {
-                  let [address, publicKey, privateKey] = await keystoreProvider.unlock((progress) => {
-                      me.setState({ completed: Math.round(progress) });
-                  })
+                    let [address, publicKey, privateKey] = await keystoreProvider.unlock((progress) => {
+                        me.setState({ completed: Math.round(progress) });
+                    })
 
-                  resolve({address: address, privateKey: privateKey, publicKey: publicKey })
+                    resolve({ address: address, privateKey: privateKey, publicKey: publicKey })
                 } catch (error) {
-                  me.setState({completed:0, keyStoreError: true, keyStoreErrorMessage: "Unable to unlock file"})
-                  reject(error)
+                    me.setState({ completed: 0, keyStoreError: true, keyStoreErrorMessage: "Unable to unlock file" })
+                    reject(error)
                 }
             }
         })
     }
 
-    unlockPrivateKey=()=>{
+    unlockPrivateKey = () => {
         return new Promise((resolve, reject) => {
-            try{
+            try {
                 const aion = new Accounts();
                 let account = aion.privateKeyToAccount(this.state.privateKey);
                 const timer = setInterval(() => {
@@ -314,8 +326,29 @@ class WalletProvidersStep extends Component {
                     }
                 }, 400);
 
-            }catch(e){
-                this.setState({privateKeyError: true, privateKeyErrorMessage: "Invalid key"})
+            } catch (e) {
+                this.setState({ privateKeyError: true, privateKeyErrorMessage: "Invalid key" })
+                reject(false)
+            }
+        })
+    }
+
+    unlockKTPKey = () => {
+        return new Promise((resolve, reject) => {
+            try {
+                const aion = new Accounts();
+                let account = aion.privateKeyToAccount(this.state.privateKey);
+                const timer = setInterval(() => {
+                    if (this.state.completed === 100) {
+                        clearInterval(timer);
+                        resolve(account)
+                    } else {
+                        this.setState({ completed: this.state.completed + 25 })
+                    }
+                }, 400);
+
+            } catch (e) {
+                this.setState({ privateKeyError: true, privateKeyErrorMessage: "Invalid key" })
                 reject(false)
             }
         })
@@ -359,17 +392,23 @@ class WalletProvidersStep extends Component {
 
         </div>)
     }
+
+    focusKeystorePasswordField = input => {
+        if (input) {
+            console.log(input)
+        }
+    };
     createKeyStorePanel = (classes) => {
         return (<div className={classes.content}>
             {this.state.keyStoreFile ?
 
-                    <Grid container
-                        direction="column"
-                        justify="center"
-                        alignItems="center"
-                        wrap="nowrap">
-                        <InsertDriveFile className={classes.fileIcon} />
-                        <Typography className={classes.panelTextLong} variant='h5' style={{ fontWeight: 'bold', marginTop: '15px' }}>{this.state.keyStoreFile.name}</Typography>
+                <Grid container
+                    direction="column"
+                    justify="center"
+                    alignItems="center"
+                    wrap="nowrap">
+                    <InsertDriveFile className={classes.fileIcon} />
+                    <Typography className={classes.panelTextLong} variant='h5' style={{ fontWeight: 'bold', marginTop: '15px' }}>{this.state.keyStoreFile.name}</Typography>
 
 
                     <IconButton onClick={this.onCancelFileUpload} aria-label="Close" className={classes.cancelFileUploadButton}>
@@ -393,6 +432,7 @@ class WalletProvidersStep extends Component {
                         margin="normal"
                         color="secondary"
                         type="password"
+                        autoFocus
                         onChange={(event) => this.onKeystorePasswordEntered(event.target.value)}
                         InputProps={{
                             classes: {
@@ -401,25 +441,25 @@ class WalletProvidersStep extends Component {
                             },
                         }}
                         InputLabelProps={{
-                            classes:{root:classes.inputPlaceholder},
+                            classes: { root: classes.inputPlaceholder },
                         }}
                     />
                     <br />
                     {this.state.keyStoreError ?
-                    <Grid className={classes.privateKeyError}
-                        container
-                        direction="row"
-                        justify="flex-start"
-                        alignItems="center">
-                        <Grid item>
-                            <Warning className={classes.warningIcon} />
-                        </Grid>
-                        <Grid item>
-                            <Typography className={classes.warningText} variant="subtitle2">{this.state.keyStoreErrorMessage}</Typography>
-                        </Grid>
-                    </Grid>: null
+                        <Grid className={classes.privateKeyError}
+                            container
+                            direction="row"
+                            justify="flex-start"
+                            alignItems="center">
+                            <Grid item>
+                                <Warning className={classes.warningIcon} />
+                            </Grid>
+                            <Grid item>
+                                <Typography className={classes.warningText} variant="subtitle2">{this.state.keyStoreErrorMessage}</Typography>
+                            </Grid>
+                        </Grid> : null
                     }
-                    </Grid>
+                </Grid>
                 :
                 <Dropzone onDrop={this.onKeystoreFileUploaded}>
                     {({ getRootProps, getInputProps, isDragActive }) => {
@@ -445,7 +485,8 @@ class WalletProvidersStep extends Component {
 
         </div>)
     }
-    createPrivateKeyPanel = (classes) => {
+    createPrivateKeyPanel = (classes, item) => {
+
         return (<div className={classes.content}>
             <TextField
                 fullWidth
@@ -454,6 +495,8 @@ class WalletProvidersStep extends Component {
                 margin="normal"
                 color="secondary"
                 type="password"
+                inputRef={(input)=>{item.focusElement=input}}
+                autoFocus
                 onChange={(event) => this.onPrivateKeyEntered(event.target.value)}
                 InputProps={{
                     classes: {
@@ -462,7 +505,7 @@ class WalletProvidersStep extends Component {
                     },
                 }}
                 InputLabelProps={{
-                    classes:{root:classes.inputPlaceholder},
+                    classes: { root: classes.inputPlaceholder },
                 }}
             />
             <br />
@@ -481,9 +524,15 @@ class WalletProvidersStep extends Component {
         </div>);
     }
 
+    createKTPKeyPanel = () => {
+        return ( <Keyterpillar
+            onGotPkFromKeyterpillar={this.onPrivateKeyEntered.bind(this)}
+            web3Provider={this.props.web3Provider} /> )
+    }
+
     validateLedger = () => {
 
-        const {ledgerConnected} = this.state;
+        const { ledgerConnected } = this.state;
         return ledgerConnected;
     }
     validateKeystoreFile = () => {
@@ -491,6 +540,10 @@ class WalletProvidersStep extends Component {
         return keyStoreFile != null && keyStoreFilePass !== null && keyStoreFilePass.length > 0;
     }
     validatePrivateKey = () => {
+        const { privateKey } = this.state;
+        return privateKey !== null && privateKey.length > 0;
+    }
+    validateKTPCredentials = () => {
         const { privateKey } = this.state;
         return privateKey !== null && privateKey.length > 0;
     }
@@ -508,7 +561,7 @@ class WalletProvidersStep extends Component {
                             <Typography className={expanded === item ? classes.headingExpanded : classes.heading}>{item.title.toUpperCase()}</Typography>
                         </ExpansionPanelSummary>
                         <ExpansionPanelDetails style={{ marginTop: '-20px' }}>
-                            {item.create(classes)}
+                            {item.create(classes,item)}
                         </ExpansionPanelDetails>
                     </ExpansionPanel>
                     {expanded === item ?
@@ -518,7 +571,7 @@ class WalletProvidersStep extends Component {
                                 disabled={!expanded.validate()}
                                 className={classes.continueButton}
                                 onClick={() => this.unlockAccount(expanded)}
-                                text='Continue'/>
+                                text='Continue' />
                         </Grid>
                         : null}
                 </Grid>);
@@ -527,12 +580,12 @@ class WalletProvidersStep extends Component {
                 container
                 direction="column"
                 justify="flex-start">
-                {showInfoHeader?
+                {showInfoHeader ?
                     <div>
                         <img alt="Aion Pay Logo" className={classNames(classes.aionPayIcon)} src={AionPayLogoLight} />
-                <Typography variant="subtitle2" style={{ fontWeight: 'light', marginTop: '25px' }}> Seamlessly send Aion to any address</Typography>
-                        </div>
-                    :null}
+                        <Typography variant="subtitle2" style={{ fontWeight: 'light', marginTop: '25px' }}> Seamlessly send Aion to any address</Typography>
+                    </div>
+                    : null}
                 <Typography variant="h5" style={{ fontWeight: 'bold', marginTop: '25px', marginBottom: '25px' }}> Choose your wallet provider</Typography>
                 {innerContent}
             </Grid>)
@@ -545,7 +598,7 @@ class WalletProvidersStep extends Component {
                 alignItems="center"
                 className={classes.unlockingState}>
                 <Zoom in={true}>
-                    <img alt='Lock' src={LockIcon} width='50px'/>
+                    <img alt='Lock' src={LockIcon} width='50px' />
                 </Zoom>
                 <Typography variant="h5" style={{ fontWeight: 'bold', marginTop: '25px', marginBottom: '25px' }}>Unlocking {expanded.title}...</Typography>
                 <div className={classes.progressBarContainer}>
@@ -564,7 +617,8 @@ class WalletProvidersStep extends Component {
 
 WalletProvidersStep.propTypes = {
     classes: PropTypes.object.isRequired,
-    onAccountImported: PropTypes.func.isRequired
+    onAccountImported: PropTypes.func.isRequired,
+    web3Provider: PropTypes.string.isRequired
 };
 
 export default withStyles(styles)(WalletProvidersStep);
