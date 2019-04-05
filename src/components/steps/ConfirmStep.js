@@ -2,8 +2,11 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Web3 from 'aion-web3';
 import { withStyles, Typography, Grid, Paper } from '@material-ui/core'
+import { withTheme } from '@material-ui/core/styles';
+import compose from 'recompose/compose';
 import PrimaryButton from '../PrimaryButton'
 import SecondaryButton from '../SecondaryButton'
+import ReactGA from 'react-ga';
 
 const styles = theme => ({
     paper: {
@@ -66,6 +69,15 @@ class ConfirmStep extends Component {
         try {
             const transactionHash = await this.state.web3.eth.sendRawTransaction(this.props.rawTransaction)
             this.props.onTransactionStepContinue(transactionHash)
+            const {amount, currency, theme} = this.props;
+            let name = currency?currency.name.toUpperCase():"AION"
+            ReactGA.event({
+                category: 'Transaction',
+                action: `Sent ${name}`,
+                label:theme.palette.isWidget?'Widget':'Site',
+                value: parseFloat(amount)
+              });
+            
         } catch (error) {
             console.log(error)
             this.setState({ errorMessage: "Error sending transaction. Check your balance." })
@@ -193,4 +205,7 @@ ConfirmStep.propTypes = {
     web3Provider: PropTypes.string.isRequired,
 };
 
-export default withStyles(styles)(ConfirmStep);
+export default compose(
+    withStyles(styles, { name: 'ConfirmStep' }),
+    withTheme()
+)(ConfirmStep);
