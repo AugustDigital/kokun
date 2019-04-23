@@ -6,6 +6,9 @@
 # testing
 /coverage
 
+# npm library
+/lib/
+
 # production
 /build
 
