@@ -1,6 +1,7 @@
 {
   "name": "kokun",
-  "version": "0.0.1",
+  "version": "0.0.3",
+  "main": "lib/index.js",
   "private": true,
   "dependencies": {
     "@ledgerhq/hw-transport-u2f": "^4.32.0",
@@ -79,7 +80,8 @@
     "start": "node scripts/start.js",
     "build": "node scripts/build.js",
     "buildlib": "node scripts/buildlib.js",
-    "test": "node scripts/test.js --env=jsdom"
+    "test": "node scripts/test.js --env=jsdom",
+    "prepublish": "node scripts/prepublish.js"
   },
   "jest": {
     "collectCoverageFrom": [
@@ -124,6 +126,7 @@
     "extends": "react-app"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
     "babel-loader": "^7.1.5",
     "babel-polyfill": "^6.26.0",
