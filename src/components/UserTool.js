@@ -70,17 +70,7 @@ class UserTool extends Component {
         if (externalTransaction) {
             console.log('Got external transaction:')
             console.log(externalTransaction)
-            this.setState({
-                account: account.address,
-                privateKey: account.privateKey,
-            })
-        this.onSendStepContinue(null,
-            externalTransaction.from?externalTransaction.from:account.address,
-            externalTransaction.to,
-            externalTransaction.value,
-            externalTransaction.gas,
-            externalTransaction.gasPrice,
-            externalTransaction.data)
+            this.onExternalTransactionContinue(externalTransaction, account.address, account.privateKey)
         } else {
             this.setState({
                 step: 1,
@@ -92,29 +82,18 @@ class UserTool extends Component {
 
     }
     async signTransaction(transaction, addr, pk) {
-        transaction.from=null;
         const aion = new Accounts();
         const account = aion.privateKeyToAccount(pk);
         const signedTransaction = await account.signTransaction(transaction);
 
         return signedTransaction;
     }
-    toTransaction = (currency, from, to, amount, nrg, nrgPrice, data=null) => {
-        if(!nrg){
-            nrg=2000000;
-        }
-        if(!nrgPrice){
-            nrgPrice=10000000000;
-        }
-        if(!from){
-            from=this.state.account;
-        }
-
-        let methodData = data;
+    toTransaction = (currency, from, to, amount, nrg, nrgPrice) => {
+        let methodData = null;
         let aionAmount = parseInt(this.state.web3.toWei(amount, "ether"), 10);
         let actualReciepient = to;
         let nonce = parseInt(this.state.web3.eth.getTransactionCount(from), 10);
-        if (!methodData&&currency&&currency.contract) {
+        if (currency.contract) {
             methodData = currency.contract.send.getData(
                 to,
                 amount * Math.pow(10, 18),
@@ -124,7 +103,6 @@ class UserTool extends Component {
         }
         return {
             nonce: nonce,
-            from: from,
             gasPrice: nrgPrice,
             to: actualReciepient,
             value: aionAmount,
@@ -137,50 +115,94 @@ class UserTool extends Component {
         const transaction = this.toTransaction(currency, from, to, amount, nrg, nrgPrice)
         return this.state.web3.eth.estimateGas({ data: transaction })
     }
-    onSendStepContinue = (currency, from, to, amount, nrg, nrgPrice, data=null) => {
-        const transaction = this.toTransaction(currency, from, to, amount, nrg, nrgPrice, data)
-        const transactionData = { currency, from, to, amount, nrg, nrgPrice }
+    onExternalTransactionContinue = (transaction, addr, pk) => {
+        transaction.timestamp = Date.now() * 1000;
+        transaction.nonce = this.state.web3.eth.getTransactionCount(addr);
+        const transactionData = {
+            currency: null,
+            from: addr,
+            to: transaction.to,
+            amount: parseInt(transaction.value, 10),
+            nrg: parseInt(transaction.gas, 10),
+            nrgPrice: parseInt(transaction.gasPrice, 10)
+        }
         if (this.state.privateKey === 'ledger') {
 
             let ledgerConnection = new LedgerProvider()
             ledgerConnection.unlock(null).then((address) => {
                 this.setState({ checkLedger: true });
-                ledgerConnection
-                .sign(transaction)
-                    .then((signedTransaction) => {
-                        this.setState({
-                            checkLedger: false,
-                            step: 2,
-                            transactionData,
-                            rawTransaction: signedTransaction.rawTransaction
-                        })
-
-                    }).catch((error) => {
-                        console.trace(error)
-                        this.setState({ checkLedger: false });
-                        this.onSendStepBack();
-                    })
-            })
-        } else {
-            this.signTransaction(transaction, this.state.account, this.state.privateKey)
-                .then((signedTransaction) => {
+                ledgerConnection.sign(transaction).then((signedTransaction) => {
                     this.setState({
+                        checkLedger: false,
                         step: 2,
                         transactionData,
                         rawTransaction: signedTransaction.rawTransaction
                     })
-                    this.onChangeStep(2)
+
                 }).catch((error) => {
-                    console.trace(error)
-                    alert(error)
+                    this.setState({ checkLedger: false });
+                    this.onSendStepBack();
                 })
+            })
+        } else {
+            this.signTransaction(transaction, addr, pk).then((signedTransaction) => {
+                this.setState({
+                    step: 2,
+                    transactionData,
+                    rawTransaction: signedTransaction.rawTransaction
+                })
+                this.onChangeStep(2)
+            }).catch((error) => {
+                console.trace(error)
+                alert(error)
+            })
+        }
+    }
+    onSendStepContinue = (currency, from, to, amount, nrg, nrgPrice) => {
+        const transaction = this.toTransaction(currency, from, to, amount, nrg, nrgPrice)
+        const transactionData = { currency, from, to, amount, nrg, nrgPrice }
+
+        if (this.state.privateKey === 'ledger') {
+
+            let ledgerConnection = new LedgerProvider()
+            ledgerConnection.unlock(null).then((address) => {
+                this.setState({ checkLedger: true });
+
+                ledgerConnection.sign(transaction).then((signedTransaction) => {
+
+                    this.setState({
+                        checkLedger: false,
+                        step: 2,
+                        transactionData,
+                        rawTransaction: signedTransaction.rawTransaction
+                    })
+
+                }).catch((error) => {
+                    console.log(error)
+                    this.setState({ checkLedger: false });
+                    this.onSendStepBack();
+                })
+            })
+        } else {
+
+            this.signTransaction(transaction, this.state.account, this.state.privateKey).then((signedTransaction) => {
+
+                this.setState({
+                    step: 2,
+                    transactionData,
+                    rawTransaction: signedTransaction.rawTransaction
+                })
+                this.onChangeStep(2)
+            }).catch((error) => {
+                console.trace(error)
+                alert(error)
+            })
         }
 
     }
     onSendStepBack = () => {
         this.setState({
-            step: 0,
-            transactionData:{},
+            step: 0
         })
         this.onChangeStep(0)
     }
@@ -193,8 +215,8 @@ class UserTool extends Component {
         })
 
         this.onChangeStep(3)
-        if (this.props.callback) {
-            this.props.callback(txHash, null)
+        if (window.AionPayButtonInterface.aionPayButtonCompletionListener) {
+            window.AionPayButtonInterface.aionPayButtonCompletionListener(txHash, null)
         }
     }
     checkTransactionStatus = (hash) => {
@@ -213,26 +235,29 @@ class UserTool extends Component {
                         transactionData: {}
                     })
                     this.onChangeStep(4)
-                    if (this.props.callback) {
-                        this.props.callback(hash, status === 1)
+                    if (window.AionPayButtonInterface.aionPayButtonCompletionListener) {
+                        window.AionPayButtonInterface.aionPayButtonCompletionListener(hash, status === 1)
                     }
                 }
             })
         }, 5000);
     }
     onTransactionStepBack = () => {
-        this.setState({
-            step: this.props.externalTransaction?0:1,
-            rawTransaction: null
-        })
+        if (this.props.externalTransaction) {
+            this.setState({
+                step: 0
+            })
+        } else {
+            this.setState({
+                step: 1
+            })
+        }
 
         this.onChangeStep(1)
     }
     onSentSuccess = () => {
         this.setState({
             step: 0,
-            transactionData:{},
-            rawTransaction: null
         })
         this.onChangeStep(0)
     }
@@ -240,7 +265,7 @@ class UserTool extends Component {
         this.props.onStepChanged(step, 4)
     }
     render() {
-        const { classes, theme, showInfoHeader, web3Provider, defaultRecipient, currency, defaultAmount, defaultTokenAddress } = this.props;
+        const { classes, theme, showInfoHeader, web3Provider, defaultRecipient, currency } = this.props;
         const { step, transactionData, txHash, rawTransaction, account, privateKey, checkLedger, transactionStatus, completed } = this.state;
         let content = null;
         let status = null;
@@ -253,12 +278,13 @@ class UserTool extends Component {
             status = <HighlightOffRounded className={classes.errorIcon} />
         }
 
+        const isLedger = privateKey === 'ledger' ? true : false;
+
         switch (step) {
             case 0: { // Account import
                 content = (<WalletProvidersStep
                     onAccountImported={this.onAccountImported}
                     showInfoHeader={showInfoHeader}
-                    web3Provider={web3Provider}
                 />);
                 break;
             }
@@ -277,9 +303,8 @@ class UserTool extends Component {
                     rawTransaction={rawTransaction}
                     checkLedger={checkLedger}
                     defaultRecipient={defaultRecipient}
-                    defaultAmount={defaultAmount}
-                    defaultTokenAddress={defaultTokenAddress}
                     web3Provider={web3Provider}
+                    isLedger={isLedger}
                 />);
                 break;
             }
@@ -332,19 +357,15 @@ class UserTool extends Component {
                             alignItems="center"
                             className={classes.linkText}
                             wrap='nowrap'>
-                            <Typography style={{ whiteSpace: 'nowrap' }} variant="subtitle2">{'Transaction Hash: '}</Typography>
+                            <Typography variant="subtitle2">{'Transaction\u00A0Hash:\u00A0'}</Typography>
                             <a target='_blank' rel='noopener noreferrer' className={classes.link} href={`https://${isTestnet ? 'mastery' : 'mainnet'}.aion.network/#/transaction/${txHash}`}>{txHash}</a>
 
                         </Grid>
-                        {
-                            (completed === 1) ?
-                                <PrimaryButton
-                                    onClick={(event) => { this.onSentSuccess() }}
-                                    className={classes.continueButton}
-                                    text='Done' />
-                                :
-                                null
-                        }
+
+                        <PrimaryButton
+                            onClick={(event) => { this.onSentSuccess() }}
+                            className={classes.continueButton}
+                            text='Done' />
                     </Grid>)
                 break;
             }

@@ -13,12 +13,13 @@ const SecondaryButton = withStyles(theme => ({
     },
 
 }))(props => {
-    const { children, classes, className, onClick, text } = props;
+    const { children, classes, className, onClick, text, buttonType } = props;
     return (
         <Button
             variant="outlined"
             color="secondary"
             onClick={onClick}
+            type={buttonType}
             className={classNames(className, classes.root)}>
             <b>{text}</b>
             {children}

@@ -96,14 +96,14 @@ class CoinDropdown extends Component {
     }
 
     render() {
-        const { classes, items, className, itemClassName, selectedIndex, lock } = this.props;
+        const { classes, items, className, itemClassName, selectedIndex, lock, isLedger } = this.props;
         const selectedItem= items[selectedIndex];
         const dropDownItems = items.map((item, index) => {
             return (<button key={index} className={itemClassName} onClick={() => { this.onItemClick(index) }}> <Typography variant="subtitle2">{item}</Typography> </button>)
         })
         return (
             <div className={classes.dropdown + (lock? ' '+classes.lock:'')}>
-                <button className={classes.btn + ' ' + className + (lock? ' '+classes.lock:'')} key={dropDownItems.length} onClick={() => { this.props.onTokenAddClicked() }}>
+                <button className={classes.btn + ' ' + className + (lock? ' '+classes.lock:'')} key={dropDownItems.length} >
                     <Grid
                         container
                         direction="row"
@@ -117,17 +117,22 @@ class CoinDropdown extends Component {
 
                 <div className={classes.dropdownContent}>
                     {dropDownItems}
-                    <button className={itemClassName} key={dropDownItems.length} onClick={() => { this.props.onTokenAddClicked() }}>
-                        <Grid
-                            container
-                            direction="row"
-                            justify="space-between"
-                            alignItems="center"
-                        >
-                            <Typography variant="subtitle2" >ADD</Typography>
-                            <Add className={classes.addButton} />
-                        </Grid>
-                    </button>
+
+                    {
+                        !isLedger ?
+                        <button className={itemClassName} key={dropDownItems.length} onClick={() => { this.props.onTokenAddClicked() }}>
+                            <Grid
+                                container
+                                direction="row"
+                                justify="space-between"
+                                alignItems="center"
+                            >
+                                <Typography variant="subtitle2" >ADD</Typography>
+                                <Add className={classes.addButton} />
+                            </Grid>
+                        </button>
+                        : null
+                    }
 
                 </div>
 
