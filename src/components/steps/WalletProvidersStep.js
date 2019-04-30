@@ -11,6 +11,7 @@ import LedgerProvider from '../../utils/ledger/LedgerProvider'
 import { promiseTimeout } from '../../utils/promiseTimeout';
 import PrimaryButton from '../PrimaryButton'
 import Keyterpillar from '../keyterpillar/Keyterpillar'
+import queryString from 'stringquery'
 
 const Accounts = require('aion-keystore');
 
@@ -209,13 +210,18 @@ class WalletProvidersStep extends Component {
                 validate: this.validatePrivateKey,
                 focusElement: null
             },
-            // {
-            //     title: 'Keyterpillar',
-            //     create: this.createKTPKeyPanel,
-            //     unlock: this.unlockKTPKey,
-            //     validate: this.validateKTPCredentials
-            // },
+            {
+                title: 'Keyterpillar',
+                create: this.createKTPKeyPanel,
+                unlock: this.unlockKTPKey,
+                validate: this.validateKTPCredentials,
+                testnet: false
+            },
         ];
+    }
+    componentWillMount() {
+        const queryParams = queryString(window.location.search);
+        this.setState({ showKeyterpillar: queryParams.testnet === 'true' && queryParams.keyterpillar === 'true' })
     }
     componentDidMount() {
         setInterval(() => {
@@ -247,7 +253,7 @@ class WalletProvidersStep extends Component {
         })
     }
     handlePanelChange = (item) => (event, expanded) => {
-        if(expanded && item.focusElement){
+        if (expanded && item.focusElement) {
             item.focusElement.focus()
         }
         this.setState({
@@ -495,7 +501,7 @@ class WalletProvidersStep extends Component {
                 margin="normal"
                 color="secondary"
                 type="password"
-                inputRef={(input)=>{item.focusElement=input}}
+                inputRef={(input) => { item.focusElement = input }}
                 autoFocus
                 onChange={(event) => this.onPrivateKeyEntered(event.target.value)}
                 InputProps={{
@@ -525,9 +531,9 @@ class WalletProvidersStep extends Component {
     }
 
     createKTPKeyPanel = () => {
-        return ( <Keyterpillar
+        return (<Keyterpillar
             onGotPkFromKeyterpillar={this.onPrivateKeyEntered.bind(this)}
-            web3Provider={this.props.web3Provider} /> )
+            web3Provider={this.props.web3Provider} />)
     }
 
     validateLedger = () => {
@@ -549,11 +555,11 @@ class WalletProvidersStep extends Component {
     }
     render() {
         const { classes, showInfoHeader } = this.props;
-        const { expanded, completed } = this.state;
+        const { expanded, completed, showKeyterpillar } = this.state;
 
         let content;
         if (completed === 0) { //Wallet Import Options
-            const innerContent = this.CONTENT_ITEMS.map((item, index) => {
+            const innerContent = this.CONTENT_ITEMS.filter(item => item.title !== 'Keyterpillar' || showKeyterpillar).map((item, index) => {
 
                 return (<Grid key={index} item>
                     <ExpansionPanel className={expanded === item ? classes.expandedPanelStyle : classes.normalPanelStyle} expanded={expanded === item} onChange={this.handlePanelChange(item)}>
@@ -561,7 +567,7 @@ class WalletProvidersStep extends Component {
                             <Typography className={expanded === item ? classes.headingExpanded : classes.heading}>{item.title.toUpperCase()}</Typography>
                         </ExpansionPanelSummary>
                         <ExpansionPanelDetails style={{ marginTop: '-20px' }}>
-                            {item.create(classes,item)}
+                            {item.create(classes, item)}
                         </ExpansionPanelDetails>
                     </ExpansionPanel>
                     {expanded === item ?

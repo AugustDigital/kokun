@@ -47,7 +47,7 @@ const themeExample = {
         paddingTop:'6p',
         paddingBottom:'6p',
         paddingLeft:'16p',
-        paddingRight:'16p',
+        paddingRight:'16p'
     }
 }
 
