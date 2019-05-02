@@ -73,7 +73,7 @@ class TopBar extends Component {
                 </Grid>
                 <Grid item xs={12} sm={6} className={classes.helpButtonContainer}>
                   <Button color="secondary" onClick={this.onSupportClicked} className={classes.helpButton}>
-                    Help &amp; Support
+                    Support
                     </Button>
                 </Grid>
               </Grid>
