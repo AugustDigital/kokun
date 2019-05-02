@@ -15,7 +15,7 @@ const styles = theme => ({
         paddingRight: theme.spacing.unit * 7,
         [theme.breakpoints.down('xs')]: {
             paddingRight: theme.spacing.unit,
-            marginTop: theme.spacing.unit * 3,
+            marginTop: theme.spacing.unit * 10,
         }
     },
     right: {
