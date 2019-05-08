@@ -24,7 +24,10 @@ class AionPayButton extends Component {
             dialogData: {
                 web3Provider: this.props.web3Provider,
                 defaultRecipient: this.props.address,
+                defaultAmount: this.props.amount,
+                defaultTokenAddress: this.props.tokenAddress,
                 transaction: this.props.transaction,
+                callback: this.props.callback
             }
         })
     }
@@ -55,7 +58,6 @@ AionPayButton.propTypes = {
 export const inject = () => {
     window.AionPayButtonInterface = {
         renderAionPayButton: inject,
-        aionPayButtonCompletionListener: null,
         aionPayWidgetThemes: []
     }
     //Register our custom element
@@ -64,10 +66,18 @@ export const inject = () => {
     document.querySelectorAll('aion-pay')
         .forEach(domContainer => {
             let address = domContainer.dataset.address;
+            let amount = domContainer.dataset.amount;
+            let tokenAddress = domContainer.dataset.tokenAddress;
             let buttonText = domContainer.dataset.buttonText;
             let buttonBackground = domContainer.dataset.buttonBackground;
             let buttonTextColor = domContainer.dataset.buttonTextColor;
             let buttonIconType = domContainer.dataset.buttonIconType;
+            let buttonFontWeight = domContainer.dataset.buttonFontWeight;
+            let buttonFontSize = domContainer.dataset.buttonFontSize;
+            let buttonPaddingLeft = domContainer.dataset.buttonPaddingLeft;
+            let buttonPaddingRight = domContainer.dataset.buttonPaddingRight;
+            let buttonPaddingTop = domContainer.dataset.buttonPaddingTop;
+            let buttonPaddingBottom = domContainer.dataset.buttonPaddingBottom;
             let style = domContainer.dataset.style;
             let web3Provider = domContainer.dataset.web3Provider;
             let transactionString = domContainer.dataset.transaction;
@@ -76,13 +86,40 @@ export const inject = () => {
                 transaction = JSON.parse(transactionString)
             }
 
+            let callback = (txHash, status) => {
+                console.log('got callback data...')
+                domContainer.dispatchEvent(new CustomEvent('transactionSent', {
+                    detail: {
+                        txHash: txHash,
+                        status: status
+                    }
+                }));
+            }
 
             let theme = cloneDeep(WidgetTheme);
             if (buttonBackground) {
-                theme.palette.background.aionPay = buttonBackground;
+                theme.palette.aionPay.backgroundColor = buttonBackground;
             }
             if (buttonTextColor) {
-                theme.palette.text.aionPay = buttonTextColor;
+                theme.palette.aionPay.textColor = buttonTextColor;
+            }
+            if (buttonFontWeight) {
+                theme.palette.aionPay.fontWeight = buttonFontWeight;
+            }
+            if (buttonFontSize) {
+                theme.palette.aionPay.fontSize = buttonFontSize;
+            }
+            if (buttonPaddingTop) {
+                theme.palette.aionPay.paddingTop = buttonPaddingTop;
+            }
+            if (buttonPaddingBottom) {
+                theme.palette.aionPay.paddingBottom = buttonPaddingBottom;
+            }
+            if (buttonPaddingLeft) {
+                theme.palette.aionPay.paddingLeft = buttonPaddingLeft;
+            }
+            if (buttonPaddingRight) {
+                theme.palette.aionPay.paddingRight = buttonPaddingRight;
             }
 
             if (style) {
@@ -91,7 +128,7 @@ export const inject = () => {
                 theme.palette = themePallete;
             }
             window.AionPayButtonInterface.aionPayWidgetThemes.push(theme)
-            let propData = { address, buttonText, web3Provider, theme, buttonIconType, transaction }
+            let propData = { address, amount, tokenAddress, buttonText, web3Provider, theme, buttonIconType, transaction, callback }
 
             ReactDOM.render(
                 React.createElement(withStyles(styles)(AionPayButton), propData),

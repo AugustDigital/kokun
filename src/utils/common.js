@@ -108,3 +108,18 @@ export const poll = async (
             )
     })
 }
+
+export const asPromise =  async (fun, params) => {
+    return new Promise( (resolve, reject) =>{
+        try{
+            if(params && params.length){
+                resolve(fun(...params)) 
+            }else{
+                resolve(fun())
+            }
+           
+        }catch(ex){
+            reject(ex)
+        }
+    })
+}
