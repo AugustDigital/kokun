@@ -96,7 +96,7 @@ class CoinDropdown extends Component {
     }
 
     render() {
-        const { classes, items, className, itemClassName, selectedIndex, lock, isLedger } = this.props;
+        const { classes, items, className, itemClassName, selectedIndex, lock } = this.props;
         const selectedItem= items[selectedIndex];
         const dropDownItems = items.map((item, index) => {
             return (<button key={index} className={itemClassName} onClick={() => { this.onItemClick(index) }}> <Typography variant="subtitle2">{item}</Typography> </button>)
@@ -118,9 +118,7 @@ class CoinDropdown extends Component {
                 <div className={classes.dropdownContent}>
                     {dropDownItems}
 
-                    {
-                        !isLedger ?
-                        <button className={itemClassName} key={dropDownItems.length} onClick={() => { this.props.onTokenAddClicked() }}>
+                    <button className={itemClassName} key={dropDownItems.length} onClick={() => { this.props.onTokenAddClicked() }}>
                             <Grid
                                 container
                                 direction="row"
@@ -130,9 +128,7 @@ class CoinDropdown extends Component {
                                 <Typography variant="subtitle2" >ADD</Typography>
                                 <Add className={classes.addButton} />
                             </Grid>
-                        </button>
-                        : null
-                    }
+                    </button>
 
                 </div>
 

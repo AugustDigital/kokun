@@ -285,7 +285,7 @@ class SendStep extends Component {
     }
 
     render() {
-        const { classes, onSendStepBack, onSendStepContinue, checkLedger, defaultRecipient, defaultAmount, isLedger } = this.props;
+        const { classes, onSendStepBack, onSendStepContinue, checkLedger, defaultRecipient, defaultAmount } = this.props;
         const { availableCurrencies, currencyId, amount, recipient, customNrg, nrg, nrgPrice, errorMessage, valid, account, addTokenDialogOpened, tokenAddError, addTokenSuccesfull } = this.state;
 
         return (
@@ -312,7 +312,6 @@ class SendStep extends Component {
                             itemClassName={classes.dropDownItem}
                             onChange={this.handleCurrencyChange}
                             items={availableCurrencies.map(item => item.name.toUpperCase())}
-                            isLedger={isLedger}
                             onTokenAddClicked={this.onTokenAddClicked}
                             lock={defaultAmount} />
                     </Grid>

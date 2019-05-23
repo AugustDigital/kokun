@@ -278,7 +278,6 @@ class UserTool extends Component {
             status = <HighlightOffRounded className={classes.errorIcon} />
         }
 
-        const isLedger = privateKey === 'ledger' ? true : false;
 
         switch (step) {
             case 0: { // Account import
@@ -304,7 +303,6 @@ class UserTool extends Component {
                     checkLedger={checkLedger}
                     defaultRecipient={defaultRecipient}
                     web3Provider={web3Provider}
-                    isLedger={isLedger}
                 />);
                 break;
             }

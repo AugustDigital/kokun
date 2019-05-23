@@ -2,9 +2,9 @@
   "name": "kokun",
   "version": "0.0.3",
   "main": "lib/index.js",
-  "private": true,
+  "private": false,
   "dependencies": {
-    "@ledgerhq/hw-transport-u2f": "^4.32.0",
+    "@ledgerhq/hw-transport-u2f": "^4.60.2",
     "@material-ui/core": "^3.8.2",
     "@material-ui/icons": "^3.0.2",
     "aes-js": "^3.1.2",

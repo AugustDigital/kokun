@@ -25,7 +25,8 @@ class LedgerProvider extends Component{
         this,
         [
           "getAddress",
-          "sign"
+          "sign",
+          "getAppConfiguration"
         ],
         "aion"
       );
@@ -99,6 +100,16 @@ class LedgerProvider extends Component{
       });
   }
 
+  async getAppConfiguration() {
+    return this.transport.send(0xe0, 0x06, 0x00, 0x00).then(response => {
+      let result = {};
+      result.arbitraryDataEnabled = response[0] & 0x01;
+      result.version = '' + response[1] + '.' + response[2] + '.' + response[3];
+      return result;
+    });
+  }
+
+  // @ts-ignore
   async sign(transaction){
     let rawTransaction = TransactionUtil.rlpEncode(transaction)
     let rawTxHash = CryptoUtil.uia2hex(rawTransaction, true)
@@ -111,8 +122,7 @@ class LedgerProvider extends Component{
     let response;
 
     while (offset !== rawTx.length) {
-      let maxChunkSize = offset === 0 ? 150 - 1 - paths.length * 4 : 150;
-
+      let maxChunkSize = offset === 0 ? 256 - 1 - paths.length * 4 : 256;
       let chunkSize =
         offset + maxChunkSize > rawTx.length
           ? rawTx.length - offset
@@ -141,14 +151,12 @@ class LedgerProvider extends Component{
           response = apduResponse;
         })}
     ).then(() => {
-       //const v = response.slice(0, 1);
-       //const r = response.slice(1, 1 + 32);
-       //const s = response.slice(1 + 32, 1 + 32 + 32);
-       //return { v, r, s };
-
-       let signature = response.slice(0, 64) //get first 64 bytes for signature
-
-       return TransactionUtil.verifyAndEncodedSignTransaction(transaction, rawTransaction, signature, CryptoUtil.hex2ua(this.publicKey))
+      // const v = response.slice(0, 1);
+      // const r = response.slice(1, 1 + 32);
+      // const s = response.slice(1 + 32, 1 + 32 + 32);
+      //return { v, r, s };
+      let signature = response.slice(0, 64) //get first 64 bytes for signature
+      return TransactionUtil.verifyAndEncodedSignTransaction(transaction, rawTransaction, signature, CryptoUtil.hex2ua(this.publicKey))
     });
 
   }
