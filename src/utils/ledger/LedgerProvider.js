@@ -1,4 +1,5 @@
 import { Component } from 'react';
+import rlp from "aion-rlp";
 import Transport from "@ledgerhq/hw-transport-u2f";
 import {Buffer} from "buffer";
 import * as Util from "./Util";
@@ -126,6 +127,7 @@ class LedgerProvider extends Component{
         offset + maxChunkSize > rawTx.length
           ? rawTx.length - offset
           : maxChunkSize;
+
       let buffer = new Buffer(
         offset === 0 ? 1 + paths.length * 4 + chunkSize : chunkSize
       );

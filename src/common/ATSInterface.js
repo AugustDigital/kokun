@@ -9,7 +9,7 @@ export default [
        "constant":true,
        "payable":false,
        "inputs":[
- 
+
        ],
        "name":"name",
        "type":"function"
@@ -24,7 +24,7 @@ export default [
        "constant":true,
        "payable":false,
        "inputs":[
- 
+
        ],
        "name":"liquidSupply",
        "type":"function"
@@ -39,7 +39,7 @@ export default [
        "constant":true,
        "payable":false,
        "inputs":[
- 
+
        ],
        "name":"totalSupply",
        "type":"function"
@@ -54,14 +54,14 @@ export default [
        "constant":true,
        "payable":false,
        "inputs":[
- 
+
        ],
        "name":"granularity",
        "type":"function"
     },
     {
        "outputs":[
- 
+
        ],
        "constant":false,
        "payable":false,
@@ -110,7 +110,7 @@ export default [
     },
     {
        "outputs":[
- 
+
        ],
        "constant":false,
        "payable":false,
@@ -141,7 +141,7 @@ export default [
     },
     {
        "outputs":[
- 
+
        ],
        "constant":false,
        "payable":false,
@@ -168,7 +168,7 @@ export default [
     },
     {
        "outputs":[
- 
+
        ],
        "constant":false,
        "payable":false,
@@ -191,14 +191,14 @@ export default [
        "constant":true,
        "payable":false,
        "inputs":[
- 
+
        ],
        "name":"symbol",
        "type":"function"
     },
     {
        "outputs":[
- 
+
        ],
        "constant":false,
        "payable":false,
@@ -237,7 +237,7 @@ export default [
     },
     {
        "outputs":[
- 
+
        ],
        "constant":false,
        "payable":false,
@@ -286,7 +286,7 @@ export default [
     },
     {
        "outputs":[
- 
+
        ],
        "constant":false,
        "payable":false,
@@ -309,7 +309,7 @@ export default [
     },
     {
        "outputs":[
- 
+
        ],
        "constant":false,
        "payable":false,
@@ -328,7 +328,7 @@ export default [
     },
     {
        "outputs":[
- 
+
        ],
        "constant":false,
        "payable":false,
@@ -343,7 +343,7 @@ export default [
     },
     {
        "outputs":[
- 
+
        ],
        "inputs":[
           {
@@ -363,7 +363,7 @@ export default [
     },
     {
        "outputs":[
- 
+
        ],
        "inputs":[
           {
@@ -403,7 +403,7 @@ export default [
     },
     {
        "outputs":[
- 
+
        ],
        "inputs":[
           {
@@ -448,7 +448,7 @@ export default [
     },
     {
        "outputs":[
- 
+
        ],
        "inputs":[
           {
@@ -483,7 +483,7 @@ export default [
     },
     {
        "outputs":[
- 
+
        ],
        "inputs":[
           {
@@ -513,7 +513,7 @@ export default [
     },
     {
        "outputs":[
- 
+
        ],
        "inputs":[
           {
@@ -548,7 +548,7 @@ export default [
     },
     {
        "outputs":[
- 
+
        ],
        "inputs":[
           {
@@ -568,7 +568,7 @@ export default [
     },
     {
        "outputs":[
- 
+
        ],
        "inputs":[
           {
