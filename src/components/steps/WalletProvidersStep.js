@@ -623,8 +623,7 @@ class WalletProvidersStep extends Component {
 
 WalletProvidersStep.propTypes = {
     classes: PropTypes.object.isRequired,
-    onAccountImported: PropTypes.func.isRequired,
-    web3Provider: PropTypes.string.isRequired
+    onAccountImported: PropTypes.func.isRequired
 };
 
 export default withStyles(styles)(WalletProvidersStep);

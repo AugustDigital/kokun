@@ -11,6 +11,7 @@ import ATSInterface from '../../common/ATSInterface';
 import globalTokenContractRegistry from '../../common/ContractRegistry'
 import AddTokenDialog from '../AddTokenDialog'
 import { asPromise } from '../../utils/common'
+import queryString from 'stringquery'
 
 
 const styles = theme => ({
@@ -140,6 +141,15 @@ class SendStep extends Component {
 
     componentDidMount() {
         this.setState({ web3: new Web3(new Web3.providers.HttpProvider(this.props.web3Provider)) });
+        const queryParams = queryString(window.location.search);
+        let platAddress;
+        if (queryParams.testnet === 'true') {
+            platAddress = '0xa0ae5a4854293dd64412327c7c172d911da524fc6f39fc211be7b7ecaac0185f' // note: mastery plat address is subject to change
+        } else {
+            platAddress = '0xa0c6ed9486e9137802d0acdcd9a0499241872f648b51a5ab49a534a0d440f62c'
+        }
+        this.updateCurrenciesWithAddress(platAddress, false, false)
+
         if(this.props.defaultTokenAddress)
             this.updateCurrenciesWithAddress(this.props.defaultTokenAddress, true)
         if(this.props.defaultAmount && this.props.defaultRecipient)
@@ -160,7 +170,7 @@ class SendStep extends Component {
         return parseFloat(this.state.web3.fromWei(balance, 'ether')).toFixed(2)
     }
 
-    updateCurrenciesWithAddress = async (address, skipRegistry=false) => {
+    updateCurrenciesWithAddress = async (address, skipRegistry=false, makeCurrent=true) => {
         try {
             const tokenContract = this.state.web3.eth.contract(ATSInterface).at(address)
             const symbol = await asPromise(tokenContract.symbol.call)
@@ -198,7 +208,9 @@ class SendStep extends Component {
                         })
                     }, 1000)
                 }, 2000)
-                this.handleCurrencyChange(this.state.availableCurrencies.length - 1)
+                if(makeCurrent){
+                    this.handleCurrencyChange(this.state.availableCurrencies.length - 1)
+                }
                 return true;
             } else {
                 this.setState({
