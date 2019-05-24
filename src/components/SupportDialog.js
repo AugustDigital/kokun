@@ -125,6 +125,7 @@ class SupportDialog extends React.Component {
         maxWidth={fullScreen ? false : 'sm'}
         aria-labelledby="simple-dialog-title"
         open={open}
+        scroll={'body'}
         transitionDuration={{ exit: 1000 }}
         onClose={this.onClose}>
         <BlueDialogContent>
