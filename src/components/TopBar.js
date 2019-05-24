@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { withStyles, AppBar, Toolbar, Button, Grid, Dialog } from '@material-ui/core'
+import { withStyles, AppBar, Toolbar, Button, Grid } from '@material-ui/core'
 import KokunLogo from '../assets/kokun_logo.svg'
 import SupportDialog from './SupportDialog'
 const styles = theme => ({
