@@ -6,6 +6,7 @@ import classNames from 'classnames'
 import Dropzone from 'react-dropzone';
 import KeystoreWalletProvider from '../../utils/KeystoreWalletProvider';
 import AionPayLogoLight from '../../assets/aion_pay_logo_light.svg'
+import AIWALogo from '../../assets/aiwa_logo_white_horizontal.png'
 import LockIcon from '../../assets/lock_icon.svg'
 import LedgerProvider from '../../utils/ledger/LedgerProvider'
 import { promiseTimeout } from '../../utils/promiseTimeout';
@@ -183,6 +184,7 @@ class WalletProvidersStep extends Component {
             keyStoreFilePass: null,
             ledgerConnected: false,
             ledgerAddress: '',
+            aiwaAddress: null,
             completed: 0,
             privateKeyError: false,
             privateKeyErrorMessage: 'Using a private key online is not safe',
@@ -217,6 +219,12 @@ class WalletProvidersStep extends Component {
                 validate: this.validateKTPCredentials,
                 testnet: false
             },
+            {
+                title: 'AIWA',
+                create: this.createAIWAPanel,
+                unlock: this.unlockAIWA,
+                validate: this.validateAIWA
+            }
         ];
     }
     componentWillMount() {
@@ -224,6 +232,7 @@ class WalletProvidersStep extends Component {
         this.setState({ showKeyterpillar: queryParams.testnet === 'true' && queryParams.keyterpillar === 'true' })
     }
     componentDidMount() {
+
         setInterval(() => {
             if (this.state.expanded != null) {
                 let expanded = { title: '' };
@@ -239,6 +248,10 @@ class WalletProvidersStep extends Component {
                     }).catch(error => {
                         this.setState({ ledgerConnected: false, ledgerAddress: '' });
                     });
+                }else if(expanded.title === "AIWA"){
+                    if(window.aionweb3 && window.aionweb3.eth.accounts && window.aionweb3.eth.accounts[0]){
+                        this.setState({ aiwaAddress: window.aionweb3.eth.accounts[0]});
+                    }
                 }
             }
         }, 5000);
@@ -274,6 +287,11 @@ class WalletProvidersStep extends Component {
         this.setState({
             keyStoreFile: null,
             keyStoreFilePass: null
+        })
+    }
+    unlockAIWA=(item)=>{
+        return new Promise((resolve, reject) => {
+            resolve({ address: this.state.aiwaAddress, privateKey: 'aiwa' })
         })
     }
     unlockAccount = (item) => {
@@ -358,6 +376,45 @@ class WalletProvidersStep extends Component {
                 reject(false)
             }
         })
+    }
+
+    createAIWAPanel = (classes) => {
+        return (<div className={classes.content}>
+            {this.state.aiwaAddress ? <div>
+                <Grid
+                    container
+                    spacing={16}
+                    direction="row"
+                    justify="center"
+                    alignItems="center"
+                    style={{ marginTop: '15px' }}>
+
+                    <CheckCircleRounded className={classes.checkIconBig} />
+                    <Grid item xs>
+                        <Typography className={classes.panelText} variant='subtitle1'>AIWA is present</Typography>
+                    </Grid>
+
+                </Grid>
+            </div> :
+                <Grid
+                    container
+                    spacing={16}
+                    direction="row"
+                    justify="center"
+                    alignItems="center"
+                    wrap='wrap'
+                    style={{ marginTop: '15px' }}>
+
+                    <img alt='Lock' src={AIWALogo} width='75px'className={classes.fileIcon} />
+                    <Grid item xs>
+                        <Typography className={classes.panelText} variant='subtitle1' >Please install AIWA in your browser</Typography>
+                    </Grid>
+
+                </Grid>
+            }
+
+
+        </div>)
     }
 
     createLedgerPanel = (classes) => {
@@ -536,6 +593,11 @@ class WalletProvidersStep extends Component {
             web3Provider={this.props.web3Provider} />)
     }
 
+    validateAIWA = () => {
+
+        const { aiwaAddress } = this.state;
+        return aiwaAddress?true:false;
+    }
     validateLedger = () => {
 
         const { ledgerConnected } = this.state;

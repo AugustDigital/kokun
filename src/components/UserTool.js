@@ -144,6 +144,22 @@ class UserTool extends Component {
                     this.onSendStepBack();
                 })
             })
+        } else if(this.state.privateKey === 'aiwa'){
+            console.log(transaction)
+            
+            window.aionweb3.eth.signTransaction(transaction).then((signedTransaction)=>{
+                console.log(signedTransaction)
+                this.setState({
+                    step: 2,
+                    transactionData,
+                    rawTransaction: signedTransaction.rawTransaction,
+                    errorMessage:null
+                })
+                this.onChangeStep(2)
+            }).catch((error) => {
+                console.trace(error)
+                this.setState({errorMessage:error.toString()})
+            })
         } else {
             this.signTransaction(transaction, addr, pk).then((signedTransaction) => {
                 this.setState({
@@ -159,7 +175,7 @@ class UserTool extends Component {
         }
     }
     onSendStepContinue = (currency, from, to, amount, nrg, nrgPrice) => {
-        const transaction = this.toTransaction(currency, from, to, amount, nrg, nrgPrice)
+        let transaction = this.toTransaction(currency, from, to, amount, nrg, nrgPrice)
         const transactionData = { currency, from, to, amount, nrg, nrgPrice }
 
         if (this.state.privateKey === 'ledger') {
@@ -183,6 +199,22 @@ class UserTool extends Component {
                     this.onSendStepBack();
                 })
             })
+        }else if(this.state.privateKey === 'aiwa'){
+            console.log(transaction)
+            
+            window.aionweb3.eth.signTransaction(transaction).then((signedTransaction)=>{
+                console.log(signedTransaction)
+                this.setState({
+                    step: 2,
+                    transactionData,
+                    rawTransaction: signedTransaction.rawTransaction,
+                    errorMessage:null
+                })
+                this.onChangeStep(2)
+            }).catch((error) => {
+                console.trace(error)
+                this.setState({errorMessage:error.toString()})
+            })
         } else {
 
             this.signTransaction(transaction, this.state.account, this.state.privateKey).then((signedTransaction) => {
@@ -195,7 +227,7 @@ class UserTool extends Component {
                 this.onChangeStep(2)
             }).catch((error) => {
                 console.trace(error)
-                alert(error)
+                this.setState({errorMessage:'Error signing transaction'})
             })
         }
 
@@ -266,7 +298,7 @@ class UserTool extends Component {
     }
     render() {
         const { classes, theme, showInfoHeader, web3Provider, defaultRecipient, currency } = this.props;
-        const { step, transactionData, txHash, rawTransaction, account, privateKey, checkLedger, transactionStatus, completed } = this.state;
+        const { step, transactionData, txHash, rawTransaction, account, privateKey, checkLedger, transactionStatus, completed, errorMessage } = this.state;
         let content = null;
         let status = null;
 
@@ -303,6 +335,7 @@ class UserTool extends Component {
                     checkLedger={checkLedger}
                     defaultRecipient={defaultRecipient}
                     web3Provider={web3Provider}
+                    errorMessage={errorMessage}
                 />);
                 break;
             }

@@ -132,7 +132,7 @@ class SendStep extends Component {
             customNrg: false,
             nrgPrice: TransactionUtil.defaultNrgPrice,
             nrg: this.props.nrg ? this.props.nrg : TransactionUtil.defaultNrgLimit,
-            errorMessage: null,
+            errorMessage: this.props.errorMessage,
             account: this.props.account,
             web3: new Web3(new Web3.providers.HttpProvider(this.props.web3Provider)),
             addTokenDialogOpened: false
@@ -154,6 +154,14 @@ class SendStep extends Component {
             this.updateCurrenciesWithAddress(this.props.defaultTokenAddress, true)
         if(this.props.defaultAmount && this.props.defaultRecipient)
             this.isFormValid()
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.errorMessage) {
+            this.setState({
+                errorMessage: nextProps.errorMessage
+            });
+        }
     }
 
     async updateNrg() {
