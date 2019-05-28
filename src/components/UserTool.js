@@ -9,8 +9,8 @@ import SendStep from './steps/SendStep'
 import ConfirmStep from './steps/ConfirmStep'
 import { CheckCircleRounded, HighlightOffRounded } from '@material-ui/icons'
 import LedgerProvider from '../utils/ledger/LedgerProvider';
-import AionLogoLight from '../assets/aion_logo_light.svg'
-import AionLogoDark from '../assets/aion_logo_dark.svg'
+import KokunLogoLight from '../assets/kokun_icon_light.svg'
+import KokunLogoDark from '../assets/kokun_icon_dark.svg'
 import PrimaryButton from '../components/PrimaryButton'
 import { developmentProvider } from '../../global_config'
 const Accounts = require('aion-keystore')
@@ -144,6 +144,22 @@ class UserTool extends Component {
                     this.onSendStepBack();
                 })
             })
+        } else if(this.state.privateKey === 'aiwa'){
+            console.log(transaction)
+            
+            window.aionweb3.eth.signTransaction(transaction).then((signedTransaction)=>{
+                console.log(signedTransaction)
+                this.setState({
+                    step: 2,
+                    transactionData,
+                    rawTransaction: signedTransaction.rawTransaction,
+                    errorMessage:null
+                })
+                this.onChangeStep(2)
+            }).catch((error) => {
+                console.trace(error)
+                this.setState({errorMessage:error.toString()})
+            })
         } else {
             this.signTransaction(transaction, addr, pk).then((signedTransaction) => {
                 this.setState({
@@ -159,7 +175,7 @@ class UserTool extends Component {
         }
     }
     onSendStepContinue = (currency, from, to, amount, nrg, nrgPrice) => {
-        const transaction = this.toTransaction(currency, from, to, amount, nrg, nrgPrice)
+        let transaction = this.toTransaction(currency, from, to, amount, nrg, nrgPrice)
         const transactionData = { currency, from, to, amount, nrg, nrgPrice }
 
         if (this.state.privateKey === 'ledger') {
@@ -183,6 +199,22 @@ class UserTool extends Component {
                     this.onSendStepBack();
                 })
             })
+        }else if(this.state.privateKey === 'aiwa'){
+            console.log(transaction)
+            
+            window.aionweb3.eth.signTransaction(transaction).then((signedTransaction)=>{
+                console.log(signedTransaction)
+                this.setState({
+                    step: 2,
+                    transactionData,
+                    rawTransaction: signedTransaction.rawTransaction,
+                    errorMessage:null
+                })
+                this.onChangeStep(2)
+            }).catch((error) => {
+                console.trace(error)
+                this.setState({errorMessage:error.toString()})
+            })
         } else {
 
             this.signTransaction(transaction, this.state.account, this.state.privateKey).then((signedTransaction) => {
@@ -195,7 +227,7 @@ class UserTool extends Component {
                 this.onChangeStep(2)
             }).catch((error) => {
                 console.trace(error)
-                alert(error)
+                this.setState({errorMessage:'Error signing transaction'})
             })
         }
 
@@ -266,7 +298,7 @@ class UserTool extends Component {
     }
     render() {
         const { classes, theme, showInfoHeader, web3Provider, defaultRecipient, currency } = this.props;
-        const { step, transactionData, txHash, rawTransaction, account, privateKey, checkLedger, transactionStatus, completed } = this.state;
+        const { step, transactionData, txHash, rawTransaction, account, privateKey, checkLedger, transactionStatus, completed, errorMessage } = this.state;
         let content = null;
         let status = null;
 
@@ -303,6 +335,7 @@ class UserTool extends Component {
                     checkLedger={checkLedger}
                     defaultRecipient={defaultRecipient}
                     web3Provider={web3Provider}
+                    errorMessage={errorMessage}
                 />);
                 break;
             }
@@ -339,7 +372,7 @@ class UserTool extends Component {
                                     direction="column"
                                     justify="center"
                                     alignItems="center">
-                                    <img alt="Aion Logo" className={'rotation'} src={theme.palette.isWidget ? AionLogoDark : AionLogoLight} width="90px" />
+                                    <img alt="Aion Logo" className={'rotation'} src={theme.palette.isWidget ? KokunLogoDark : KokunLogoLight} width="90px" />
                                     <Typography variant="h4" style={{ fontWeight: 'bold', marginTop: '30px' }}>Sending {currency}</Typography>
                                     <Typography variant="subtitle2" style={{ fontWeight: 'light', marginTop: '20px' }}> Sending transaction and waiting for at least one block confirmation.</Typography>
                                     <Typography variant="subtitle2" style={{ fontWeight: 'light' }}> Please be patient this wont't take too long...</Typography>

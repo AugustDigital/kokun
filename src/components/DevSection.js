@@ -5,7 +5,7 @@ import { withStyles, Typography, Grid, Paper, IconButton, Input, InputAdornment,
 import withWidth, { isWidthUp } from '@material-ui/core/withWidth';
 import compose from 'recompose/compose';
 import { FileCopy } from '@material-ui/icons'
-import AionPayLogoDark from '../assets/aion_pay_logo_dark.svg'
+import KokunLogoDark from '../assets/kokun_logo_dark.svg'
 import AionPayDialog from './AionPayDialog'
 import { inject } from './AionPayButton'
 import SecondaryButton from '../components/SecondaryButton'
@@ -247,7 +247,7 @@ class DevSection extends Component {
         })
         return (
             <div className={this.props.className}>
-                <img alt="Aion Pay Logo" className={classNames(classes.aionPayIcon)} src={AionPayLogoDark} />
+                <img alt="Kokun Logo" className={classNames(classes.aionPayIcon)} src={KokunLogoDark} />
                 <Paper className={classes.card}>
                     <div>
                         <div className={classes.cardHeading}>
@@ -260,7 +260,7 @@ class DevSection extends Component {
                                 <Grid item xs={12} sm={7}>
                                     <div>
                                         <Typography variant="h6" style={{ fontWeight: '400' }}>Easily accept Aion payments on your site</Typography>
-                                        <Typography variant="subtitle2" style={{ fontWeight: 'light', marginTop: '15px' }}>By simply pasting a line of code to your site, Aion Pay makes it simple to accept Aion payments anywhere. The button can be styled as required and can be set to accept payment to a predetermined address or to an address chosen by the payee</Typography>
+                                        <Typography variant="subtitle2" style={{ fontWeight: 'light', marginTop: '15px' }}>By simply pasting a line of code to your site, Kokun makes it simple to accept Aion payments anywhere. The button can be styled as required and can be set to accept payment to a predetermined address or to an address chosen by the payee</Typography>
 
                                     </div>
                                 </Grid>

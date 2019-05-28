@@ -1,6 +1,5 @@
 import React from 'react';
-import { withStyles, withMobileDialog, Dialog, TextField, Typography, DialogContent, Grid, Button, CircularProgress } from '@material-ui/core'
-import { CheckCircleRounded } from '@material-ui/icons';
+import { withStyles, withMobileDialog, Dialog, TextField, Typography, DialogContent, Grid, Button } from '@material-ui/core'
 import compose from 'recompose/compose';
 import PropTypes from 'prop-types';
 import SecondaryButton from './SecondaryButton'
@@ -125,6 +124,7 @@ class SupportDialog extends React.Component {
         maxWidth={fullScreen ? false : 'sm'}
         aria-labelledby="simple-dialog-title"
         open={open}
+        scroll={'body'}
         transitionDuration={{ exit: 1000 }}
         onClose={this.onClose}>
         <BlueDialogContent>

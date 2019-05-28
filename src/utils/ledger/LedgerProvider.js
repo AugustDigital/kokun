@@ -1,5 +1,4 @@
 import { Component } from 'react';
-import rlp from "aion-rlp";
 import Transport from "@ledgerhq/hw-transport-u2f";
 import {Buffer} from "buffer";
 import * as Util from "./Util";
