@@ -9,8 +9,8 @@ import SendStep from './steps/SendStep'
 import ConfirmStep from './steps/ConfirmStep'
 import { CheckCircleRounded, HighlightOffRounded } from '@material-ui/icons'
 import LedgerProvider from '../utils/ledger/LedgerProvider';
-import AionLogoLight from '../assets/aion_logo_light.svg'
-import AionLogoDark from '../assets/aion_logo_dark.svg'
+import KokunLogoLight from '../assets/kokun_icon_light.svg'
+import KokunLogoDark from '../assets/kokun_icon_dark.svg'
 import PrimaryButton from '../components/PrimaryButton'
 import { developmentProvider } from '../../global_config'
 const Accounts = require('aion-keystore')
@@ -372,7 +372,7 @@ class UserTool extends Component {
                                     direction="column"
                                     justify="center"
                                     alignItems="center">
-                                    <img alt="Aion Logo" className={'rotation'} src={theme.palette.isWidget ? AionLogoDark : AionLogoLight} width="90px" />
+                                    <img alt="Aion Logo" className={'rotation'} src={theme.palette.isWidget ? KokunLogoDark : KokunLogoLight} width="90px" />
                                     <Typography variant="h4" style={{ fontWeight: 'bold', marginTop: '30px' }}>Sending {currency}</Typography>
                                     <Typography variant="subtitle2" style={{ fontWeight: 'light', marginTop: '20px' }}> Sending transaction and waiting for at least one block confirmation.</Typography>
                                     <Typography variant="subtitle2" style={{ fontWeight: 'light' }}> Please be patient this wont't take too long...</Typography>

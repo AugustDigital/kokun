@@ -5,7 +5,7 @@ import { Warning, CloudUpload, InsertDriveFile, CheckCircleRounded, Close, Dock 
 import classNames from 'classnames'
 import Dropzone from 'react-dropzone';
 import KeystoreWalletProvider from '../../utils/KeystoreWalletProvider';
-import AionPayLogoLight from '../../assets/aion_pay_logo_light.svg'
+import KokunLogoLight from '../../assets/kokun_logo_light.svg'
 import AIWALogo from '../../assets/aiwa_logo_white_horizontal.png'
 import LockIcon from '../../assets/lock_icon.svg'
 import LedgerProvider from '../../utils/ledger/LedgerProvider'
@@ -650,7 +650,7 @@ class WalletProvidersStep extends Component {
                 justify="flex-start">
                 {showInfoHeader ?
                     <div>
-                        <img alt="Aion Pay Logo" className={classNames(classes.aionPayIcon)} src={AionPayLogoLight} />
+                        <img alt="Kokun Logo" className={classNames(classes.aionPayIcon)} src={KokunLogoLight} />
                         <Typography variant="subtitle2" style={{ fontWeight: 'light', marginTop: '25px' }}> Seamlessly send Aion to any address</Typography>
                     </div>
                     : null}

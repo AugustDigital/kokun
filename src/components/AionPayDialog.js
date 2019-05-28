@@ -5,7 +5,7 @@ import compose from 'recompose/compose';
 import { withStyles, Grid, Dialog, DialogTitle, DialogContent, withMobileDialog, IconButton, Typography, LinearProgress } from '@material-ui/core';
 import UserTool from './UserTool'
 import CloseIcon from '@material-ui/icons/Close';
-import AionPayLogoLight from '../assets/aion_pay_logo_light.svg'
+import KokunLogoLight from '../assets/kokun_logo_light.svg'
 import PaperPlane from '../assets/paperplane.svg'
 
 const styles = theme => ({
@@ -73,7 +73,7 @@ const BlueDialogTitle = withStyles(theme => ({
         alignItems="center"
         justify='space-between'>
         <Grid item >
-          <img alt="Aion Pay Logo" className={classNames(classes.aionPayIcon)} src={AionPayLogoLight} />
+          <img alt="Kokun Logo" className={classNames(classes.aionPayIcon)} src={KokunLogoLight} />
         </Grid>
         <Grid item xs>
           <Typography color='textSecondary' variant="subtitle2" style={{ fontWeight: 'light', marginRight: '55px' }}>{children}</Typography>

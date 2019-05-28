@@ -11,7 +11,7 @@ module.exports = {
   devtool: "source-map",
   output: {
     path: paths.appBuild,
-    filename: "aion_pay.js"
+    filename: "kokun.js"
   },
   module: {
     rules: [
