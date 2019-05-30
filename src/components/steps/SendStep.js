@@ -183,7 +183,7 @@ class SendStep extends Component {
         return parseFloat(this.state.web3.fromWei(balance, 'ether')).toFixed(2)
     }
 
-    updateCurrenciesWithAddress = async (address, skipRegistry=false, makeCurrent=true, ) => {
+    updateCurrenciesWithAddress = async (address, skipRegistry=false, makeCurrent=true ) => {
         try {
             const tokenContract = this.state.web3.eth.contract(ATSInterface).at(address)
             const symbol = await asPromise(tokenContract.symbol.call)
