@@ -1,6 +1,7 @@
 class ContractRegistry {
     constructor() {
         this.contracts = []
+        this.account = null;
     }
     addContract(contract) {
         this.contracts.push(contract)
