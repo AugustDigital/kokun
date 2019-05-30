@@ -1,6 +1,6 @@
 {
   "name": "kokun",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "main": "lib/index.js",
   "private": false,
   "dependencies": {
@@ -82,7 +82,7 @@
     "build": "node scripts/build.js",
     "buildlib": "node scripts/buildlib.js",
     "test": "node scripts/test.js --env=jsdom",
-    "prepublish": "node scripts/prepublish.js"
+    "prepublishOnly": "node scripts/prepublish.js"
   },
   "jest": {
     "collectCoverageFrom": [
