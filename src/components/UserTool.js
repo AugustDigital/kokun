@@ -126,7 +126,7 @@ class UserTool extends Component {
             nrg: parseInt(transaction.gas, 10),
             nrgPrice: parseInt(transaction.gasPrice, 10)
         }
-        if (this.state.privateKey === 'ledger') {
+        if (pk === 'ledger') {
 
             let ledgerConnection = new LedgerProvider()
             ledgerConnection.unlock(null).then((address) => {
@@ -144,7 +144,7 @@ class UserTool extends Component {
                     this.onSendStepBack();
                 })
             })
-        } else if(this.state.privateKey === 'aiwa'){
+        } else if(pk === 'aiwa'){
             console.log(transaction)
             
             window.aionweb3.eth.signTransaction(transaction).then((signedTransaction)=>{
