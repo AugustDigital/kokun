@@ -67,8 +67,9 @@ class ConfirmStep extends Component {
 
     async sendTransaction() {
         try {
-            const transactionHash = await this.state.web3.eth.sendRawTransaction(this.props.rawTransaction)
-            this.props.onTransactionStepContinue(transactionHash)
+            const transactionHash = await this.state.web3.eth.sendRawTransaction(this.props.rawTransaction);
+            console.log(this.props.transaction);
+            this.props.onTransactionStepContinue(transactionHash, this.props.transaction);
             const {amount, currency, theme} = this.props;
             let name = currency?currency.name.toUpperCase():"AION"
             ReactGA.event({
@@ -85,7 +86,7 @@ class ConfirmStep extends Component {
     }
 
     render() {
-        const { classes, to, from, amount, nrg, nrgPrice, rawTransaction, onTransactonStepBack, currency } = this.props;
+        const { classes, to, from, amount, nrg, nrgPrice, rawTransaction, onTransactonStepBack, currency, data } = this.props;
         const { errorMessage } = this.state;
         return (
             <div>
@@ -152,6 +153,18 @@ class ConfirmStep extends Component {
                                 <Typography color="textSecondary" variant="subtitle2" className={classes.fatLable}>NRG PRICE</Typography>
                                 <Typography color="textSecondary" variant="subtitle2" className={classes.thinLable}>{`${Math.floor(nrgPrice/Math.pow(10,9))} Amp`}</Typography>
                             </Grid>
+                            {data && data!=='0x' ?
+                                <Grid
+                                    container
+                                    direction="row"
+                                    justify="space-between"
+                                    alignItems="center"
+                                    className={classes.transactionRow}
+                                    wrap='nowrap'>
+                                    <Typography color="textSecondary" variant="subtitle2" className={classes.fatLable}>DATA</Typography>
+                                    <Typography color="textSecondary" variant="subtitle2" className={classes.thinLable}>{data}</Typography>
+                                </Grid>
+                            :null}
                         </Grid>
 
                     </Paper>
@@ -203,6 +216,7 @@ ConfirmStep.propTypes = {
     nrg: PropTypes.number.isRequired,
     rawTransaction: PropTypes.string.isRequired,
     web3Provider: PropTypes.string.isRequired,
+    transaction: PropTypes.object.isRequired,
 };
 
 export default compose(

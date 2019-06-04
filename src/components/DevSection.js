@@ -52,12 +52,11 @@ const themeExample = {
 }
 
 const transactionExample = {
-    data: '0xf0a147ada0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb982700000000000000000de0b6b3a76400000000000000000000000000000000004000000000000000000000000000000000',
-    gas: 2000000,
-    gasPrice: 10000000000,
-    to: '0xa051aeecf95f7921c9f8ba3851445d7f221f9c7988a0d2d9ed0080eff583b313',
-    value: 0
-}
+    data: "0xf0a147ada0310bf8f9b897a687028f63ce771b93c6794d555cb85691bfc639626a36235e00000000000000000de0b6b3a76400000000000000000000000000000000004000000000000000000000000000000005010b151f15000000000000000000000000000000000000000000000000000000", 
+    gas: 2000000, 
+    gasPrice: 10000000000, 
+    to: "0xa0ae5a4854293dd64412327c7c172d911da524fc6f39fc211be7b7ecaac0185f", 
+    value: 0}
 const styles = theme => ({
     card: {
         backgroundColor: theme.palette.background.white,
@@ -142,13 +141,13 @@ class DevSection extends Component {
     }
 
     content = [
-        { description: 'Pay to any address with default button style', params: { 'data-web3-provider': 'https://api.nodesmith.io/v1/aion/testnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
-        { description: 'Pay to a given address with default button style', params: { 'data-address': '0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827', 'data-web3-provider': 'https://api.nodesmith.io/v1/aion/testnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
-        { description: 'Pay to a given address 5 AION', params: { 'data-button-text': 'Pay 5 AION', 'data-address': '0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827', 'data-amount': 5.0, 'data-web3-provider': 'https://api.nodesmith.io/v1/aion/testnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
-        { description: 'Pay to a given address 5 PLAT', params: { 'data-button-text': 'Pay 5 PLAT', 'data-address': '0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827', 'data-amount': 5.0, 'data-token-address': '0xa051aeecf95f7921c9f8ba3851445d7f221f9c7988a0d2d9ed0080eff583b313', 'data-web3-provider': 'https://api.nodesmith.io/v1/aion/testnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
-        { description: 'Pay to a given address with custom text and background but with AION icon on the button.', params: { 'data-button-text': 'Donate', 'data-button-background': '#AED581', 'data-button-text-color': '#E91E63', 'data-button-icon-type': 'dark', 'data-address': '0xa08ff25cb2d75dd9e806438fbde820fa0acedc2e262359234ef1c14d8bf9088d', 'data-web3-provider': 'https://api.nodesmith.io/v1/aion/testnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
-        { description: 'Pay to a given address with custom style.', params: { 'data-style': JSON.stringify(themeExample), 'data-address': '0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827', 'data-web3-provider': 'https://api.nodesmith.io/v1/aion/testnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
-        { description: 'Sign smart contract transactions', params: { 'data-web3-provider': 'https://api.nodesmith.io/v1/aion/testnet/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8', 'data-transaction': JSON.stringify(transactionExample) } },
+        { description: 'Pay to any address with default button style', params: { 'data-web3-provider': 'https://aion.api.nodesmith.io/v1/mastery/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
+        { description: 'Pay to a given address with default button style', params: { 'data-address': '0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827', 'data-web3-provider': 'https://aion.api.nodesmith.io/v1/mastery/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
+        { description: 'Pay to a given address 5 AION', params: { 'data-button-text': 'Pay 5 AION', 'data-address': '0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827', 'data-amount': 5.0, 'data-web3-provider': 'https://aion.api.nodesmith.io/v1/mastery/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
+        { description: 'Pay to a given address 5 PLAT', params: { 'data-button-text': 'Pay 5 PLAT', 'data-address': '0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827', 'data-amount': 5.0, 'data-token-address': '0xa051aeecf95f7921c9f8ba3851445d7f221f9c7988a0d2d9ed0080eff583b313', 'data-web3-provider': 'https://aion.api.nodesmith.io/v1/mastery/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
+        { description: 'Pay to a given address with custom text and background but with AION icon on the button.', params: { 'data-button-text': 'Donate', 'data-button-background': '#AED581', 'data-button-text-color': '#E91E63', 'data-button-icon-type': 'dark', 'data-address': '0xa08ff25cb2d75dd9e806438fbde820fa0acedc2e262359234ef1c14d8bf9088d', 'data-web3-provider': 'https://aion.api.nodesmith.io/v1/mastery/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
+        { description: 'Pay to a given address with custom style.', params: { 'data-style': JSON.stringify(themeExample), 'data-address': '0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827', 'data-web3-provider': 'https://aion.api.nodesmith.io/v1/mastery/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
+        { description: 'Sign smart contract transactions', params: { 'data-web3-provider': 'https://aion.api.nodesmith.io/v1/mastery/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8', 'data-transaction': JSON.stringify(transactionExample) } },
     ]
     componentDidMount() {
         inject()
@@ -158,6 +157,11 @@ class DevSection extends Component {
         // document.getElementById('aion-pay-0').addEventListener('transactionSent',(e)=>{
         //     alert('Got Event:'+e.detail.txHash+' with status '+e.detail.status)
         // })
+        window.AionPayButtonInterface.aionPayButtonCompletionListener = (txHash, status, txObj) => { 
+            console.log('txHash:'+txHash)
+            console.log('status:'+status)
+            console.log(txObj)
+        }
     }
 
     onGithubButtonPressed = () => {

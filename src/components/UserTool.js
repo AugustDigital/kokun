@@ -13,6 +13,14 @@ import KokunLogoLight from '../assets/kokun_icon_light.svg'
 import KokunLogoDark from '../assets/kokun_icon_dark.svg'
 import PrimaryButton from '../components/PrimaryButton'
 import { developmentProvider } from '../../global_config'
+import { asPromise } from '../utils/common'
+import ATSInterface from '../common/ATSInterface';
+import globalTokenContractRegistry from '../common/ContractRegistry'
+import BigNumber from 'bignumber.js';
+
+const TRANSFER = '0xfbb001d6';
+
+const SEND = '0xf0a147ad';
 const Accounts = require('aion-keystore')
 
 const styles = theme => ({
@@ -70,7 +78,7 @@ class UserTool extends Component {
         if (externalTransaction) {
             console.log('Got external transaction:')
             console.log(externalTransaction)
-            this.onExternalTransactionContinue(externalTransaction, account.address, account.privateKey)
+            this.onTransactionContinue(externalTransaction, account.address, account.privateKey)
         } else {
             this.setState({
                 step: 1,
@@ -88,16 +96,17 @@ class UserTool extends Component {
 
         return signedTransaction;
     }
-    toTransaction = (currency, from, to, amount, nrg, nrgPrice) => {
+    toTransaction = (currency, from, to, amount, nrg, nrgPrice, extraData) => {
         let methodData = null;
         let aionAmount = parseInt(this.state.web3.toWei(amount, "ether"), 10);
         let actualReciepient = to;
         let nonce = parseInt(this.state.web3.eth.getTransactionCount(from), 10);
         if (currency.contract) {
+            const dataForToken = extraData? extraData: '0x';
             methodData = currency.contract.send.getData(
                 to,
                 amount * Math.pow(10, 18),
-                '0x')
+                dataForToken)
             aionAmount = 0;
             actualReciepient = currency.contract.address
         }
@@ -112,34 +121,99 @@ class UserTool extends Component {
         };
     }
     onRequestGasEstimate = (currency, from, to, amount, nrg, nrgPrice) => {
-        const transaction = this.toTransaction(currency, from, to, amount, nrg, nrgPrice)
-        return this.state.web3.eth.estimateGas({ data: transaction })
+        const transaction = this.toTransaction(currency, from, to, amount, nrg, nrgPrice);
+        return this.state.web3.eth.estimateGas({ data: transaction });
     }
-    onExternalTransactionContinue = (transaction, addr, pk) => {
+    decodeERC777MethodData=(data) => {
+        const methodID = data ? data.substring(0, 10) : undefined;
+        let tempData;
+        let hexDataLength;
+        switch (methodID) {
+          case TRANSFER:
+            return {
+              to: `0x${data.substring(10, 74)}`,
+              value: new BigNumber(`0x${data.substring(74)}`),
+              data: undefined,
+            };
+          case SEND:
+            hexDataLength = parseInt(`0x${data.substring(138, 170).toString()}`, 16) * 2;
+            tempData = `0x${data.substring(170, 170 + hexDataLength).toString()}`;
+            return {
+              to: `0x${data.substring(10, 74)}`,
+              value: new BigNumber(`0x${data.substring(74, 106)}`),
+              data: tempData,
+            };
+          default:
+            return {
+              to: undefined,
+              value: new BigNumber('0'),
+              data: undefined,
+            };
+        }
+      }
+    onTransactionContinue = async (transaction, addr, pk, transactionData) => {
         transaction.timestamp = Date.now() * 1000;
         transaction.nonce = this.state.web3.eth.getTransactionCount(addr);
-        const transactionData = {
-            currency: null,
-            from: addr,
-            to: transaction.to,
-            amount: parseInt(transaction.value, 10),
-            nrg: parseInt(transaction.gas, 10),
-            nrgPrice: parseInt(transaction.gasPrice, 10)
+
+        if(!transactionData) // external transaction
+        {
+            let contractData = null;
+            const tokenContract = this.state.web3.eth.contract(ATSInterface).at(transaction.to)
+            const symbol = await asPromise(tokenContract.symbol.call)
+            if (0 < symbol.length) { // is token contract
+                contractData = {
+                    name: symbol,
+                    contract: tokenContract,
+                    getBalance: () => {
+                        var balance = tokenContract.balanceOf.call(globalTokenContractRegistry.account).toNumber()
+                        return parseFloat(this.state.web3.fromWei(balance, 'ether')).toFixed(2)
+                    }
+                }
+                
+                const decoded = this.decodeERC777MethodData(transaction.data);
+                console.log(decoded)
+                transaction = this.toTransaction(contractData, addr, decoded.to, decoded.value.toNumber()/Math.pow(10,18), transaction.gas, transaction.gasPrice, decoded.data);
+                transactionData = {
+                    currency: contractData,
+                    from: addr,
+                    to: decoded.to,
+                    amount: parseInt(decoded.value.toNumber()/Math.pow(10,18), 10),
+                    nrg: parseInt(transaction.gas, 10),
+                    nrgPrice: parseInt(transaction.gasPrice, 10),
+                    data: decoded.data,
+                }
+            }else{
+                transactionData = {
+                    currency: contractData,
+                    from: addr,
+                    to: transaction.to,
+                    amount: parseInt(transaction.value, 10),
+                    nrg: parseInt(transaction.gas, 10),
+                    nrgPrice: parseInt(transaction.gasPrice, 10),
+                    data: transaction.data
+                }
+            }
+            
+            
         }
+        
         if (pk === 'ledger') {
 
             let ledgerConnection = new LedgerProvider()
             ledgerConnection.unlock(null).then((address) => {
                 this.setState({ checkLedger: true });
+
                 ledgerConnection.sign(transaction).then((signedTransaction) => {
                     this.setState({
                         checkLedger: false,
                         step: 2,
                         transactionData,
+                        transaction,
                         rawTransaction: signedTransaction.rawTransaction
                     })
 
                 }).catch((error) => {
+                    console.log(error)
                     this.setState({ checkLedger: false });
                     this.onSendStepBack();
                 })
@@ -152,6 +226,7 @@ class UserTool extends Component {
                 this.setState({
                     step: 2,
                     transactionData,
+                    transaction,
                     rawTransaction: signedTransaction.rawTransaction,
                     errorMessage:null
                 })
@@ -165,63 +240,7 @@ class UserTool extends Component {
                 this.setState({
                     step: 2,
                     transactionData,
-                    rawTransaction: signedTransaction.rawTransaction
-                })
-                this.onChangeStep(2)
-            }).catch((error) => {
-                console.trace(error)
-                alert(error)
-            })
-        }
-    }
-    onSendStepContinue = (currency, from, to, amount, nrg, nrgPrice) => {
-        let transaction = this.toTransaction(currency, from, to, amount, nrg, nrgPrice)
-        const transactionData = { currency, from, to, amount, nrg, nrgPrice }
-
-        if (this.state.privateKey === 'ledger') {
-
-            let ledgerConnection = new LedgerProvider()
-            ledgerConnection.unlock(null).then((address) => {
-                this.setState({ checkLedger: true });
-
-                ledgerConnection.sign(transaction).then((signedTransaction) => {
-
-                    this.setState({
-                        checkLedger: false,
-                        step: 2,
-                        transactionData,
-                        rawTransaction: signedTransaction.rawTransaction
-                    })
-
-                }).catch((error) => {
-                    console.log(error)
-                    this.setState({ checkLedger: false });
-                    this.onSendStepBack();
-                })
-            })
-        }else if(this.state.privateKey === 'aiwa'){
-            console.log(transaction)
-            
-            window.aionweb3.eth.signTransaction(transaction).then((signedTransaction)=>{
-                console.log(signedTransaction)
-                this.setState({
-                    step: 2,
-                    transactionData,
-                    rawTransaction: signedTransaction.rawTransaction,
-                    errorMessage:null
-                })
-                this.onChangeStep(2)
-            }).catch((error) => {
-                console.trace(error)
-                this.setState({errorMessage:error.toString()})
-            })
-        } else {
-
-            this.signTransaction(transaction, this.state.account, this.state.privateKey).then((signedTransaction) => {
-
-                this.setState({
-                    step: 2,
-                    transactionData,
+                    transaction,
                     rawTransaction: signedTransaction.rawTransaction
                 })
                 this.onChangeStep(2)
@@ -230,6 +249,12 @@ class UserTool extends Component {
                 this.setState({errorMessage:'Error signing transaction'})
             })
         }
+    }
+    onSendStepContinue = (currency, from, to, amount, nrg, nrgPrice) => {
+        let transaction = this.toTransaction(currency, from, to, amount, nrg, nrgPrice)
+        const transactionData = { currency, from, to, amount, nrg, nrgPrice }
+
+        this.onTransactionContinue(transaction, this.state.account, this.state.privateKey, transactionData)
 
     }
     onSendStepBack = () => {
@@ -239,8 +264,9 @@ class UserTool extends Component {
         this.onChangeStep(0)
     }
 
-    onTransactionStepContinue = (txHash) => {
-        this.checkTransactionStatus(txHash)
+    onTransactionStepContinue = (txHash, transaction) => {
+        transaction.from = this.state.transactionData.from;
+        this.checkTransactionStatus(txHash, transaction)
         this.setState({
             txHash,
             step: 3
@@ -248,10 +274,10 @@ class UserTool extends Component {
 
         this.onChangeStep(3)
         if (window.AionPayButtonInterface.aionPayButtonCompletionListener) {
-            window.AionPayButtonInterface.aionPayButtonCompletionListener(txHash, null)
+            window.AionPayButtonInterface.aionPayButtonCompletionListener(txHash, null, transaction)
         }
     }
-    checkTransactionStatus = (hash) => {
+    checkTransactionStatus = (hash, transaction) => {
         const timer = setInterval(() => {
             this.state.web3.eth.getTransactionReceipt(hash, (error, receipt) => {
 
@@ -268,7 +294,7 @@ class UserTool extends Component {
                     })
                     this.onChangeStep(4)
                     if (window.AionPayButtonInterface.aionPayButtonCompletionListener) {
-                        window.AionPayButtonInterface.aionPayButtonCompletionListener(hash, status === 1)
+                        window.AionPayButtonInterface.aionPayButtonCompletionListener(hash, status === 1, transaction)
                     }
                 }
             })
@@ -288,6 +314,9 @@ class UserTool extends Component {
         this.onChangeStep(1)
     }
     onSentSuccess = () => {
+        if(this.props.onSentSuccess){
+            this.props.onSentSuccess();
+        }
         this.setState({
             step: 0,
         })
@@ -298,7 +327,7 @@ class UserTool extends Component {
     }
     render() {
         const { classes, theme, showInfoHeader, web3Provider, defaultRecipient, currency } = this.props;
-        const { step, transactionData, txHash, rawTransaction, account, privateKey, checkLedger, transactionStatus, completed, errorMessage } = this.state;
+        const { step, transactionData, transaction, txHash, rawTransaction, account, privateKey, checkLedger, transactionStatus, completed, errorMessage } = this.state;
         let content = null;
         let status = null;
 
@@ -349,9 +378,11 @@ class UserTool extends Component {
                     amount={transactionData.amount}
                     nrg={transactionData.nrg}
                     nrgPrice={transactionData.nrgPrice}
+                    data={transactionData.data}
                     rawTransaction={rawTransaction}
                     privateKey={privateKey}
                     web3Provider={web3Provider}
+                    transaction={transaction}
                 />);
                 break;
             }
