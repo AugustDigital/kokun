@@ -102,7 +102,7 @@ class UserTool extends Component {
         let actualReciepient = to;
         let nonce = parseInt(this.state.web3.eth.getTransactionCount(from), 10);
         if (currency.contract) {
-            const dataForToken = extraData? extraData: '0x';
+            const dataForToken = extraData ? extraData : '0x';
             methodData = currency.contract.send.getData(
                 to,
                 amount * Math.pow(10, 18),
@@ -124,38 +124,38 @@ class UserTool extends Component {
         const transaction = this.toTransaction(currency, from, to, amount, nrg, nrgPrice);
         return this.state.web3.eth.estimateGas({ data: transaction });
     }
-    decodeERC777MethodData=(data) => {
+    decodeERC777MethodData = (data) => {
         const methodID = data ? data.substring(0, 10) : undefined;
         let tempData;
         let hexDataLength;
         switch (methodID) {
-          case TRANSFER:
-            return {
-              to: `0x${data.substring(10, 74)}`,
-              value: new BigNumber(`0x${data.substring(74)}`),
-              data: undefined,
-            };
-          case SEND:
-            hexDataLength = parseInt(`0x${data.substring(138, 170).toString()}`, 16) * 2;
-            tempData = `0x${data.substring(170, 170 + hexDataLength).toString()}`;
-            return {
-              to: `0x${data.substring(10, 74)}`,
-              value: new BigNumber(`0x${data.substring(74, 106)}`),
-              data: tempData,
-            };
-          default:
-            return {
-              to: undefined,
-              value: new BigNumber('0'),
-              data: undefined,
-            };
+            case TRANSFER:
+                return {
+                    to: `0x${data.substring(10, 74)}`,
+                    value: new BigNumber(`0x${data.substring(74)}`),
+                    data: undefined,
+                };
+            case SEND:
+                hexDataLength = parseInt(`0x${data.substring(138, 170).toString()}`, 16) * 2;
+                tempData = `0x${data.substring(170, 170 + hexDataLength).toString()}`;
+                return {
+                    to: `0x${data.substring(10, 74)}`,
+                    value: new BigNumber(`0x${data.substring(74, 106)}`),
+                    data: tempData,
+                };
+            default:
+                return {
+                    to: undefined,
+                    value: new BigNumber('0'),
+                    data: undefined,
+                };
         }
-      }
+    }
     onTransactionContinue = async (transaction, addr, pk, transactionData) => {
         transaction.timestamp = Date.now() * 1000;
         transaction.nonce = this.state.web3.eth.getTransactionCount(addr);
 
-        if(!transactionData) // external transaction
+        if (!transactionData) // external transaction
         {
             let contractData = null;
             const tokenContract = this.state.web3.eth.contract(ATSInterface).at(transaction.to)
@@ -169,20 +169,20 @@ class UserTool extends Component {
                         return parseFloat(this.state.web3.fromWei(balance, 'ether')).toFixed(2)
                     }
                 }
-                
+
                 const decoded = this.decodeERC777MethodData(transaction.data);
                 console.log(decoded)
-                transaction = this.toTransaction(contractData, addr, decoded.to, decoded.value.toNumber()/Math.pow(10,18), transaction.gas, transaction.gasPrice, decoded.data);
+                transaction = this.toTransaction(contractData, addr, decoded.to, decoded.value.toNumber() / Math.pow(10, 18), transaction.gas, transaction.gasPrice, decoded.data);
                 transactionData = {
                     currency: contractData,
                     from: addr,
                     to: decoded.to,
-                    amount: parseInt(decoded.value.toNumber()/Math.pow(10,18), 10),
+                    amount: parseInt(decoded.value.toNumber() / Math.pow(10, 18), 10),
                     nrg: parseInt(transaction.gas, 10),
                     nrgPrice: parseInt(transaction.gasPrice, 10),
                     data: decoded.data,
                 }
-            }else{
+            } else {
                 transactionData = {
                     currency: contractData,
                     from: addr,
@@ -193,10 +193,10 @@ class UserTool extends Component {
                     data: transaction.data
                 }
             }
-            
-            
+
+
         }
-        
+
         if (pk === 'ledger') {
 
             let ledgerConnection = new LedgerProvider()
@@ -218,22 +218,22 @@ class UserTool extends Component {
                     this.onSendStepBack();
                 })
             })
-        } else if(pk === 'aiwa'){
+        } else if (pk === 'aiwa') {
             console.log(transaction)
-            
-            window.aionweb3.eth.signTransaction(transaction).then((signedTransaction)=>{
+
+            window.aionweb3.eth.signTransaction(transaction).then((signedTransaction) => {
                 console.log(signedTransaction)
                 this.setState({
                     step: 2,
                     transactionData,
                     transaction,
                     rawTransaction: signedTransaction.rawTransaction,
-                    errorMessage:null
+                    errorMessage: null
                 })
                 this.onChangeStep(2)
             }).catch((error) => {
                 console.trace(error)
-                this.setState({errorMessage:error.toString()})
+                this.setState({ errorMessage: error.toString() })
             })
         } else {
             this.signTransaction(transaction, addr, pk).then((signedTransaction) => {
@@ -246,7 +246,7 @@ class UserTool extends Component {
                 this.onChangeStep(2)
             }).catch((error) => {
                 console.trace(error)
-                this.setState({errorMessage:'Error signing transaction'})
+                this.setState({ errorMessage: 'Error signing transaction' })
             })
         }
     }
@@ -314,7 +314,7 @@ class UserTool extends Component {
         this.onChangeStep(1)
     }
     onSentSuccess = () => {
-        if(this.props.onSentSuccess){
+        if (this.props.onSentSuccess) {
             this.props.onSentSuccess();
         }
         this.setState({
@@ -324,6 +324,51 @@ class UserTool extends Component {
     }
     onChangeStep = (step) => {
         this.props.onStepChanged(step, 4)
+    }
+    createLastStep = (classes, step, completed, status, theme, currency, isTestnet, txHash) => {
+        return (
+            <Grid spacing={0}
+                container
+                direction="column"
+                justify="center"
+                alignItems="center"
+                wrap='nowrap'>
+                {
+                    (completed === 1) ?
+                        status :
+                        <Grid spacing={0}
+                            container
+                            direction="column"
+                            justify="center"
+                            alignItems="center">
+                            <img alt="Aion Logo" className={'rotation'} src={theme.palette.isWidget ? KokunLogoDark : KokunLogoLight} width="90px" />
+                            <Typography variant="h4" style={{ fontWeight: 'bold', marginTop: '30px' }}>Sending {currency}</Typography>
+                            <Typography variant="subtitle2" style={{ fontWeight: 'light', marginTop: '20px' }}> Sending transaction and waiting for at least one block confirmation.</Typography>
+                            <Typography variant="subtitle2" style={{ fontWeight: 'light' }}> Please be patient this wont't take too long...</Typography>
+                        </Grid>
+                }
+
+                <Typography variant="h4" style={{ fontWeight: 'bold', marginTop: '30px' }}>{this.state.transactionMessage}</Typography>
+
+                <Grid
+                    container
+                    direction="row"
+                    justify="space-between"
+                    alignItems="center"
+                    className={classes.linkText}
+                    wrap='nowrap'>
+                    <Typography variant="subtitle2">{'Transaction\u00A0Hash:\u00A0'}</Typography>
+                    <a target='_blank' rel='noopener noreferrer' className={classes.link} href={`https://${isTestnet ? 'mastery' : 'mainnet'}.aion.network/#/transaction/${txHash}`}>{txHash}</a>
+
+                </Grid>
+                {(step === 4) ?
+                    <PrimaryButton
+                        onClick={(event) => { this.onSentSuccess() }}
+                        className={classes.continueButton}
+                        text='Done' />
+                    : null}
+
+            </Grid>)
     }
     render() {
         const { classes, theme, showInfoHeader, web3Provider, defaultRecipient, currency } = this.props;
@@ -388,47 +433,7 @@ class UserTool extends Component {
             }
             case 3:
             case 4: { //Done
-                content = (
-                    <Grid spacing={0}
-                        container
-                        direction="column"
-                        justify="center"
-                        alignItems="center"
-                        wrap='nowrap'>
-                        {
-                            (completed === 1) ?
-                                status :
-                                <Grid spacing={0}
-                                    container
-                                    direction="column"
-                                    justify="center"
-                                    alignItems="center">
-                                    <img alt="Aion Logo" className={'rotation'} src={theme.palette.isWidget ? KokunLogoDark : KokunLogoLight} width="90px" />
-                                    <Typography variant="h4" style={{ fontWeight: 'bold', marginTop: '30px' }}>Sending {currency}</Typography>
-                                    <Typography variant="subtitle2" style={{ fontWeight: 'light', marginTop: '20px' }}> Sending transaction and waiting for at least one block confirmation.</Typography>
-                                    <Typography variant="subtitle2" style={{ fontWeight: 'light' }}> Please be patient this wont't take too long...</Typography>
-                                </Grid>
-                        }
-
-                        <Typography variant="h4" style={{ fontWeight: 'bold', marginTop: '30px' }}>{this.state.transactionMessage}</Typography>
-
-                        <Grid
-                            container
-                            direction="row"
-                            justify="space-between"
-                            alignItems="center"
-                            className={classes.linkText}
-                            wrap='nowrap'>
-                            <Typography variant="subtitle2">{'Transaction\u00A0Hash:\u00A0'}</Typography>
-                            <a target='_blank' rel='noopener noreferrer' className={classes.link} href={`https://${isTestnet ? 'mastery' : 'mainnet'}.aion.network/#/transaction/${txHash}`}>{txHash}</a>
-
-                        </Grid>
-
-                        <PrimaryButton
-                            onClick={(event) => { this.onSentSuccess() }}
-                            className={classes.continueButton}
-                            text='Done' />
-                    </Grid>)
+                content = this.createLastStep(classes, step, completed, status, theme, currency, isTestnet, txHash);
                 break;
             }
             default: {

@@ -407,7 +407,7 @@ class WalletProvidersStep extends Component {
 
                     <img alt='Lock' src={AIWALogo} width='75px'className={classes.fileIcon} />
                     <Grid item xs>
-                        <Typography className={classes.panelText} variant='subtitle1' >Please install AIWA in your browser</Typography>
+                        <Typography className={classes.panelText} variant='subtitle1' >Checking if AIWA is present...</Typography>
                     </Grid>
 
                 </Grid>
