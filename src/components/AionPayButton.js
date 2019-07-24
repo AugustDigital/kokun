@@ -18,7 +18,11 @@ class AionPayButton extends Component {
     state = {
         dialogData: null
     }
-    componentDidMount() { }
+    componentDidMount() { 
+        if(this.props.toggleOpen){
+            this.onPayButtonClick();
+        }
+    }
     onPayButtonClick = () => {
         this.setState({
             dialogData: {
@@ -27,7 +31,8 @@ class AionPayButton extends Component {
                 defaultAmount: this.props.amount,
                 defaultTokenAddress: this.props.tokenAddress,
                 transaction: this.props.transaction,
-                callback: this.props.callback
+                callback: this.props.callback,
+                toggleOpen: this.props.toggleOpen
             }
         })
     }
@@ -81,6 +86,7 @@ export const inject = () => {
             let style = domContainer.dataset.style;
             let web3Provider = domContainer.dataset.web3Provider;
             let transactionString = domContainer.dataset.transaction;
+            let toggleOpen = domContainer.dataset.toggleOpen;
             let transaction;
             if (transactionString) {
                 transaction = JSON.parse(transactionString)
@@ -128,7 +134,7 @@ export const inject = () => {
                 theme.palette = themePallete;
             }
             window.AionPayButtonInterface.aionPayWidgetThemes.push(theme)
-            let propData = { address, amount, tokenAddress, buttonText, web3Provider, theme, buttonIconType, transaction, callback }
+            let propData = { address, amount, tokenAddress, buttonText, web3Provider, theme, buttonIconType, transaction, callback, toggleOpen }
 
             ReactDOM.render(
                 React.createElement(withStyles(styles)(AionPayButton), propData),
