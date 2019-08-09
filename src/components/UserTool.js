@@ -371,7 +371,7 @@ class UserTool extends Component {
             </Grid>)
     }
     render() {
-        const { classes, theme, showInfoHeader, web3Provider, defaultRecipient, currency } = this.props;
+        const { classes, theme, showInfoHeader, web3Provider, defaultRecipient, currency, defaultAmount } = this.props;
         const { step, transactionData, transaction, txHash, rawTransaction, account, privateKey, checkLedger, transactionStatus, completed, errorMessage } = this.state;
         let content = null;
         let status = null;
@@ -408,6 +408,7 @@ class UserTool extends Component {
                     rawTransaction={rawTransaction}
                     checkLedger={checkLedger}
                     defaultRecipient={defaultRecipient}
+                    defaultAmount={defaultAmount}
                     web3Provider={web3Provider}
                     errorMessage={errorMessage}
                 />);
