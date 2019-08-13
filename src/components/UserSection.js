@@ -36,7 +36,6 @@ const styles = theme => ({
             paddingTop: theme.spacing.unit * 3,
             paddingLeft: '0px',
         }
-
     },
     progressBar: {
         marginLeft: theme.spacing.unit * 10,
@@ -75,6 +74,7 @@ class UserSection extends Component {
             currentStep: current,
             totalSteps: total
         })
+
     }
 
     render() {

@@ -28,11 +28,13 @@ class AionPayButton extends Component {
             dialogData: {
                 web3Provider: this.props.web3Provider,
                 defaultRecipient: this.props.address,
+                defaultSender: this.props.fromAddress,
                 defaultAmount: this.props.amount,
                 defaultTokenAddress: this.props.tokenAddress,
                 transaction: this.props.transaction,
                 callback: this.props.callback,
-                toggleOpen: this.props.toggleOpen
+                toggleOpen: this.props.toggleOpen,
+                skipConfirmation: this.props.skipConfirmation,
             }
         })
     }
@@ -71,6 +73,7 @@ export const inject = () => {
     document.querySelectorAll('aion-pay')
         .forEach(domContainer => {
             let address = domContainer.dataset.address;
+            let fromAddress = domContainer.dataset.from;
             let amount = domContainer.dataset.amount;
             let tokenAddress = domContainer.dataset.tokenAddress;
             let buttonText = domContainer.dataset.buttonText;
@@ -87,6 +90,7 @@ export const inject = () => {
             let web3Provider = domContainer.dataset.web3Provider;
             let transactionString = domContainer.dataset.transaction;
             let toggleOpen = domContainer.dataset.toggleOpen;
+            let skipConfirmation = domContainer.dataset.skipConfirmation;
             let transaction;
             if (transactionString) {
                 transaction = JSON.parse(transactionString)
@@ -134,7 +138,7 @@ export const inject = () => {
                 theme.palette = themePallete;
             }
             window.AionPayButtonInterface.aionPayWidgetThemes.push(theme)
-            let propData = { address, amount, tokenAddress, buttonText, web3Provider, theme, buttonIconType, transaction, callback, toggleOpen }
+            let propData = { address, fromAddress, amount, tokenAddress, buttonText, web3Provider, theme, buttonIconType, transaction, callback, toggleOpen, skipConfirmation }
 
             ReactDOM.render(
                 React.createElement(withStyles(styles)(AionPayButton), propData),

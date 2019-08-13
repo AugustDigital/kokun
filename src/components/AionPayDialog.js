@@ -111,11 +111,14 @@ class AionPayDialog extends React.Component {
     }
   }
 
-  onStepChanged = (current, total) => {
+  onStepChanged = (current, total, quit) => {
     this.setState({
       currentStep: current,
       totalSteps: total
     })
+    if(quit && current === 2){
+      this.handleClose();
+    }
   }
 
   render() {
@@ -128,10 +131,12 @@ class AionPayDialog extends React.Component {
         onStepChanged={this.onStepChanged}
         web3Provider={dialogData.web3Provider}
         defaultRecipient={dialogData.defaultRecipient}
+        defaultSender={dialogData.defaultSender}
         defaultAmount={dialogData.defaultAmount}
         defaultTokenAddress={dialogData.defaultTokenAddress}
         externalTransaction={dialogData.transaction}
-        callback={dialogData.callback} 
+        callback={dialogData.callback}
+        skipConfirmation={dialogData.skipConfirmation}
         onSentSuccess={()=>this.setState({dialogData:null})}/>;
     }
     return (

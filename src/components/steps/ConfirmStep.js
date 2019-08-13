@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Web3 from 'aion-web3';
-import { withStyles, Typography, Grid, Paper } from '@material-ui/core'
+import { withStyles, Typography, Grid, Paper } from '@material-ui/core';
 import { withTheme } from '@material-ui/core/styles';
 import compose from 'recompose/compose';
-import PrimaryButton from '../PrimaryButton'
-import SecondaryButton from '../SecondaryButton'
-import ReactGA from 'react-ga';
+import PrimaryButton from '../PrimaryButton';
+import SecondaryButton from '../SecondaryButton';
 
 const styles = theme => ({
     paper: {
@@ -67,18 +66,7 @@ class ConfirmStep extends Component {
 
     async sendTransaction() {
         try {
-            const transactionHash = await this.state.web3.eth.sendRawTransaction(this.props.rawTransaction);
-            console.log(this.props.transaction);
-            this.props.onTransactionStepContinue(transactionHash, this.props.transaction);
-            const {amount, currency, theme} = this.props;
-            let name = currency?currency.name.toUpperCase():"AION"
-            ReactGA.event({
-                category: 'Transaction',
-                action: `Sent ${name}`,
-                label:theme.palette.isWidget?'Widget':'Site',
-                value: parseFloat(amount)
-              });
-            
+            await this.props.onTransactionStepContinue(this.props.transaction);
         } catch (error) {
             console.log(error)
             this.setState({ errorMessage: "Error sending transaction. Check your balance." })

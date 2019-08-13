@@ -153,7 +153,7 @@ class SendStep extends Component {
         
         if(this.props.defaultTokenAddress)
             this.updateCurrenciesWithAddress(this.props.defaultTokenAddress, true)
-        if(this.props.defaultAmount && this.props.defaultRecipient)
+        if(this.props.defaultAmount || this.props.defaultRecipient ||  this.props.defaultSender)
             this.isFormValid()
     }
 
@@ -278,9 +278,14 @@ class SendStep extends Component {
     }
 
     isFormValid = () => {
-        const { recipient, amount } = this.state;
-
-        if (typeof (recipient) === 'undefined' || recipient.length < 0 || isNaN(parseInt(amount, 10))) {
+        const { recipient, amount, account } = this.state;
+        const {defaultSender} = this.props;
+        if(defaultSender!==account){
+            this.setState({
+                valid: false,
+                errorMessage: 'Expecting a different wallet address'
+            })
+        }else if (typeof (recipient) === 'undefined' || recipient.length < 0 || isNaN(parseInt(amount, 10))) {
             this.setState({
                 valid: false,
                 errorMessage: 'Fields missing'
