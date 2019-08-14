@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles, Typography, TextField, ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, Grid, LinearProgress, IconButton, Zoom } from '@material-ui/core'
-import { Warning, CloudUpload, InsertDriveFile, CheckCircleRounded, Close, Dock } from '@material-ui/icons';
+import { Warning, CloudUpload, InsertDriveFile, CheckCircleRounded, RemoveCircleOutlineRounded,  Close, Dock } from '@material-ui/icons';
 import classNames from 'classnames'
 import Dropzone from 'react-dropzone';
 import KeystoreWalletProvider from '../../utils/KeystoreWalletProvider';
@@ -140,6 +140,11 @@ const styles = theme => ({
         fontSize: 75,
         color: theme.palette.common.green
     },
+    crossIconBig: {
+        padding: theme.spacing.unit,
+        fontSize: 75,
+        color: theme.palette.common.red
+    },
     leftIcon: {
         marginRight: theme.spacing.unit,
     },
@@ -248,13 +253,16 @@ class WalletProvidersStep extends Component {
                     }).catch(error => {
                         this.setState({ ledgerConnected: false, ledgerAddress: '' });
                     });
-                }else if(expanded.title === "AIWA"){
-                    if(window.aionweb3 && window.aionweb3.eth.accounts && window.aionweb3.eth.accounts[0]){
-                        this.setState({ aiwaAddress: window.aionweb3.eth.accounts[0]});
-                    }
                 }
             }
         }, 5000);
+        setTimeout(() => {
+            if (window.aionweb3 && window.aionweb3.eth.accounts && window.aionweb3.eth.accounts[0]) {
+                this.setState({ aiwaAddress: window.aionweb3.eth.accounts[0] });
+            } else {
+                this.setState({ aiwaError: "AIWA not found" });
+            }
+        }, 5000)
     }
     connectToLedger() {
         return new Promise((resolve, reject) => {
@@ -289,7 +297,7 @@ class WalletProvidersStep extends Component {
             keyStoreFilePass: null
         })
     }
-    unlockAIWA=(item)=>{
+    unlockAIWA = (item) => {
         return new Promise((resolve, reject) => {
             resolve({ address: this.state.aiwaAddress, privateKey: 'aiwa' })
         })
@@ -380,40 +388,54 @@ class WalletProvidersStep extends Component {
 
     createAIWAPanel = (classes) => {
         return (<div className={classes.content}>
-            {this.state.aiwaAddress ? <div>
+            {this.state.aiwaError ? <div>
                 <Grid
-                    container
-                    spacing={16}
-                    direction="row"
-                    justify="center"
-                    alignItems="center"
-                    style={{ marginTop: '15px' }}>
+                        container
+                        spacing={16}
+                        direction="row"
+                        justify="center"
+                        alignItems="center"
+                        style={{ marginTop: '15px' }}>
 
-                    <CheckCircleRounded className={classes.checkIconBig} />
-                    <Grid item xs>
-                        <Typography className={classes.panelText} variant='subtitle1'>AIWA is present</Typography>
+                        <RemoveCircleOutlineRounded className={classes.crossIconBig} />
+                        <Grid item xs>
+                            <Typography className={classes.panelText} variant='subtitle1'>AIWA not found</Typography>
+                        </Grid>
+
                     </Grid>
-
-                </Grid>
             </div> :
-                <Grid
-                    container
-                    spacing={16}
-                    direction="row"
-                    justify="center"
-                    alignItems="center"
-                    wrap='wrap'
-                    style={{ marginTop: '15px' }}>
+                this.state.aiwaAddress ? <div>
+                    <Grid
+                        container
+                        spacing={16}
+                        direction="row"
+                        justify="center"
+                        alignItems="center"
+                        style={{ marginTop: '15px' }}>
 
-                    <img alt='Lock' src={AIWALogo} width='75px'className={classes.fileIcon} />
-                    <Grid item xs>
-                        <Typography className={classes.panelText} variant='subtitle1' >Checking if AIWA is present...</Typography>
+                        <CheckCircleRounded className={classes.checkIconBig} />
+                        <Grid item xs>
+                            <Typography className={classes.panelText} variant='subtitle1'>AIWA is present</Typography>
+                        </Grid>
+
                     </Grid>
+                </div> :
+                    <Grid
+                        container
+                        spacing={16}
+                        direction="row"
+                        justify="center"
+                        alignItems="center"
+                        wrap='wrap'
+                        style={{ marginTop: '15px' }}>
 
-                </Grid>
+                        <img alt='Lock' src={AIWALogo} width='75px' className={classes.fileIcon} />
+                        <Grid item xs>
+                            <Typography className={classes.panelText} variant='subtitle1' >Checking if AIWA is present...</Typography>
+                        </Grid>
+
+                    </Grid>
             }
-
-
         </div>)
     }
 
@@ -596,7 +618,7 @@ class WalletProvidersStep extends Component {
     validateAIWA = () => {
 
         const { aiwaAddress } = this.state;
-        return aiwaAddress?true:false;
+        return aiwaAddress ? true : false;
     }
     validateLedger = () => {
 

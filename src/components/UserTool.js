@@ -17,6 +17,7 @@ import { asPromise } from '../utils/common'
 import ATSInterface from '../common/ATSInterface';
 import globalTokenContractRegistry from '../common/ContractRegistry'
 import BigNumber from 'bignumber.js';
+import ReactGA from 'react-ga';
 
 const TRANSFER = '0xfbb001d6';
 
@@ -87,7 +88,6 @@ class UserTool extends Component {
             })
             this.onChangeStep(1)
         }
-
     }
     async signTransaction(transaction, addr, pk) {
         const aion = new Accounts();
@@ -255,7 +255,6 @@ class UserTool extends Component {
         const transactionData = { currency, from, to, amount, nrg, nrgPrice }
 
         this.onTransactionContinue(transaction, this.state.account, this.state.privateKey, transactionData)
-
     }
     onSendStepBack = () => {
         this.setState({
@@ -263,10 +262,36 @@ class UserTool extends Component {
         })
         this.onChangeStep(0)
     }
-
-    onTransactionStepContinue = (txHash, transaction) => {
-        transaction.from = this.state.transactionData.from;
-        this.checkTransactionStatus(txHash, transaction)
+    onTransactionStepContinue = async () => {
+        const {transaction, rawTransaction, transactionData} = this.state;
+        const {amount, currency, from} = transactionData;
+        const txHash = await this.state.web3.eth.sendRawTransaction(rawTransaction);
+        const { theme} = this.props;
+        let name = currency?currency.name.toUpperCase():"AION"
+        ReactGA.event({
+            category: 'Transaction',
+            action: `Sent ${name}`,
+            label:theme.palette.isWidget?'Widget':'Site',
+            value: parseFloat(amount)
+            });
+        
+        transaction.from = from;
+        this.checkTransactionStatus(txHash, transaction, (status, message)=>{
+            if (!this.props.skipConfirmation) {
+                this.setState({
+                    step: 4,
+                    completed: 1,
+                    transactionStatus: status,
+                    transactionMessage: message,
+                    transactionData: {}
+                })
+                this.onChangeStep(4)
+            }
+            
+            if (window.AionPayButtonInterface.aionPayButtonCompletionListener) {
+                window.AionPayButtonInterface.aionPayButtonCompletionListener(txHash, status === 1, transaction)
+            }
+        })
         this.setState({
             txHash,
             step: 3
@@ -277,7 +302,7 @@ class UserTool extends Component {
             window.AionPayButtonInterface.aionPayButtonCompletionListener(txHash, null, transaction)
         }
     }
-    checkTransactionStatus = (hash, transaction) => {
+    checkTransactionStatus = (hash, transaction, callback) => {
         const timer = setInterval(() => {
             this.state.web3.eth.getTransactionReceipt(hash, (error, receipt) => {
 
@@ -285,17 +310,7 @@ class UserTool extends Component {
                     clearInterval(timer);
                     let status = parseInt(receipt.status, 16)
                     let message = status === 1 ? 'Succesfully Sent!' : 'Transaction error!';
-                    this.setState({
-                        step: 4,
-                        completed: 1,
-                        transactionStatus: status,
-                        transactionMessage: message,
-                        transactionData: {}
-                    })
-                    this.onChangeStep(4)
-                    if (window.AionPayButtonInterface.aionPayButtonCompletionListener) {
-                        window.AionPayButtonInterface.aionPayButtonCompletionListener(hash, status === 1, transaction)
-                    }
+                    callback(status, message);
                 }
             })
         }, 5000);
@@ -322,8 +337,16 @@ class UserTool extends Component {
         })
         this.onChangeStep(0)
     }
-    onChangeStep = (step) => {
-        this.props.onStepChanged(step, 4)
+    onChangeStep = async (step) => {
+        this.props.onStepChanged(step, 4, this.props.skipConfirmation)
+        if(step===2 && this.props.skipConfirmation){
+            await this.onTransactionStepContinue();
+            this.setState({
+                step: 0,
+                transactionData: {}
+            })
+            this.onChangeStep(0)
+        }
     }
     createLastStep = (classes, step, completed, status, theme, currency, isTestnet, txHash) => {
         return (
@@ -371,7 +394,7 @@ class UserTool extends Component {
             </Grid>)
     }
     render() {
-        const { classes, theme, showInfoHeader, web3Provider, defaultRecipient, currency } = this.props;
+        const { classes, theme, showInfoHeader, web3Provider, defaultRecipient, currency, defaultAmount, defaultSender } = this.props;
         const { step, transactionData, transaction, txHash, rawTransaction, account, privateKey, checkLedger, transactionStatus, completed, errorMessage } = this.state;
         let content = null;
         let status = null;
@@ -408,6 +431,8 @@ class UserTool extends Component {
                     rawTransaction={rawTransaction}
                     checkLedger={checkLedger}
                     defaultRecipient={defaultRecipient}
+                    defaultSender={defaultSender}
+                    defaultAmount={defaultAmount}
                     web3Provider={web3Provider}
                     errorMessage={errorMessage}
                 />);
