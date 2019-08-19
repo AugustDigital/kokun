@@ -22,6 +22,10 @@ class AionPayButton extends Component {
         if(this.props.toggleOpen){
             this.onPayButtonClick();
         }
+        window.AionPayButtonInterface.render = this.onPayButtonClick;
+    }
+    componentWillUnmount() {
+        window.AionPayButtonInterface.render = null;
     }
     onPayButtonClick = () => {
         this.setState({
@@ -65,7 +69,7 @@ AionPayButton.propTypes = {
 export const inject = () => {
     window.AionPayButtonInterface = {
         renderAionPayButton: inject,
-        aionPayWidgetThemes: []
+        aionPayWidgetThemes: [],
     }
     //Register our custom element
     document.createElement('aion-pay');
