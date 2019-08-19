@@ -253,16 +253,23 @@ class WalletProvidersStep extends Component {
                     }).catch(error => {
                         this.setState({ ledgerConnected: false, ledgerAddress: '' });
                     });
+                } else if(expanded.title === "AIWA"){
+                    if (window.aionweb3 && window.aionweb3.eth.accounts && window.aionweb3.eth.accounts[0]) {
+                        window.aionweb3.version.getNetwork((_, networkType) => {
+                                const networkProviderTypeMainnet = this.props.web3Provider.includes('mainnet');
+                                if ((networkProviderTypeMainnet && networkType === '256')
+                                    || (!networkProviderTypeMainnet && networkType === '32')) {
+                                        this.setState({ aiwaAddress: window.aionweb3.eth.accounts[0],aiwaError:null });
+                                } else {
+                                    this.setState({ aiwaError: `Please switch AIWA to ${networkProviderTypeMainnet?"MAINNET":"MASTERY"} network!` });
+                                }
+                        })
+                    } else {
+                        this.setState({ aiwaError: "AIWA not found" });
+                    }
                 }
             }
         }, 5000);
-        setTimeout(() => {
-            if (window.aionweb3 && window.aionweb3.eth.accounts && window.aionweb3.eth.accounts[0]) {
-                this.setState({ aiwaAddress: window.aionweb3.eth.accounts[0] });
-            } else {
-                this.setState({ aiwaError: "AIWA not found" });
-            }
-        }, 5000)
     }
     connectToLedger() {
         return new Promise((resolve, reject) => {
@@ -399,7 +406,7 @@ class WalletProvidersStep extends Component {
 
                         <RemoveCircleOutlineRounded className={classes.crossIconBig} />
                         <Grid item xs>
-                            <Typography className={classes.panelText} variant='subtitle1'>AIWA not found</Typography>
+                            <Typography className={classes.panelText} variant='subtitle1'>{this.state.aiwaError}</Typography>
                         </Grid>
 
                     </Grid>

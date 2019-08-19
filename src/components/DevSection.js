@@ -141,7 +141,7 @@ class DevSection extends Component {
     }
 
     content = [
-        { description: 'Pay to any address with default button style', params: { 'data-from':'0xa027d25c5c371e8b7feb6bf8d9767e9a34d169c5f310b6a1dc58ec780f389584','data-web3-provider': 'https://aion.api.nodesmith.io/v1/mastery/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
+        { description: 'Pay to any address with default button style', params: {'data-web3-provider': 'https://aion.api.nodesmith.io/v1/mastery/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
         { description: 'Pay to a given address with default button style', params: { 'data-address': '0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827', 'data-web3-provider': 'https://aion.api.nodesmith.io/v1/mastery/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
         { description: 'Pay to a given address 5 AION', params: { 'data-button-text': 'Pay 5 AION', 'data-address': '0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827', 'data-amount': 5.0, 'data-web3-provider': 'https://aion.api.nodesmith.io/v1/mastery/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
         { description: 'Pay to a given address 5 PLAT', params: { 'data-button-text': 'Pay 5 PLAT', 'data-address': '0xa0f9b0086fdf6c29f67c009e98eb31e1ddf1809a6ef2e44296a377b37ebb9827', 'data-amount': 5.0, 'data-token-address': '0xa051aeecf95f7921c9f8ba3851445d7f221f9c7988a0d2d9ed0080eff583b313', 'data-web3-provider': 'https://aion.api.nodesmith.io/v1/mastery/jsonrpc?apiKey=451ea61711c4409aaa12fb9394d008b8' } },
@@ -157,11 +157,17 @@ class DevSection extends Component {
         // document.getElementById('aion-pay-0').addEventListener('transactionSent',(e)=>{
         //     alert('Got Event:'+e.detail.txHash+' with status '+e.detail.status)
         // })
+        //can also triget popup like so:
+        // setTimeout(()=>{
+        //     window.AionPayButtonInterface.render()
+        // },2000)
         window.AionPayButtonInterface.aionPayButtonCompletionListener = (txHash, status, txObj) => { 
             console.log('txHash:'+txHash)
             console.log('status:'+status)
             console.log(txObj)
         }
+        
+       
     }
 
     onGithubButtonPressed = () => {

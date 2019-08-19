@@ -151,10 +151,18 @@ class SendStep extends Component {
             }
             this.updateCurrenciesWithAddress(platAddress, false, false)
         
-        if(this.props.defaultTokenAddress)
+        if(this.props.defaultTokenAddress){
             this.updateCurrenciesWithAddress(this.props.defaultTokenAddress, true)
-        if(this.props.defaultAmount || this.props.defaultRecipient ||  this.props.defaultSender)
+        }
+        if(this.props.defaultAmount || this.props.defaultRecipient ||  this.props.defaultSender){
             this.isFormValid()
+        }
+        setInterval(()=>{
+            if (this.props.defaultSender && window.aionweb3 && window.aionweb3.eth.accounts && window.aionweb3.eth.accounts[0]) {
+                this.setState({ account: window.aionweb3.eth.accounts[0] });
+                this.isFormValid()
+            }
+        },2000)
     }
 
     componentWillReceiveProps(nextProps) {
@@ -280,11 +288,13 @@ class SendStep extends Component {
     isFormValid = () => {
         const { recipient, amount, account } = this.state;
         const {defaultSender} = this.props;
-        if(defaultSender!==account){
+        if(defaultSender && defaultSender!==account){
+            
             this.setState({
                 valid: false,
                 errorMessage: 'Expecting a different wallet address'
             })
+            
         }else if (typeof (recipient) === 'undefined' || recipient.length < 0 || isNaN(parseInt(amount, 10))) {
             this.setState({
                 valid: false,
