@@ -420,6 +420,7 @@ class UserTool extends Component {
             case 1: { // Send
                 content = (<SendStep
                     account={account}
+                    privateKey={privateKey}
                     onSendStepContinue={this.onSendStepContinue}
                     onSendStepBack={this.onSendStepBack}
                     onRequestGasEstimate={this.onRequestGasEstimate}
