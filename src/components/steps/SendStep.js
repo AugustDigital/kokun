@@ -10,7 +10,6 @@ import CoinDropdown from '../CoinDropdown';
 import ATSInterface from '../../common/ATSInterface';
 import globalTokenContractRegistry from '../../common/ContractRegistry'
 import AddTokenDialog from '../AddTokenDialog'
-import { asPromise } from '../../utils/common'
 import queryString from 'stringquery'
 
 
@@ -140,8 +139,11 @@ class SendStep extends Component {
         globalTokenContractRegistry.account = this.props.account;
     }
 
-    componentDidMount() {
-        this.setState({ web3: new Web3(new Web3.providers.HttpProvider(this.props.web3Provider)) });
+    async componentDidMount() {
+        let initialBalance = await this.getBalance();
+        this.setState({ 
+            web3: new Web3(new Web3.providers.HttpProvider(this.props.web3Provider)),
+            balance: initialBalance});
         const queryParams = queryString(window.location.search);
         let platAddress;
         if (queryParams.testnet === 'true') {
@@ -187,28 +189,31 @@ class SendStep extends Component {
     async updateNrg() {
         const { availableCurrencies, currencyId, amount, recipient, nrg, nrgPrice, account } = this.state;
         try {
-            this.setState({ nrg: this.props.onRequestGasEstimate(availableCurrencies[currencyId], account, recipient, parseFloat(amount, 10), nrg, nrgPrice) });
+            let estimate = await this.props.onRequestGasEstimate(availableCurrencies[currencyId], account, recipient, parseFloat(amount, 10), nrg, nrgPrice);
+            this.setState({ nrg: estimate });
         } catch (e) {
             console.log(e)
         }
 
     }
-    getBalance = () => {
-        const balance = this.state.web3.eth.getBalance(this.state.account).toNumber()
-        return parseFloat(this.state.web3.fromWei(balance, 'ether')).toFixed(2)
+    getBalance = async () => {
+        let balance = await this.state.web3.eth.getBalance(this.state.account);
+        return parseFloat(this.state.web3.utils.fromNAmp(balance, 'aion')).toFixed(2)
     }
 
     updateCurrenciesWithAddress = async (address, skipRegistry = false, makeCurrent = true) => {
         try {
-            const tokenContract = this.state.web3.eth.contract(ATSInterface).at(address)
-            const symbol = await asPromise(tokenContract.symbol.call)
+            const tokenContract = new this.state.web3.eth.Contract(ATSInterface, address)
+            console.log(tokenContract)
+            const symbol = await tokenContract.methods.symbol().call();
+            console.log(symbol)
             if (0 < symbol.length) {
                 const contractData = {
                     name: symbol,
                     contract: tokenContract,
-                    getBalance: () => {
-                        var balance = tokenContract.balanceOf.call(globalTokenContractRegistry.account).toNumber()
-                        return parseFloat(this.state.web3.fromWei(balance, 'ether')).toFixed(2)
+                    getBalance: async  () => {
+                        var balance = (await tokenContract.methods.balanceOf(globalTokenContractRegistry.account).call()).toNumber()
+                        return parseFloat(this.state.web3.utils.fromNAmp(balance, 'aion')).toFixed(2)
                     }
                 }
                 if (!skipRegistry && this.state.availableCurrencies.find(item => item.contract && item.contract.address === contractData.contract.address)) {
@@ -220,10 +225,12 @@ class SendStep extends Component {
                 if (!skipRegistry)
                     globalTokenContractRegistry.addContract(contractData)
                 this.state.availableCurrencies.push(contractData)
+                let balance = await contractData.getBalance();
                 this.setState({
                     availableCurrencies: this.state.availableCurrencies,
                     tokenAddError: null,
-                    addTokenSuccesfull: true
+                    addTokenSuccesfull: true,
+                    balance
                 })
                 setTimeout(() => {
                     this.setState({
@@ -307,7 +314,7 @@ class SendStep extends Component {
                 valid: false,
                 errorMessage: 'Fields missing'
             })
-        } else if (!this.state.web3.isAddress(recipient)) {
+        } else if (!this.state.web3.utils.isAddress(recipient)) {
             this.setState({
                 valid: false,
                 errorMessage: 'Provided address is invalid'
@@ -333,7 +340,7 @@ class SendStep extends Component {
 
     render() {
         const { classes, onSendStepBack, onSendStepContinue, checkLedger, defaultRecipient, defaultAmount } = this.props;
-        const { availableCurrencies, currencyId, amount, recipient, customNrg, nrg, nrgPrice, errorMessage, valid, account, addTokenDialogOpened, tokenAddError, addTokenSuccesfull } = this.state;
+        const { availableCurrencies, currencyId, amount, recipient, customNrg, nrg, nrgPrice, errorMessage, valid, account, addTokenDialogOpened, tokenAddError, addTokenSuccesfull, balance } = this.state;
 
         return (
             <div><Grid
@@ -364,7 +371,7 @@ class SendStep extends Component {
                     </Grid>
                 </Grid>
                 <Typography variant="caption" style={{ marginTop: '25px', marginBottom: '5px' }}>FROM</Typography>
-                <Typography variant="subtitle2" className={classes.balanceText}>Wallet Ballance: {availableCurrencies[currencyId].getBalance()}</Typography>
+                <Typography variant="subtitle2" className={classes.balanceText}>Wallet Ballance: {balance}</Typography>
                 <Typography variant="body1" className={classes.fromText}>{account}</Typography>
                 <TextField
                     fullWidth

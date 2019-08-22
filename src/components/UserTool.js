@@ -16,7 +16,7 @@ import { developmentProvider } from '../../global_config'
 import { asPromise } from '../utils/common'
 import ATSInterface from '../common/ATSInterface';
 import globalTokenContractRegistry from '../common/ContractRegistry'
-import BigNumber from 'bignumber.js';
+import BN from 'bn.js';
 import ReactGA from 'react-ga';
 
 const TRANSFER = '0xfbb001d6';
@@ -86,21 +86,24 @@ class UserTool extends Component {
                 account: account.address,
                 privateKey: account.privateKey,
             })
+
             this.onChangeStep(1)
         }
     }
     async signTransaction(transaction, addr, pk) {
+        console.log(transaction)
         const aion = new Accounts();
         const account = aion.privateKeyToAccount(pk);
         const signedTransaction = await account.signTransaction(transaction);
 
         return signedTransaction;
     }
-    toTransaction = (currency, from, to, amount, nrg, nrgPrice, extraData) => {
+    toTransaction = async (currency, from, to, amount, nrg, nrgPrice, extraData) => {
+        console.log({ currency, from, to, amount, nrg, nrgPrice, extraData })
         let methodData = null;
-        let aionAmount = parseInt(this.state.web3.toWei(amount, "ether"), 10);
+        let aionAmount = parseInt(this.state.web3.utils.toNAmp(new BN(amount), 'aion'), 10);
         let actualReciepient = to;
-        let nonce = parseInt(this.state.web3.eth.getTransactionCount(from), 10);
+        let nonce = parseInt(await this.state.web3.eth.getTransactionCount(from), 10);
         if (currency.contract) {
             const dataForToken = extraData ? extraData : '0x';
             methodData = currency.contract.send.getData(
@@ -120,9 +123,10 @@ class UserTool extends Component {
             data: methodData
         };
     }
-    onRequestGasEstimate = (currency, from, to, amount, nrg, nrgPrice) => {
-        const transaction = this.toTransaction(currency, from, to, amount, nrg, nrgPrice);
-        return this.state.web3.eth.estimateGas({ data: transaction });
+    onRequestGasEstimate = async (currency, from, to, amount, nrg, nrgPrice) => {
+        const transaction = await this.toTransaction(currency, from, to, amount, nrg, nrgPrice);
+        let gasEstimate = this.state.web3.eth.estimateGas({ data: transaction });
+        this.setState({ gasEstimate })
     }
     decodeERC777MethodData = (data) => {
         const methodID = data ? data.substring(0, 10) : undefined;
@@ -132,7 +136,7 @@ class UserTool extends Component {
             case TRANSFER:
                 return {
                     to: `0x${data.substring(10, 74)}`,
-                    value: new BigNumber(`0x${data.substring(74)}`),
+                    value: new BN(`0x${data.substring(74)}`),
                     data: undefined,
                 };
             case SEND:
@@ -140,25 +144,25 @@ class UserTool extends Component {
                 tempData = `0x${data.substring(170, 170 + hexDataLength).toString()}`;
                 return {
                     to: `0x${data.substring(10, 74)}`,
-                    value: new BigNumber(`0x${data.substring(74, 106)}`),
+                    value: new BN(`0x${data.substring(74, 106)}`),
                     data: tempData,
                 };
             default:
                 return {
                     to: undefined,
-                    value: new BigNumber('0'),
+                    value: new BN('0'),
                     data: undefined,
                 };
         }
     }
     onTransactionContinue = async (transaction, addr, pk, transactionData) => {
         transaction.timestamp = Date.now() * 1000;
-        transaction.nonce = this.state.web3.eth.getTransactionCount(addr);
+        transaction.nonce = await this.state.web3.eth.getTransactionCount(addr);
 
         if (!transactionData) // external transaction
         {
             let contractData = null;
-            const tokenContract = this.state.web3.eth.contract(ATSInterface).at(transaction.to)
+            const tokenContract = new this.state.web3.eth.Contract(ATSInterface, transaction.to)
             const symbol = await asPromise(tokenContract.symbol.call)
             if (0 < symbol.length) { // is token contract
                 contractData = {
@@ -166,13 +170,13 @@ class UserTool extends Component {
                     contract: tokenContract,
                     getBalance: () => {
                         var balance = tokenContract.balanceOf.call(globalTokenContractRegistry.account).toNumber()
-                        return parseFloat(this.state.web3.fromWei(balance, 'ether')).toFixed(2)
+                        return parseFloat(this.state.web3.utils.fromNAmp(balance, 'aion')).toFixed(2)
                     }
                 }
 
                 const decoded = this.decodeERC777MethodData(transaction.data);
                 console.log(decoded)
-                transaction = this.toTransaction(contractData, addr, decoded.to, decoded.value.toNumber() / Math.pow(10, 18), transaction.gas, transaction.gasPrice, decoded.data);
+                transaction = await this.toTransaction(contractData, addr, decoded.to, decoded.value.toNumber() / Math.pow(10, 18), transaction.gas, transaction.gasPrice, decoded.data);
                 transactionData = {
                     currency: contractData,
                     from: addr,
@@ -250,8 +254,8 @@ class UserTool extends Component {
             })
         }
     }
-    onSendStepContinue = (currency, from, to, amount, nrg, nrgPrice) => {
-        let transaction = this.toTransaction(currency, from, to, amount, nrg, nrgPrice)
+    onSendStepContinue = async (currency, from, to, amount, nrg, nrgPrice) => {
+        let transaction = await this.toTransaction(currency, from, to, amount, nrg, nrgPrice)
         const transactionData = { currency, from, to, amount, nrg, nrgPrice }
 
         this.onTransactionContinue(transaction, this.state.account, this.state.privateKey, transactionData)
@@ -263,54 +267,54 @@ class UserTool extends Component {
         this.onChangeStep(0)
     }
     onTransactionStepContinue = async () => {
-        const {transaction, rawTransaction, transactionData} = this.state;
-        const {amount, currency, from} = transactionData;
-        const txHash = await this.state.web3.eth.sendRawTransaction(rawTransaction);
-        const { theme} = this.props;
-        let name = currency?currency.name.toUpperCase():"AION"
-        ReactGA.event({
-            category: 'Transaction',
-            action: `Sent ${name}`,
-            label:theme.palette.isWidget?'Widget':'Site',
-            value: parseFloat(amount)
+        const { transaction, rawTransaction, transactionData } = this.state;
+        const { amount, currency, from } = transactionData;
+        this.state.web3.eth.sendSignedTransaction(rawTransaction).once('transactionHash', (txHash)=>{
+            const { theme } = this.props;
+            let name = currency ? currency.name.toUpperCase() : "AION"
+            ReactGA.event({
+                category: 'Transaction',
+                action: `Sent ${name}`,
+                label: theme.palette.isWidget ? 'Widget' : 'Site',
+                value: parseFloat(amount)
             });
-        
-        transaction.from = from;
-        this.checkTransactionStatus(txHash, transaction, (status, message)=>{
-            if (!this.props.skipConfirmation) {
-                this.setState({
-                    step: 4,
-                    completed: 1,
-                    transactionStatus: status,
-                    transactionMessage: message,
-                    transactionData: {}
-                })
-                this.onChangeStep(4)
-            }
-            
-            if (window.AionPayButtonInterface.aionPayButtonCompletionListener) {
-                window.AionPayButtonInterface.aionPayButtonCompletionListener(txHash, status === 1, transaction)
-            }
-        })
-        this.setState({
-            txHash,
-            step: 3
-        })
 
-        this.onChangeStep(3)
-        if (window.AionPayButtonInterface.aionPayButtonCompletionListener) {
-            window.AionPayButtonInterface.aionPayButtonCompletionListener(txHash, null, transaction)
-        }
+            transaction.from = from;
+            this.checkTransactionStatus(txHash, transaction, (status, message) => {
+                if (!this.props.skipConfirmation) {
+                    this.setState({
+                        step: 4,
+                        completed: 1,
+                        transactionStatus: status,
+                        transactionMessage: message,
+                        transactionData: {}
+                    })
+                    this.onChangeStep(4)
+                }
+
+                if (window.AionPayButtonInterface.aionPayButtonCompletionListener) {
+                    window.AionPayButtonInterface.aionPayButtonCompletionListener(txHash, status === 1, transaction)
+                }
+            })
+            this.setState({
+                txHash,
+                step: 3
+            })
+
+            this.onChangeStep(3)
+            if (window.AionPayButtonInterface.aionPayButtonCompletionListener) {
+                window.AionPayButtonInterface.aionPayButtonCompletionListener(txHash, null, transaction)
+            }
+        })
     }
     checkTransactionStatus = (hash, transaction, callback) => {
         const timer = setInterval(() => {
             this.state.web3.eth.getTransactionReceipt(hash, (error, receipt) => {
-
                 if (receipt) {
+                    console.log(receipt)
                     clearInterval(timer);
-                    let status = parseInt(receipt.status, 16)
-                    let message = status === 1 ? 'Succesfully Sent!' : 'Transaction error!';
-                    callback(status, message);
+                    let message = receipt.status ? 'Succesfully Sent!' : 'Transaction error!';
+                    callback(receipt.status, message);
                 }
             })
         }, 5000);
@@ -339,7 +343,7 @@ class UserTool extends Component {
     }
     onChangeStep = async (step) => {
         this.props.onStepChanged(step, 4, this.props.skipConfirmation)
-        if(step===2 && this.props.skipConfirmation){
+        if (step === 2 && this.props.skipConfirmation) {
             await this.onTransactionStepContinue();
             this.setState({
                 step: 0,
