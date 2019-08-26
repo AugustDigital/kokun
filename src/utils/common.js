@@ -1,3 +1,4 @@
+import ATSInterface from '../common/ATSInterface.js'
 const { interval } = require('rxjs')
 const {
     mergeMap,
@@ -122,4 +123,40 @@ export const asPromise =  async (fun, params) => {
             reject(ex)
         }
     })
+}
+
+export const isSolToken = async (web3, contractAddress) => {
+    console.log({web3, contractAddress})
+    console.log(ATSInterface)
+    const tokenContract = new web3.eth.Contract(ATSInterface, contractAddress);
+    try{
+        const symbol = await tokenContract.methods.symbol().call();
+        if(0 < symbol.length){
+            return symbol;
+        }
+        return false;
+    }catch(ex){
+        return false;
+    }
+}
+
+export const isJavaToken = async (web3, contractAddress, account) => {
+    let data = web3.avm.contract.method('symbol').encode(); //todo UPDATE when ats if finalized
+    const Tx = {
+        from: account,
+        to: contractAddress,
+        data: data,
+        gasPrice: 10000000000,
+        gas: 2000000
+    };
+    try {
+        let res = await web3.eth.call(Tx);
+        let symbol = await web3.avm.contract.decode('string', res); 
+        if(0 < symbol.length){
+            return symbol;
+        }
+        return false;
+    }catch(ex){
+        return false;
+    }
 }

@@ -11,6 +11,7 @@ import ATSInterface from '../../common/ATSInterface';
 import globalTokenContractRegistry from '../../common/ContractRegistry'
 import AddTokenDialog from '../AddTokenDialog'
 import queryString from 'stringquery'
+import {isJavaToken, isSolToken} from '../../utils/common.js'
 
 
 const styles = theme => ({
@@ -186,10 +187,15 @@ class SendStep extends Component {
         }
     }
 
-    async updateNrg() {
-        const { availableCurrencies, currencyId, amount, recipient, nrg, nrgPrice, account } = this.state;
+    async updateNrg(currency) {
+        const {amount, recipient } = this.state;
         try {
-            let estimate = await this.props.onRequestGasEstimate(availableCurrencies[currencyId], account, recipient, parseFloat(amount, 10), nrg, nrgPrice);
+            let estimate = 21000;
+            console.log(currency);
+            if(currency.getNRGEstimate){
+                estimate = await currency.getNRGEstimate(recipient, amount?amount:1, '0x') + 21000 //extra gas incase estimate is too low
+            }
+            console.log("ESTIMATE:"+estimate)
             this.setState({ nrg: estimate });
         } catch (e) {
             console.log(e)
@@ -203,20 +209,45 @@ class SendStep extends Component {
 
     updateCurrenciesWithAddress = async (address, skipRegistry = false, makeCurrent = true) => {
         try {
-            const tokenContract = new this.state.web3.eth.Contract(ATSInterface, address)
-            console.log(tokenContract)
-            const symbol = await tokenContract.methods.symbol().call();
-            console.log(symbol)
-            if (0 < symbol.length) {
-                const contractData = {
-                    name: symbol,
-                    contract: tokenContract,
-                    getBalance: async  () => {
-                        var balance = (await tokenContract.methods.balanceOf(globalTokenContractRegistry.account).call()).toNumber()
-                        return parseFloat(this.state.web3.utils.fromNAmp(balance, 'aion')).toFixed(2)
+            const isJava = await isJavaToken(this.state.web3, address, this.state.account);
+            const isSol = await isSolToken(this.state.web3, address)
+            console.log(isSol)
+            console.log(isJava)
+            console.log(this.state.availableCurrencies)
+            if (isJava || isSol) {
+                let contractData;
+                if(isSol){
+                    const tokenContract = new this.state.web3.eth.Contract(ATSInterface, address)
+                    contractData = {
+                        name: isSol,
+                        contract: tokenContract,
+                        getBalance: async  () => {
+                            var num = await tokenContract.methods.balanceOf(globalTokenContractRegistry.account).call();
+                            return parseFloat(this.state.web3.utils.fromNAmp(num, 'aion')).toFixed(2)
+                        },
+                        getNRGEstimate: async (recepient, amount, data) =>{
+                            return await tokenContract.methods.send(recepient,amount, data).estimateGas(recepient)
+                        }
+                    }
+                }else{
+                    const tokenContract = new this.state.web3.eth.Contract(ATSInterface, address) //update when ATS is finalized
+                    contractData = {
+                        name: isJava,
+                        contract: tokenContract,
+                        getBalance: async  () => {
+                            //todo update when ATS is finilized
+                            var num = await tokenContract.methods.balanceOf(globalTokenContractRegistry.account).call();
+                            return parseFloat(this.state.web3.utils.fromNAmp(num, 'aion')).toFixed(2)
+                        },
+                        getNRGEstimate: async (recepient, amount, data) =>{
+                            // todo update when ATS is finilized
+                            return await tokenContract.methods.send(recepient,amount, data).estimateGas(recepient)
+                        }
                     }
                 }
-                if (!skipRegistry && this.state.availableCurrencies.find(item => item.contract && item.contract.address === contractData.contract.address)) {
+                let foundContracts = this.state.availableCurrencies.find(item => item.contract && item.contract.address === address);
+                console.log(foundContracts)
+                if (!skipRegistry && foundContracts) {
                     this.setState({
                         tokenAddError: 'The Token Address already added'
                     })
@@ -224,13 +255,11 @@ class SendStep extends Component {
                 }
                 if (!skipRegistry)
                     globalTokenContractRegistry.addContract(contractData)
-                this.state.availableCurrencies.push(contractData)
-                let balance = await contractData.getBalance();
+                this.state.availableCurrencies.push(contractData);
                 this.setState({
                     availableCurrencies: this.state.availableCurrencies,
                     tokenAddError: null,
-                    addTokenSuccesfull: true,
-                    balance
+                    addTokenSuccesfull: true
                 })
                 setTimeout(() => {
                     this.setState({
@@ -262,9 +291,11 @@ class SendStep extends Component {
         }
     }
 
-    handleCurrencyChange = index => {
-        this.updateNrg()
-        this.setState({ currencyId: index });
+    handleCurrencyChange = async (index) => {
+        let currency = this.state.availableCurrencies[index];
+        await this.updateNrg(currency)
+        const balance = await currency.getBalance();
+        this.setState({ currencyId: index, balance });
     };
 
     onRecipientEntered = (event) => {

@@ -103,15 +103,19 @@ class UserTool extends Component {
         let methodData = null;
         let aionAmount = parseInt(this.state.web3.utils.toNAmp(new BN(amount), 'aion'), 10);
         let actualReciepient = to;
-        let nonce = parseInt(await this.state.web3.eth.getTransactionCount(from), 10);
+        let nonce = await this.state.web3.eth.getTransactionCount(from);
         if (currency.contract) {
             const dataForToken = extraData ? extraData : '0x';
-            methodData = currency.contract.send.getData(
+            console.log("...")
+            const value = new BN(amount?0: amount * Math.pow(10, 18));
+            console.log({ currency, from, to, value, dataForToken });
+            methodData = currency.contract.methods.send(
                 to,
-                amount * Math.pow(10, 18),
+                value,
                 dataForToken)
+            .encodeABI()
             aionAmount = 0;
-            actualReciepient = currency.contract.address
+            actualReciepient = currency.contract.options.address
         }
         return {
             nonce: nonce,
@@ -124,9 +128,13 @@ class UserTool extends Component {
         };
     }
     onRequestGasEstimate = async (currency, from, to, amount, nrg, nrgPrice) => {
+        console.log('1')
         const transaction = await this.toTransaction(currency, from, to, amount, nrg, nrgPrice);
-        let gasEstimate = this.state.web3.eth.estimateGas({ data: transaction });
+        console.log('2')
+        let gasEstimate = await this.state.web3.eth.estimateGas({to:to, data: transaction });
+        console.log('3')
         this.setState({ gasEstimate })
+        return gasEstimate;
     }
     decodeERC777MethodData = (data) => {
         const methodID = data ? data.substring(0, 10) : undefined;
