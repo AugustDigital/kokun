@@ -277,7 +277,8 @@ class UserTool extends Component {
         
         transaction.from = from;
         this.checkTransactionStatus(txHash, transaction, (status, message)=>{
-            if (!this.props.skipConfirmation) {
+            let shouldSkip = this.props.skipAiwaConfirmation && this.state.privateKey === "aiwa";
+            if (!shouldSkip && this.state) {
                 this.setState({
                     step: 4,
                     completed: 1,
@@ -338,8 +339,9 @@ class UserTool extends Component {
         this.onChangeStep(0)
     }
     onChangeStep = async (step) => {
-        this.props.onStepChanged(step, 4, this.props.skipConfirmation)
-        if(step===2 && this.props.skipConfirmation){
+        this.props.onStepChanged(step, 4)
+        let shouldSkip = this.props.skipAiwaConfirmation && this.state.privateKey === "aiwa";
+        if(step===2 && shouldSkip){
             await this.onTransactionStepContinue();
             this.setState({
                 step: 0,

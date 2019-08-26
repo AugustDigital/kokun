@@ -136,7 +136,7 @@ class AionPayDialog extends React.Component {
         defaultTokenAddress={dialogData.defaultTokenAddress}
         externalTransaction={dialogData.transaction}
         callback={dialogData.callback}
-        skipConfirmation={dialogData.skipConfirmation}
+        skipAiwaConfirmation={true}
         onSentSuccess={()=>this.setState({dialogData:null})}/>;
     }
     return (
