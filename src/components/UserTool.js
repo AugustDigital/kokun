@@ -343,8 +343,8 @@ class UserTool extends Component {
         this.onChangeStep(0)
     }
     onChangeStep = async (step) => {
-        this.props.onStepChanged(step, 4)
         let shouldSkip = this.props.skipAiwaConfirmation && this.state.privateKey === "aiwa";
+        this.props.onStepChanged(step, 4, shouldSkip);
         if(step===2 && shouldSkip){
             await this.onTransactionStepContinue();
             this.setState({
