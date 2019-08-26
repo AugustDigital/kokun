@@ -79,6 +79,10 @@ class UserTool extends Component {
         if (externalTransaction) {
             console.log('Got external transaction:')
             console.log(externalTransaction)
+            this.setState({
+                account: account.address,
+                privateKey: account.privateKey,
+            })
             this.onTransactionContinue(externalTransaction, account.address, account.privateKey)
         } else {
             this.setState({

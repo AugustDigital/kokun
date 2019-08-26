@@ -37,7 +37,8 @@ class AionPayButton extends Component {
                 defaultTokenAddress: this.props.tokenAddress,
                 transaction: this.props.transaction,
                 callback: this.props.callback,
-                toggleOpen: this.props.toggleOpen
+                toggleOpen: this.props.toggleOpen,
+                skipAiwaConfirmation: true
             }
         })
     }
