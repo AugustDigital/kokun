@@ -38,7 +38,7 @@ class AionPayButton extends Component {
                 transaction: this.props.transaction,
                 callback: this.props.callback,
                 toggleOpen: this.props.toggleOpen,
-                skipConfirmation: this.props.skipConfirmation,
+                skipAiwaConfirmation: true
             }
         })
     }
@@ -94,7 +94,6 @@ export const inject = () => {
             let web3Provider = domContainer.dataset.web3Provider;
             let transactionString = domContainer.dataset.transaction;
             let toggleOpen = domContainer.dataset.toggleOpen;
-            let skipConfirmation = domContainer.dataset.skipConfirmation;
             let transaction;
             if (transactionString) {
                 transaction = JSON.parse(transactionString)
@@ -142,7 +141,7 @@ export const inject = () => {
                 theme.palette = themePallete;
             }
             window.AionPayButtonInterface.aionPayWidgetThemes.push(theme)
-            let propData = { address, fromAddress, amount, tokenAddress, buttonText, web3Provider, theme, buttonIconType, transaction, callback, toggleOpen, skipConfirmation }
+            let propData = { address, fromAddress, amount, tokenAddress, buttonText, web3Provider, theme, buttonIconType, transaction, callback, toggleOpen }
 
             ReactDOM.render(
                 React.createElement(withStyles(styles)(AionPayButton), propData),

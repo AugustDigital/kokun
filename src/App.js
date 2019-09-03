@@ -5,7 +5,6 @@ import TopBar from './components/TopBar.js'
 import UserSection from './components/UserSection'
 import DevSection from './components/DevSection'
 import BottomBar from './components/BottomBar'
-import './assets/Animations.css'
 import PaperPlane from './assets/paperplane.svg'
 
 const PAGE_PADDING ='15%'

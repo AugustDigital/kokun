@@ -105,6 +105,7 @@ class UserSection extends Component {
 
                                 <UserTool
                                     showInfoHeader={true}
+                                    skipAiwaConfirmation={true}
                                     onStepChanged={this.onStepChanged}
                                     web3Provider={Provider} />
 
