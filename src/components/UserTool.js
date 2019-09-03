@@ -46,7 +46,14 @@ const styles = theme => ({
     },
     linkText: {
         marginTop: '20px'
-    }
+    },
+    rotation:{
+        animation:'spin 4s linear infinite',
+    },
+    '@keyframes spin': {
+        from: {transform:'rotate(0deg)'},
+        to: {transform: 'rotate(359deg)'}
+    },
 
 })
 class UserTool extends Component {
@@ -370,7 +377,7 @@ class UserTool extends Component {
                             direction="column"
                             justify="center"
                             alignItems="center">
-                            <img alt="Aion Logo" className={'rotation'} src={theme.palette.isWidget ? KokunLogoDark : KokunLogoLight} width="90px" />
+                            <img alt="Aion Logo" className={classes.rotation} src={theme.palette.isWidget ? KokunLogoDark : KokunLogoLight} width="90px" />
                             <Typography variant="h4" style={{ fontWeight: 'bold', marginTop: '30px' }}>Sending {currency}</Typography>
                             <Typography variant="subtitle2" style={{ fontWeight: 'light', marginTop: '20px' }}> Sending transaction and waiting for at least one block confirmation.</Typography>
                             <Typography variant="subtitle2" style={{ fontWeight: 'light' }}> Please be patient this wont't take too long...</Typography>
