@@ -258,10 +258,10 @@ class WalletProvidersStep extends Component {
                         window.aionweb3.version.getNetwork((_, networkType) => {
                                 const networkProviderTypeMainnet = this.props.web3Provider.includes('mainnet');
                                 if ((networkProviderTypeMainnet && networkType === '256')
-                                    || (!networkProviderTypeMainnet && networkType === '32')) {
+                                    || (!networkProviderTypeMainnet && networkType === '27')) {
                                         this.setState({ aiwaAddress: window.aionweb3.eth.accounts[0],aiwaError:null });
                                 } else {
-                                    this.setState({ aiwaError: `Please switch AIWA to ${networkProviderTypeMainnet?"MAINNET":"MASTERY"} network!` });
+                                    this.setState({ aiwaError: `Please switch AIWA to ${networkProviderTypeMainnet?"MAINNET":"AMITY"} network!` });
                                 }
                         })
                     } else {
