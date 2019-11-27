@@ -15,7 +15,7 @@ const styles = theme => ({
         paddingRight: theme.spacing.unit * 7,
         [theme.breakpoints.down('xs')]: {
             paddingRight: theme.spacing.unit,
-            marginTop: theme.spacing.unit * 3,
+            marginTop: theme.spacing.unit * 10,
         }
     },
     right: {
@@ -36,7 +36,6 @@ const styles = theme => ({
             paddingTop: theme.spacing.unit * 3,
             paddingLeft: '0px',
         }
-
     },
     progressBar: {
         marginLeft: theme.spacing.unit * 10,
@@ -75,6 +74,7 @@ class UserSection extends Component {
             currentStep: current,
             totalSteps: total
         })
+
     }
 
     render() {
@@ -105,6 +105,7 @@ class UserSection extends Component {
 
                                 <UserTool
                                     showInfoHeader={true}
+                                    skipAiwaConfirmation={true}
                                     onStepChanged={this.onStepChanged}
                                     web3Provider={Provider} />
 

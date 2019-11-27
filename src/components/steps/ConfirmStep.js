@@ -1,12 +1,11 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import Web3 from 'aion-web3';
-import { withStyles, Typography, Grid, Paper } from '@material-ui/core'
+import { withStyles, Typography, Grid, Paper } from '@material-ui/core';
 import { withTheme } from '@material-ui/core/styles';
 import compose from 'recompose/compose';
-import PrimaryButton from '../PrimaryButton'
-import SecondaryButton from '../SecondaryButton'
-import ReactGA from 'react-ga';
+import PrimaryButton from '../PrimaryButton';
+import SecondaryButton from '../SecondaryButton';
 
 const styles = theme => ({
     paper: {
@@ -67,17 +66,7 @@ class ConfirmStep extends Component {
 
     async sendTransaction() {
         try {
-            const transactionHash = await this.state.web3.eth.sendRawTransaction(this.props.rawTransaction)
-            this.props.onTransactionStepContinue(transactionHash)
-            const {amount, currency, theme} = this.props;
-            let name = currency?currency.name.toUpperCase():"AION"
-            ReactGA.event({
-                category: 'Transaction',
-                action: `Sent ${name}`,
-                label:theme.palette.isWidget?'Widget':'Site',
-                value: parseFloat(amount)
-              });
-            
+            await this.props.onTransactionStepContinue(this.props.transaction);
         } catch (error) {
             console.log(error)
             this.setState({ errorMessage: "Error sending transaction. Check your balance." })
@@ -85,7 +74,7 @@ class ConfirmStep extends Component {
     }
 
     render() {
-        const { classes, to, from, amount, nrg, nrgPrice, rawTransaction, onTransactonStepBack, currency } = this.props;
+        const { classes, to, from, amount, nrg, nrgPrice, rawTransaction, onTransactonStepBack, currency, data } = this.props;
         const { errorMessage } = this.state;
         return (
             <div>
@@ -152,6 +141,18 @@ class ConfirmStep extends Component {
                                 <Typography color="textSecondary" variant="subtitle2" className={classes.fatLable}>NRG PRICE</Typography>
                                 <Typography color="textSecondary" variant="subtitle2" className={classes.thinLable}>{`${Math.floor(nrgPrice/Math.pow(10,9))} Amp`}</Typography>
                             </Grid>
+                            {data && data!=='0x' ?
+                                <Grid
+                                    container
+                                    direction="row"
+                                    justify="space-between"
+                                    alignItems="center"
+                                    className={classes.transactionRow}
+                                    wrap='nowrap'>
+                                    <Typography color="textSecondary" variant="subtitle2" className={classes.fatLable}>DATA</Typography>
+                                    <Typography color="textSecondary" variant="subtitle2" className={classes.thinLable}>{data}</Typography>
+                                </Grid>
+                            :null}
                         </Grid>
 
                     </Paper>
@@ -203,6 +204,7 @@ ConfirmStep.propTypes = {
     nrg: PropTypes.number.isRequired,
     rawTransaction: PropTypes.string.isRequired,
     web3Provider: PropTypes.string.isRequired,
+    transaction: PropTypes.object.isRequired,
 };
 
 export default compose(

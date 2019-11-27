@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="90px" height="24px" viewBox="0 0 90 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 54.1 (76490) - https://sketchapp.com -->
+    <title>aion_pay_logo_dark</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="aion_pay_logo_dark">
+            <g id="kokun_logo-copy" transform="translate(0.000000, 0.000000)" fill-rule="nonzero">
+                <circle id="Oval" fill="#113665" cx="19.5" cy="4.5" r="2.5"></circle>
+                <circle id="Oval" fill="#369B79" cx="12" cy="12" r="4"></circle>
+                <circle id="Oval" fill="#113665" cx="4.5" cy="19.5" r="2.5"></circle>
+                <path d="M3.72521324,14.503171 C2.67438222,11.4396528 3.46045148,8.04526314 5.75106171,5.75518979 C8.04167193,3.46511644 11.4368574,2.67923142 14.5010937,3.72981614 L17,1.23149559 C12.4747167,-1.0197097 7.01676006,-0.128276709 3.44332877,3.44566927 C-0.130102525,7.01961524 -1.01967898,12.4766296 1.23376641,17 L3.72521324,14.503171 Z" id="Path" fill="#113665"></path>
+                <path d="M22.7648401,7 L20.2685913,9.4962488 C21.3202055,12.5591786 20.5349501,15.9536267 18.2450339,18.2435428 C15.9551178,20.5334589 12.5606698,21.3187143 9.49773998,20.2671001 L7,22.7648401 C11.5236594,25.0200221 16.9825383,24.1308724 20.5567053,20.5567053 C24.1308724,16.9825383 25.0200221,11.5236594 22.7648401,7 L22.7648401,7 Z" id="Path" fill="#113665"></path>
+            </g>
+            <g id="AION-PAY" transform="translate(34.000000, 4.000000)" fill="#113665" font-family="Lato" font-size="14.56" font-weight="bold">
+                <text id="KOKUN">
+                    <tspan x="0.55932" y="14">KOKUN</tspan>
+                </text>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -103,7 +103,7 @@ class CoinDropdown extends Component {
         })
         return (
             <div className={classes.dropdown + (lock? ' '+classes.lock:'')}>
-                <button className={classes.btn + ' ' + className + (lock? ' '+classes.lock:'')} key={dropDownItems.length} onClick={() => { this.props.onTokenAddClicked() }}>
+                <button className={classes.btn + ' ' + className + (lock? ' '+classes.lock:'')} key={dropDownItems.length} >
                     <Grid
                         container
                         direction="row"
@@ -117,16 +117,17 @@ class CoinDropdown extends Component {
 
                 <div className={classes.dropdownContent}>
                     {dropDownItems}
+
                     <button className={itemClassName} key={dropDownItems.length} onClick={() => { this.props.onTokenAddClicked() }}>
-                        <Grid
-                            container
-                            direction="row"
-                            justify="space-between"
-                            alignItems="center"
-                        >
-                            <Typography variant="subtitle2" >ADD</Typography>
-                            <Add className={classes.addButton} />
-                        </Grid>
+                            <Grid
+                                container
+                                direction="row"
+                                justify="space-between"
+                                alignItems="center"
+                            >
+                                <Typography variant="subtitle2" >ADD</Typography>
+                                <Add className={classes.addButton} />
+                            </Grid>
                     </button>
 
                 </div>

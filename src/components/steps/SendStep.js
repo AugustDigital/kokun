@@ -11,6 +11,7 @@ import ATSInterface from '../../common/ATSInterface';
 import globalTokenContractRegistry from '../../common/ContractRegistry'
 import AddTokenDialog from '../AddTokenDialog'
 import { asPromise } from '../../utils/common'
+import queryString from 'stringquery'
 
 
 const styles = theme => ({
@@ -118,7 +119,7 @@ const styles = theme => ({
 })
 
 class SendStep extends Component {
-
+    checkerInterval = null;
     constructor(props) {
         super(props);
         this.defaultCurrencies = [{ name: 'Aion', contract: null, getBalance: this.getBalance }];
@@ -131,19 +132,56 @@ class SendStep extends Component {
             customNrg: false,
             nrgPrice: TransactionUtil.defaultNrgPrice,
             nrg: this.props.nrg ? this.props.nrg : TransactionUtil.defaultNrgLimit,
-            errorMessage: null,
+            errorMessage: this.props.errorMessage,
             account: this.props.account,
             web3: new Web3(new Web3.providers.HttpProvider(this.props.web3Provider)),
-            addTokenDialogOpened: false
+            addTokenDialogOpened: false,
         }
+        globalTokenContractRegistry.account = this.props.account;
     }
 
     componentDidMount() {
         this.setState({ web3: new Web3(new Web3.providers.HttpProvider(this.props.web3Provider)) });
-        if(this.props.defaultTokenAddress)
+        const queryParams = queryString(window.location.search);
+        let platAddress;
+        if (queryParams.testnet === 'true') {
+            platAddress = '0xa0ae5a4854293dd64412327c7c172d911da524fc6f39fc211be7b7ecaac0185f' // note: mastery plat address is subject to change
+        } else {
+            platAddress = '0xa0c6ed9486e9137802d0acdcd9a0499241872f648b51a5ab49a534a0d440f62c'
+        }
+        this.updateCurrenciesWithAddress(platAddress, false, false)
+
+        if (this.props.defaultTokenAddress) {
             this.updateCurrenciesWithAddress(this.props.defaultTokenAddress, true)
-        if(this.props.defaultAmount && this.props.defaultRecipient)
+        }
+        if (this.props.defaultAmount || this.props.defaultRecipient || this.props.defaultSender) {
             this.isFormValid()
+        }
+        if (this.props.privateKey === 'aiwa' ) {
+            this.checkerInterval = setInterval(() => {
+                if( window.aionweb3 && window.aionweb3.eth.accounts && window.aionweb3.eth.accounts[0])
+                {
+                    this.setState({ account: window.aionweb3.eth.accounts[0] });
+                    this.isFormValid()
+                }
+            }, 2000)
+        }
+    }
+
+    componentWillUnmount(){
+        clearInterval(this.checkerInterval);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.errorMessage) {
+            this.setState({
+                errorMessage: nextProps.errorMessage
+            });
+        } else if (nextProps.account) {
+            this.setState({
+                account: nextProps.account
+            })
+        }
     }
 
     async updateNrg() {
@@ -160,7 +198,7 @@ class SendStep extends Component {
         return parseFloat(this.state.web3.fromWei(balance, 'ether')).toFixed(2)
     }
 
-    updateCurrenciesWithAddress = async (address, skipRegistry=false) => {
+    updateCurrenciesWithAddress = async (address, skipRegistry = false, makeCurrent = true) => {
         try {
             const tokenContract = this.state.web3.eth.contract(ATSInterface).at(address)
             const symbol = await asPromise(tokenContract.symbol.call)
@@ -169,7 +207,7 @@ class SendStep extends Component {
                     name: symbol,
                     contract: tokenContract,
                     getBalance: () => {
-                        var balance = tokenContract.balanceOf.call(this.props.account).toNumber()
+                        var balance = tokenContract.balanceOf.call(globalTokenContractRegistry.account).toNumber()
                         return parseFloat(this.state.web3.fromWei(balance, 'ether')).toFixed(2)
                     }
                 }
@@ -179,7 +217,7 @@ class SendStep extends Component {
                     })
                     return false;
                 }
-                if(!skipRegistry)
+                if (!skipRegistry)
                     globalTokenContractRegistry.addContract(contractData)
                 this.state.availableCurrencies.push(contractData)
                 this.setState({
@@ -198,7 +236,9 @@ class SendStep extends Component {
                         })
                     }, 1000)
                 }, 2000)
-                this.handleCurrencyChange(this.state.availableCurrencies.length - 1)
+                if (makeCurrent) {
+                    this.handleCurrencyChange(this.state.availableCurrencies.length - 1)
+                }
                 return true;
             } else {
                 this.setState({
@@ -253,14 +293,21 @@ class SendStep extends Component {
     }
 
     isFormValid = () => {
-        const { recipient, amount } = this.state;
+        const { recipient, amount, account } = this.state;
+        const { defaultSender } = this.props;
+        if (defaultSender && defaultSender !== account) {
 
-        if (typeof (recipient) === 'undefined' || recipient.length < 0 || isNaN(parseInt(amount, 10))) {
+            this.setState({
+                valid: false,
+                errorMessage: 'Expecting a different wallet address'
+            })
+
+        } else if (typeof (recipient) === 'undefined' || recipient.length < 0 || isNaN(parseInt(amount, 10))) {
             this.setState({
                 valid: false,
                 errorMessage: 'Fields missing'
             })
-        }else if(!this.state.web3.isAddress(recipient)){
+        } else if (!this.state.web3.isAddress(recipient)) {
             this.setState({
                 valid: false,
                 errorMessage: 'Provided address is invalid'

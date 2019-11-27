@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { withStyles, Typography, TextField, ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails, Grid, LinearProgress, IconButton, Zoom } from '@material-ui/core'
-import { Warning, CloudUpload, InsertDriveFile, CheckCircleRounded, Close, Dock } from '@material-ui/icons';
+import { Warning, CloudUpload, InsertDriveFile, CheckCircleRounded, RemoveCircleOutlineRounded,  Close, Dock } from '@material-ui/icons';
 import classNames from 'classnames'
 import Dropzone from 'react-dropzone';
 import KeystoreWalletProvider from '../../utils/KeystoreWalletProvider';
-import AionPayLogoLight from '../../assets/aion_pay_logo_light.svg'
+import KokunLogoLight from '../../assets/kokun_logo_light.svg'
+import AIWALogo from '../../assets/aiwa_logo_white_horizontal.png'
 import LockIcon from '../../assets/lock_icon.svg'
 import LedgerProvider from '../../utils/ledger/LedgerProvider'
 import { promiseTimeout } from '../../utils/promiseTimeout';
@@ -139,6 +140,11 @@ const styles = theme => ({
         fontSize: 75,
         color: theme.palette.common.green
     },
+    crossIconBig: {
+        padding: theme.spacing.unit,
+        fontSize: 75,
+        color: theme.palette.common.red
+    },
     leftIcon: {
         marginRight: theme.spacing.unit,
     },
@@ -150,7 +156,8 @@ const styles = theme => ({
         float: 'left'
     },
     aionPayIcon: {
-        height: '28px'
+        height: "28px",
+        paddingRight: "6px"
     },
     unlockingState: {
         paddingTop: theme.spacing.unit * 15,
@@ -183,6 +190,7 @@ class WalletProvidersStep extends Component {
             keyStoreFilePass: null,
             ledgerConnected: false,
             ledgerAddress: '',
+            aiwaAddress: null,
             completed: 0,
             privateKeyError: false,
             privateKeyErrorMessage: 'Using a private key online is not safe',
@@ -217,6 +225,12 @@ class WalletProvidersStep extends Component {
                 validate: this.validateKTPCredentials,
                 testnet: false
             },
+            {
+                title: 'AIWA',
+                create: this.createAIWAPanel,
+                unlock: this.unlockAIWA,
+                validate: this.validateAIWA
+            }
         ];
     }
     componentWillMount() {
@@ -224,6 +238,7 @@ class WalletProvidersStep extends Component {
         this.setState({ showKeyterpillar: queryParams.testnet === 'true' && queryParams.keyterpillar === 'true' })
     }
     componentDidMount() {
+
         setInterval(() => {
             if (this.state.expanded != null) {
                 let expanded = { title: '' };
@@ -239,6 +254,20 @@ class WalletProvidersStep extends Component {
                     }).catch(error => {
                         this.setState({ ledgerConnected: false, ledgerAddress: '' });
                     });
+                } else if(expanded.title === "AIWA"){
+                    if (window.aionweb3 && window.aionweb3.eth.accounts && window.aionweb3.eth.accounts[0]) {
+                        window.aionweb3.version.getNetwork((_, networkType) => {
+                                const networkProviderTypeMainnet = this.props.web3Provider.includes('mainnet');
+                                if ((networkProviderTypeMainnet && networkType === '256')
+                                    || (!networkProviderTypeMainnet && networkType === '27')) {
+                                        this.setState({ aiwaAddress: window.aionweb3.eth.accounts[0],aiwaError:null });
+                                } else {
+                                    this.setState({ aiwaError: `Please switch AIWA to ${networkProviderTypeMainnet?"MAINNET":"AMITY"} network!` });
+                                }
+                        })
+                    } else {
+                        this.setState({ aiwaError: "AIWA not found" });
+                    }
                 }
             }
         }, 5000);
@@ -274,6 +303,11 @@ class WalletProvidersStep extends Component {
         this.setState({
             keyStoreFile: null,
             keyStoreFilePass: null
+        })
+    }
+    unlockAIWA = (item) => {
+        return new Promise((resolve, reject) => {
+            resolve({ address: this.state.aiwaAddress, privateKey: 'aiwa' })
         })
     }
     unlockAccount = (item) => {
@@ -358,6 +392,59 @@ class WalletProvidersStep extends Component {
                 reject(false)
             }
         })
+    }
+
+    createAIWAPanel = (classes) => {
+        return (<div className={classes.content}>
+            {this.state.aiwaError ? <div>
+                <Grid
+                        container
+                        spacing={16}
+                        direction="row"
+                        justify="center"
+                        alignItems="center"
+                        style={{ marginTop: '15px' }}>
+
+                        <RemoveCircleOutlineRounded className={classes.crossIconBig} />
+                        <Grid item xs>
+                            <Typography className={classes.panelText} variant='subtitle1'>{this.state.aiwaError}</Typography>
+                        </Grid>
+
+                    </Grid>
+            </div> :
+                this.state.aiwaAddress ? <div>
+                    <Grid
+                        container
+                        spacing={16}
+                        direction="row"
+                        justify="center"
+                        alignItems="center"
+                        style={{ marginTop: '15px' }}>
+
+                        <CheckCircleRounded className={classes.checkIconBig} />
+                        <Grid item xs>
+                            <Typography className={classes.panelText} variant='subtitle1'>AIWA is present</Typography>
+                        </Grid>
+
+                    </Grid>
+                </div> :
+                    <Grid
+                        container
+                        spacing={16}
+                        direction="row"
+                        justify="center"
+                        alignItems="center"
+                        wrap='wrap'
+                        style={{ marginTop: '15px' }}>
+
+                        <img alt='Lock' src={AIWALogo} width='75px' className={classes.fileIcon} />
+                        <Grid item xs>
+                            <Typography className={classes.panelText} variant='subtitle1' >Checking if AIWA is present...</Typography>
+                        </Grid>
+
+                    </Grid>
+            }
+        </div>)
     }
 
     createLedgerPanel = (classes) => {
@@ -536,6 +623,11 @@ class WalletProvidersStep extends Component {
             web3Provider={this.props.web3Provider} />)
     }
 
+    validateAIWA = () => {
+
+        const { aiwaAddress } = this.state;
+        return aiwaAddress ? true : false;
+    }
     validateLedger = () => {
 
         const { ledgerConnected } = this.state;
@@ -588,7 +680,7 @@ class WalletProvidersStep extends Component {
                 justify="flex-start">
                 {showInfoHeader ?
                     <div>
-                        <img alt="Aion Pay Logo" className={classNames(classes.aionPayIcon)} src={AionPayLogoLight} />
+                        <img alt="Kokun Logo" className={classNames(classes.aionPayIcon)} src={KokunLogoLight} />
                         <Typography variant="subtitle2" style={{ fontWeight: 'light', marginTop: '25px' }}> Seamlessly send Aion to any address</Typography>
                     </div>
                     : null}
@@ -623,8 +715,7 @@ class WalletProvidersStep extends Component {
 
 WalletProvidersStep.propTypes = {
     classes: PropTypes.object.isRequired,
-    onAccountImported: PropTypes.func.isRequired,
-    web3Provider: PropTypes.string.isRequired
+    onAccountImported: PropTypes.func.isRequired
 };
 
 export default withStyles(styles)(WalletProvidersStep);

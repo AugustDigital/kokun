@@ -26,5 +26,5 @@ export function splitPath(path){
                 return iterate(index + 1, array, result);
             });
     }
-    return Promise.resolve().then(function () { return iterate(0, arr, []); });
+    return Promise.resolve().then(() => iterate(0, arr, []));
 }

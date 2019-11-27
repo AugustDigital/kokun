@@ -18,16 +18,27 @@ class AionPayButton extends Component {
     state = {
         dialogData: null
     }
-    componentDidMount() { }
+    componentDidMount() { 
+        if(this.props.toggleOpen){
+            this.onPayButtonClick();
+        }
+        window.AionPayButtonInterface.render = this.onPayButtonClick;
+    }
+    componentWillUnmount() {
+        window.AionPayButtonInterface.render = null;
+    }
     onPayButtonClick = () => {
         this.setState({
             dialogData: {
                 web3Provider: this.props.web3Provider,
                 defaultRecipient: this.props.address,
+                defaultSender: this.props.fromAddress,
                 defaultAmount: this.props.amount,
                 defaultTokenAddress: this.props.tokenAddress,
                 transaction: this.props.transaction,
-                callback: this.props.callback
+                callback: this.props.callback,
+                toggleOpen: this.props.toggleOpen,
+                skipAiwaConfirmation: true
             }
         })
     }
@@ -58,7 +69,7 @@ AionPayButton.propTypes = {
 export const inject = () => {
     window.AionPayButtonInterface = {
         renderAionPayButton: inject,
-        aionPayWidgetThemes: []
+        aionPayWidgetThemes: [],
     }
     //Register our custom element
     document.createElement('aion-pay');
@@ -66,6 +77,7 @@ export const inject = () => {
     document.querySelectorAll('aion-pay')
         .forEach(domContainer => {
             let address = domContainer.dataset.address;
+            let fromAddress = domContainer.dataset.from;
             let amount = domContainer.dataset.amount;
             let tokenAddress = domContainer.dataset.tokenAddress;
             let buttonText = domContainer.dataset.buttonText;
@@ -81,6 +93,7 @@ export const inject = () => {
             let style = domContainer.dataset.style;
             let web3Provider = domContainer.dataset.web3Provider;
             let transactionString = domContainer.dataset.transaction;
+            let toggleOpen = domContainer.dataset.toggleOpen;
             let transaction;
             if (transactionString) {
                 transaction = JSON.parse(transactionString)
@@ -128,7 +141,7 @@ export const inject = () => {
                 theme.palette = themePallete;
             }
             window.AionPayButtonInterface.aionPayWidgetThemes.push(theme)
-            let propData = { address, amount, tokenAddress, buttonText, web3Provider, theme, buttonIconType, transaction, callback }
+            let propData = { address, fromAddress, amount, tokenAddress, buttonText, web3Provider, theme, buttonIconType, transaction, callback, toggleOpen }
 
             ReactDOM.render(
                 React.createElement(withStyles(styles)(AionPayButton), propData),

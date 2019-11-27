@@ -1,4 +1,4 @@
-# Aion Pay
+# Kokun
 
 This component allows you to transfer Aion, AIP4 tokens, and sign smart contract transactions.
 
@@ -45,7 +45,7 @@ In your page create ```<aion-pay>``` tag then pass the data as attribute paramet
         <aion-pay  
             id='aion-pay-0' 
             data-web3-provider='...'></aion-pay>
-	    <script type="text/javascript" src="https://www.kokun.co/aion_pay.js"></script>
+	    <script type="text/javascript" src="https://www.kokun.co/kokun.js"></script>
     </body>
 </html>
 ```
