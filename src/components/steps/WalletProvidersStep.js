@@ -156,7 +156,8 @@ const styles = theme => ({
         float: 'left'
     },
     aionPayIcon: {
-        height: '28px'
+        height: "28px",
+        paddingRight: "6px"
     },
     unlockingState: {
         paddingTop: theme.spacing.unit * 15,
