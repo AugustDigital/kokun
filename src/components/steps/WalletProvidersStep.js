@@ -257,12 +257,11 @@ class WalletProvidersStep extends Component {
                 } else if(expanded.title === "AIWA"){
                     if (window.aionweb3 && window.aionweb3.eth.accounts && window.aionweb3.eth.accounts[0]) {
                         window.aionweb3.version.getNetwork((_, networkType) => {
-                                const networkProviderTypeMainnet = this.props.web3Provider.includes('mainnet');
-                                if ((networkProviderTypeMainnet && networkType === '256')
-                                    || (!networkProviderTypeMainnet && networkType === '27')) {
+                                if ((networkType === '256')
+                                    || (networkType === '27')) {
                                         this.setState({ aiwaAddress: window.aionweb3.eth.accounts[0],aiwaError:null });
                                 } else {
-                                    this.setState({ aiwaError: `Please switch AIWA to ${networkProviderTypeMainnet?"MAINNET":"AMITY"} network!` });
+                                    this.setState({ aiwaError: `Please switch AIWA to ${networkType !== '256'?"MAINNET":"AMITY"} network!` });
                                 }
                         })
                     } else {
