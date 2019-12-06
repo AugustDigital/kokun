@@ -64,7 +64,7 @@
     "scrypt-js": "^2.0.4",
     "semantic-ui-css": "^2.3.3",
     "semantic-ui-react": "^0.82.1",
-    "serialize-javascript": "^1.6.1",
+    "serialize-javascript": "^2.1.1",
     "stringquery": "1.0.8",
     "style-loader": "^0.21.0",
     "superagent": "^5.0.2",
